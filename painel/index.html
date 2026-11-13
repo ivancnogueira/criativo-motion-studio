@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel de vídeos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<link rel="stylesheet" href="/painel/painel.css">
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <h1 id="titulo">Painel</h1>
+    <nav aria-label="Etapas">
+      <a href="#estilo">1 · Estilo</a><a href="#video">2 · Vídeo</a><a href="#novo">Estilo novo</a><a href="#pronto">3 · Gerar</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <p id="aviso" class="aviso" role="status" hidden></p>
+
+  <section id="estilo" aria-labelledby="h-estilo">
+    <h2 id="h-estilo">1 · Escolha o estilo</h2>
+    <p class="sub">Cada cartão mostra uma cena animada. Não sabe qual? <span id="sugestoes"></span></p>
+    <div class="grade" id="grade" role="radiogroup" aria-labelledby="h-estilo"></div>
+  </section>
+
+  <section id="video" aria-labelledby="h-video">
+    <h2 id="h-video">2 · Configure o vídeo</h2>
+    <form id="form" class="form" novalidate>
+      <label class="campo largo">Tema do vídeo
+        <textarea id="tema" rows="3" maxlength="2000" placeholder="Explique como funciona…"></textarea>
+        <button type="button" class="link" id="exemplo">Usar o tema de exemplo do estilo</button>
+      </label>
+
+      <fieldset class="campo">
+        <legend>Formato</legend>
+        <label class="opt"><input type="radio" name="vertical" value="true"> Vertical 9:16 (Reels, Shorts, TikTok)</label>
+        <label class="opt"><input type="radio" name="vertical" value="false"> Horizontal 16:9</label>
+      </fieldset>
+
+      <fieldset class="campo">
+        <legend>Narração</legend>
+        <label class="opt"><input type="checkbox" id="narracao"> Usar narração em áudio (a duração segue o áudio)</label>
+        <div id="bloco-narracao" hidden>
+          <p class="nota" id="estado-narracao"></p>
+          <label class="arquivo">Enviar MP3 da narração <input type="file" id="arq-audio" accept=".mp3,audio/mpeg"></label>
+          <label class="campo largo">Roteiro (opcional)
+            <textarea id="roteiro" rows="4" maxlength="5000" placeholder="Texto falado na narração"></textarea>
+          </label>
+          <label class="opt"><input type="checkbox" id="legendas"> Legendas na tela</label>
+        </div>
+        <label class="campo" id="bloco-duracao">Duração em segundos
+          <input type="number" id="duracao" min="5" max="600" step="1" value="30">
+        </label>
+      </fieldset>
+
+      <fieldset class="campo">
+        <legend>Extras</legend>
+        <label class="opt"><input type="checkbox" id="storyboard"> Storyboard: aprovar os quadros antes de animar</label>
+        <label class="opt"><input type="checkbox" id="musica"> Música gerada em código</label>
+        <label class="opt"><input type="checkbox" id="efeitos"> Efeitos sonoros</label>
+        <label class="opt" id="bloco-teste" hidden><input type="checkbox" id="teste"> Mostrar um quadro de teste do estilo antes de animar</label>
+      </fieldset>
+
+      <fieldset class="campo">
+        <legend>Cores</legend>
+        <label class="opt"><input type="radio" name="paleta" value="estilo"> As cores do estilo</label>
+        <label class="opt"><input type="radio" name="paleta" value="marca"> As cores da minha marca</label>
+        <label class="opt"><input type="radio" name="paleta" value="personalizada"> Escolher agora</label>
+        <div class="cores" id="cores-vid" hidden></div>
+      </fieldset>
+
+      <fieldset class="campo" id="bloco-marca" hidden>
+        <legend>Minha marca</legend>
+        <label>Nome <input type="text" id="marca-nome" maxlength="60"></label>
+        <div class="cores" id="cores-marca"></div>
+        <button type="button" id="salvar-marca" class="sec">Salvar marca</button>
+      </fieldset>
+
+      <div class="acoes largo">
+        <button type="submit" id="salvar">Salvar configuração</button>
+        <span id="msg-form" class="msg" role="status"></span>
+      </div>
+    </form>
+  </section>
+
+  <section id="novo" aria-labelledby="h-novo">
+    <h2 id="h-novo">Criar um estilo a partir de um vídeo</h2>
+    <p class="sub">Envie um vídeo de que você gostou. O painel extrai quadros, movimento e cores; depois o agente escreve a direção de arte.</p>
+    <p class="aviso" id="sem-ffmpeg" hidden>O FFmpeg não foi encontrado nesta máquina. Instale-o (https://ffmpeg.org) para extrair estilos.</p>
+    <div class="form" id="form-novo">
+      <label class="campo">Nome do estilo <input type="text" id="novo-nome" maxlength="60" placeholder="Ex.: Neon Retrô"></label>
+      <label class="arquivo campo">Vídeo de referência <input type="file" id="arq-video" accept=".mp4,.mov,.m4v,.webm,.mkv,video/*"></label>
+      <label class="campo">Início do trecho (s) <input type="number" id="novo-inicio" min="0" value="0"></label>
+      <label class="campo">Duração do trecho (s) <input type="number" id="novo-duracao" min="2" max="60" value="12"></label>
+      <div class="acoes largo">
+        <button type="button" id="extrair">Enviar e extrair estilo</button>
+        <span id="msg-novo" class="msg" role="status"></span>
+      </div>
+      <progress id="prog" max="100" value="0" hidden></progress>
+    </div>
+    <div id="resultado-novo" class="resultado" hidden></div>
+    <div id="em-preparacao"></div>
+  </section>
+
+  <section id="pronto" aria-labelledby="h-pronto">
+    <h2 id="h-pronto">3 · Gerar o vídeo</h2>
+    <p class="sub">Com a configuração salva, cole este comando no chat do seu agente (Claude, Codex ou Antigravity).</p>
+    <div class="comando"><code id="cmd"></code><button type="button" id="copiar">Copiar</button></div>
+  </section>
+</main>
+<script src="/vitrine/previas.js"></script>
+<script src="/painel/painel.js"></script>
+</body>
+</html>

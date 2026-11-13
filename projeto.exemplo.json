@@ -1,0 +1,19 @@
+{
+  "estilo": "vetor-flat",
+  "tema": "Explique como os painéis solares geram energia para uma casa: a luz energiza os elétrons nas células, o painel produz corrente contínua, o inversor converte em corrente alternada e o excedente vai para uma bateria ou para a rede.",
+  "storyboard": false,
+  "narracao": false,
+  "roteiro": "",
+  "legendas": false,
+  "duracaoSegundos": 30,
+  "vertical": false,
+  "musica": true,
+  "efeitos": true,
+  "paleta": "estilo",
+  "cores": {
+    "dominante": "#2563EB",
+    "destaque": "#F59E0B",
+    "apoio": "#10B981"
+  },
+  "testeDeEstilo": true
+}

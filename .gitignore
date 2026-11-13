@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+
+# Tudo abaixo pertence à INSTÂNCIA do usuário e nunca entra no produto.
+.env
+projeto.json
+marca.json
+runtime/
+render/
+saida/
+vitrine/estilos.js
+entrada/*
+!entrada/LEIA-ME.md
+
+# Estilos criados pelo usuário: só os nativos e o modelo são do produto.
+estilos/*
+!estilos/indice.json
+!estilos/_personalizado/
+!estilos/recorte-de-papel/
+!estilos/vidro-liquido/
+!estilos/isometrico-em-linha/
+!estilos/vetor-flat/
+!estilos/pixel-art-8-bit/
+
+# Material de origem do desenvolvimento, fora do produto.
+/*.html
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

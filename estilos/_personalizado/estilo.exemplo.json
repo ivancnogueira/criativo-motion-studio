@@ -1,0 +1,16 @@
+{
+  "id": "giz-cinetico",
+  "personalizado": true,
+  "nome": "Giz Cinético",
+  "subtitulo": "lousa desenhada à mão",
+  "motor": "Canvas 2D · traço de giz",
+  "resumo": "Uma frase curta sobre o que se vê.",
+  "aparencia": "Duas ou três frases sobre como o estilo parece e se move.",
+  "melhorPara": "Para quais tipos de vídeo ele serve.",
+  "bomSaber": "Uma dica ou limitação honesta.",
+  "temaExemplo": "Explique ...",
+  "rotulo": "hand-drawn kinetic chalkboard",
+  "resumoPrompt": "Two or three English sentences summarising the look and motion.",
+  "cores": ["#111111", "#F5F5F5"],
+  "sequenciaMovimento": true
+}

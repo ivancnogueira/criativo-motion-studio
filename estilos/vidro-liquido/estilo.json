@@ -1,0 +1,11 @@
+{
+  "id": "vidro-liquido",
+  "nome": "Vidro Líquido",
+  "subtitulo": "produto premium",
+  "motor": "Shaders WebGL de refração",
+  "resumo": "Lentes de vidro deslizam pela cena e distorcem o que está atrás delas.",
+  "aparencia": "Formas de vidro refrativo passam sobre uma interface escura e detalhada. Elas ampliam e distorcem o que está embaixo, se juntam e se separam, com brilhos fortes nas bordas.",
+  "melhorPara": "Demonstrações de apps e produtos, fluxos de SaaS, qualquer coisa com uma interface para mostrar.",
+  "bomSaber": "É o estilo mais pesado de renderizar. Exporte no Chrome, num computador razoavelmente rápido, para um MP4 sem travadas.",
+  "temaExemplo": "Mostre como a IA transforma uma ideia num aplicativo funcionando: do pedido inicial à interface, a prévia e os testes no localhost, a correção de problemas e a publicação num endereço público para outras pessoas usarem."
+}

@@ -1,0 +1,27 @@
+{
+  "name": "criativo-motion-studio",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Linha de produção de vídeos curtos em motion graphics para agentes de código (Claude, Codex e Antigravity).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "instalar": "node scripts/instalar.mjs",
+    "instalar-skills": "node scripts/instalar-skills.mjs",
+    "desinstalar-skills": "node scripts/instalar-skills.mjs --remover",
+    "diagnosticar": "node scripts/diagnosticar.mjs",
+    "validar:integracoes": "node scripts/validar-integracoes.mjs",
+    "montar": "node scripts/montar-prompt.mjs",
+    "narrar": "node scripts/narrar.mjs",
+    "transcrever": "node scripts/transcrever.mjs",
+    "publicar:reels": "node scripts/publicar-reels.mjs",
+    "test": "node --test testes/instalador.test.mjs testes/modulos.test.mjs testes/painel.test.mjs",
+    "vitrine": "node scripts/vitrine.mjs",
+    "painel": "node scripts/painel.mjs",
+    "extrair-estilo": "node scripts/extrair-estilo.mjs",
+    "verificar:produto": "node scripts/verificar-produto.mjs",
+    "empacotar": "node scripts/empacotar.mjs"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "isometrico-em-linha",
+  "nome": "Isométrico em Linha",
+  "subtitulo": "desenho técnico",
+  "motor": "Three.js ortográfico · geometria de linhas",
+  "resumo": "Desenhos de linha precisos que se traçam sozinhos e depois começam a funcionar.",
+  "aparencia": "Prédios, máquinas e rotas isométricas se desenham linha por linha num fundo escuro. Depois as partes se movem: pacotes percorrem caminhos, veículos andam, indicadores se preenchem.",
+  "melhorPara": "Sistemas, fluxos de dados, logística, arquitetura, tudo que tem um caminho físico.",
+  "bomSaber": "Temas abstratos funcionam, mas o Claude os transforma em estruturas e caminhos. Quanto mais físico o processo, melhor fica este estilo.",
+  "temaExemplo": "Explique o caminho de uma compra online, do pagamento à entrega: o cliente confirma o pedido, o pagamento é aprovado, o estoque é reservado, o produto é separado e embalado, o entregador leva e o rastreio atualiza até a entrega."
+}

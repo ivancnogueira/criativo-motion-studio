@@ -1,0 +1,11 @@
+{
+  "id": "vetor-flat",
+  "nome": "Vetor Flat",
+  "subtitulo": "estúdio 2D limpo",
+  "motor": "Caminhos SVG · morphing de formas",
+  "resumo": "Ilustração 2D marcante, com formas que se transformam de uma ideia na próxima.",
+  "aparencia": "Cores chapadas, formas nítidas e transições suaves. Objetos ganham cortes internos, fios e setas mostram o que flui para onde, e chamadas numeradas guiam os passos.",
+  "melhorPara": "Ciência, energia, saúde e explicações do dia a dia sobre como as coisas funcionam.",
+  "bomSaber": "O curinga mais seguro. Se não souber qual estilo combina com o tema, comece por aqui.",
+  "temaExemplo": "Explique como os painéis solares geram energia para uma casa: a luz energiza os elétrons nas células, o painel produz corrente contínua, o inversor converte em corrente alternada e o excedente vai para uma bateria ou para a rede."
+}

@@ -1,0 +1,40 @@
+{
+  "estilos": [
+    "recorte-de-papel",
+    "vidro-liquido",
+    "isometrico-em-linha",
+    "vetor-flat",
+    "pixel-art-8-bit"
+  ],
+  "comecePor": [
+    {
+      "pergunta": "Explicar como algo funciona?",
+      "estilo": "vetor-flat"
+    },
+    {
+      "pergunta": "Mostrar um app ou produto?",
+      "estilo": "vidro-liquido"
+    },
+    {
+      "pergunta": "Mostrar um sistema ou um fluxo?",
+      "estilo": "isometrico-em-linha"
+    },
+    {
+      "pergunta": "Um processo que precisa parecer amigável?",
+      "estilo": "recorte-de-papel"
+    },
+    {
+      "pergunta": "Games, código ou gancho de nostalgia?",
+      "estilo": "pixel-art-8-bit"
+    }
+  ],
+  "dicas": {
+    "storyboard": "O Claude planeja primeiro: uma tabela cena a cena (tempo, visual, movimento, texto na tela, som) e quadros de prévia reais neste estilo. Ele para aí até você responder APROVADO ou pedir mudanças. Deixe desmarcado para ir direto à animação pronta.",
+    "voiceover": "Faça o MP3 da narração antes (grave ou use uma ferramenta de texto para fala) e anexe na conversa junto com o prompt. O vídeo dura exatamente o mesmo que o áudio e as cenas mudam junto com as palavras. Se o Claude não conseguir colocar o arquivo na animação, ele adiciona um botão Carregar MP3.",
+    "script": "Opcional. Cole o roteiro para o Claude saber o que é dito e sincronizar as cenas. Sem alinhamento real com o áudio, os tempos ficam marcados como estimativa.",
+    "subtitles": "O Claude adiciona legendas sincronizadas com a narração, um botão para ligar e desligar as legendas na tela e um botão Baixar SRT.",
+    "music": "Composta em código com a Web Audio API. Nada de trilha de banco, e ela some junto com o fim do vídeo.",
+    "sfx": "Whooshes, cliques e impactos suaves gerados em código e sincronizados com o que acontece na tela.",
+    "brand": "Troca a paleta do estilo pelas cores da sua marca, definidas em marca.json: dominante, destaque e apoio. A técnica e o acabamento do estilo continuam iguais."
+  }
+}

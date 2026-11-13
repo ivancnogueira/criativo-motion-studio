@@ -1,0 +1,11 @@
+{
+  "id": "recorte-de-papel",
+  "nome": "Recorte de Papel",
+  "subtitulo": "editorial artesanal",
+  "motor": "Canvas 2D · texturas de papel",
+  "resumo": "Camadas de papel colorido que deslizam, dobram e se encaixam em infográficos.",
+  "aparencia": "Papel recortado com bordas rasgadas, textura de fibra e sombras suaves. As peças se montam em diagramas, os rótulos ficam em faixas de papel e as partes pequenas se mexem com um leve passo de stop-motion.",
+  "melhorPara": "Explicações de como algo funciona, ciclos e processos, tudo que precisa parecer acolhedor e fácil de entender.",
+  "bomSaber": "Cada cena tem muito detalhe de papel, então vale ligar o Storyboard antes. Você confere os quadros antes do Claude animar.",
+  "temaExemplo": "Explique como funcionam os agentes de IA: como recebem um objetivo, escolhem ações, usam ferramentas, conferem os resultados e decidem o próximo passo."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "pixel-art-8-bit",
+  "nome": "Pixel Art 8-Bit",
+  "subtitulo": "jogo retrô",
+  "motor": "Canvas em baixa resolução · pixel nítido",
+  "resumo": "Sprites em pixel, letras bitmap e transições em blocos com clima de chiptune.",
+  "aparencia": "Uma cena em baixa resolução ampliada com bordas de pixel duras: sprites animados, fundos em camadas, fontes de pixel e painéis no estilo HUD. A música, se marcada, tem som de videogame antigo.",
+  "melhorPara": "Games, conceitos de programação, nostalgia e explicações divertidas.",
+  "bomSaber": "Texto em pixel é grosso, então use poucas palavras curtas na tela. Funciona também para temas que não têm nada a ver com games.",
+  "temaExemplo": "Explique como um jogo 2D responde ao jogador: o botão vira uma ação, o loop do jogo atualiza posições e checa colisões, os quadros do sprite mostram o movimento e a tela é redesenhada."
+}

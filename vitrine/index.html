@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vitrine de estilos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+  :root { --fundo: #14101f; --cartao: #1f1830; --borda: #35294f; --texto: #f3effa; --suave: #b3a7cc; --destaque: #8b5cf6; --ok: #39ff88; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fundo); color: var(--texto); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1160px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 28px; margin: 0 0 4px; }
+  .sub { color: var(--suave); margin: 0 0 28px; max-width: 60ch; }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; list-style: none; padding: 0; margin: 0; }
+  .cartao { background: var(--cartao); border: 1px solid var(--borda); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .palco { aspect-ratio: 16 / 9; background: #0c0915; display: block; width: 100%; }
+  .palco img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  canvas.palco { height: auto; }
+  .corpo { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .etiqueta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ok); font-weight: 700; }
+  .etiqueta.meu { color: #ffc65c; }
+  h2 { font-size: 20px; margin: 0; }
+  h2 small { display: block; font-size: 13px; font-weight: 400; color: var(--suave); }
+  p { margin: 0; }
+  .linha { font-size: 14px; color: var(--suave); }
+  .linha b { color: var(--texto); font-weight: 600; }
+  .comando { margin-top: auto; display: flex; gap: 8px; align-items: stretch; }
+  code { flex: 1; background: #0c0915; border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px; font: 13px ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+  button { background: var(--destaque); color: #fff; border: 0; border-radius: 8px; padding: 0 14px; font: inherit; font-weight: 600; cursor: pointer; }
+  button:focus-visible, code:focus-visible { outline: 3px solid var(--ok); outline-offset: 2px; }
+  .novo { border-style: dashed; justify-content: center; }
+  .novo .palco { display: grid; place-items: center; color: var(--suave); font-size: 48px; }
+  ol { margin: 0; padding-left: 20px; color: var(--suave); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Escolha o estilo do seu vídeo</h1>
+  <p class="sub">Cada cartão mostra uma cena animada no estilo. Copie o comando do estilo escolhido e cole no chat do agente, ou crie um estilo novo a partir de um vídeo que você gostou.</p>
+  <ul class="grade" id="grade"></ul>
+</main>
+<script src="previas.js"></script>
+<script src="estilos.js"></script>
+<script>
+const V = window.VITRINE || { estilos: [], prefixo: "motion" };
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const grade = document.getElementById("grade");
+const comando = e => `/${V.prefixo}-criar-video no estilo ${e.id}`;
+
+grade.innerHTML = V.estilos.map((e, k) => `
+  <li class="cartao">
+    ${e.previa >= 0 ? `<canvas class="palco" data-previa="${e.previa}" width="640" height="360" role="img" aria-label="Cena animada no estilo ${esc(e.nome)}"></canvas>`
+      : `<div class="palco">${e.imagem ? `<img src="${esc(e.imagem)}" alt="Quadros de referência do estilo ${esc(e.nome)}">` : ""}</div>`}
+    <div class="corpo">
+      <span class="etiqueta ${e.personalizado ? "meu" : ""}">${e.personalizado ? "Seu estilo" : "Estilo nativo"}</span>
+      <h2>${esc(e.nome)}<small>${esc(e.subtitulo)}</small></h2>
+      <p>${esc(e.resumo)}</p>
+      ${e.melhorPara ? `<p class="linha"><b>Melhor para:</b> ${esc(e.melhorPara)}</p>` : ""}
+      ${e.bomSaber ? `<p class="linha"><b>Bom saber:</b> ${esc(e.bomSaber)}</p>` : ""}
+      <div class="comando"><code id="c${k}">${esc(comando(e))}</code><button type="button" data-copiar="c${k}">Copiar</button></div>
+    </div>
+  </li>`).join("") + `
+  <li class="cartao novo">
+    <div class="palco" aria-hidden="true">+</div>
+    <div class="corpo">
+      <span class="etiqueta meu">Estilo próprio</span>
+      <h2>Criar um estilo novo<small>a partir de um vídeo que você gostou</small></h2>
+      <ol>
+        <li>Salve o vídeo de referência na pasta <b>entrada</b>.</li>
+        <li>Cole o comando abaixo no chat do agente.</li>
+        <li>O agente extrai o visual e o estilo aparece nesta vitrine.</li>
+      </ol>
+      <div class="comando"><code id="cnovo">/${esc(V.prefixo)}-extrator-de-estilos</code><button type="button" data-copiar="cnovo">Copiar</button></div>
+    </div>
+  </li>`;
+
+grade.addEventListener("click", async ev => {
+  const b = ev.target.closest("[data-copiar]"); if (!b) return;
+  const texto = document.getElementById(b.dataset.copiar).textContent;
+  try { await navigator.clipboard.writeText(texto); b.textContent = "Copiado"; }
+  catch { const r = document.createRange(); r.selectNodeContents(document.getElementById(b.dataset.copiar)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selecionado"; }
+  setTimeout(() => { b.textContent = "Copiar"; }, 1600);
+});
+
+// Anima só os cartões visíveis; com movimento reduzido, mostra um quadro parado.
+const parado = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const telas = [...document.querySelectorAll("canvas[data-previa]")].map(cv => ({ cv, i: +cv.dataset.previa, visivel: false, ultimo: 0 }));
+const desenhar = (t, tempo) => { try { RENDER[t.i](t.cv, tempo); } catch (e) { console.error(e); t.quebrou = true; } };
+telas.forEach(t => desenhar(t, 2));
+if (!parado && telas.length) {
+  const observador = new IntersectionObserver(es => es.forEach(e => { const t = telas.find(x => x.cv === e.target); if (t) t.visivel = e.isIntersecting; }), { threshold: .2 });
+  telas.forEach(t => observador.observe(t.cv));
+  const inicio = performance.now();
+  const laco = agora => {
+    requestAnimationFrame(laco);
+    for (const t of telas) { if (!t.visivel || t.quebrou || agora - t.ultimo < 40) continue; t.ultimo = agora; desenhar(t, (agora - inicio) / 1000); }
+  };
+  requestAnimationFrame(laco);
+}
+</script>
+</body>
+</html>
