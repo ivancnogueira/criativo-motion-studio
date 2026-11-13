@@ -64,6 +64,8 @@ test("painel: estado, gravação, envio e proteções", async () => {
     assert.equal((await post(url + "/api/projeto", ok, { "x-painel": "0" })).status, 403);
     assert.equal((await post(url + "/api/projeto", ok, { origin: "http://outro.site" })).status, 403);
     assert.equal((await post(url + "/api/projeto", { ...ok, estilo: "../.." })).status, 400);
+    const prompt = await (await fetch(url + "/api/prompt")).json();
+    assert.match(prompt.prompt, /Como funciona o Wi-Fi/);
 
     const envio = (nome, corpo) => fetch(`${url}/api/enviar?nome=${encodeURIComponent(nome)}`, { method: "POST", headers: { "x-painel": "1" }, body: corpo });
     const MP3 = Buffer.concat([Buffer.from([0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0, 0]), Buffer.alloc(300)]);

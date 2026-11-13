@@ -298,6 +298,16 @@ function body(s, i) {
         </div>
         <div class="cmdbox" id="cmdbox" hidden><code id="cmd">/${BOOT.prefixo}-criar-video</code><button type="button" class="mini" id="copy-cmd">Copiar comando</button></div>
         <p class="hint">Depois de salvar, cole o comando no chat do seu agente (Claude Code, Codex ou Antigravity).</p>
+        <details class="dir">
+          <summary>Prefere usar em um chat, sem agente? (opcional)</summary>
+          <p class="hint">Copie o prompt completo e cole em um chat de IA${s.custom ? ", anexando a folha de referência na mesma mensagem (a imagem e o texto vão em colagens separadas)" : ""}. A configuração é salva antes de copiar.</p>
+          <div class="copy-row">
+            <button type="button" class="mini" id="copy-prompt">Copiar prompt</button>
+            ${s.custom ? `<a class="mini" href="/estilos/${esc(s.id)}/referencia.png" download="referencia-${esc(s.id)}.png">Baixar folha de referência</a>` : ""}
+          </div>
+          <p class="hint" id="prompt-st" aria-live="polite"></p>
+          <div class="fallback" id="prompt-fallback" hidden><textarea id="prompt-text" readonly rows="8" aria-label="Texto do prompt"></textarea></div>
+        </details>
       </div>
     </form>
 
@@ -468,6 +478,18 @@ async function copiarComando() {
   catch (e) { const r = document.createRange(); r.selectNodeContents(inner.querySelector("#cmd")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Selecionado"; }
   setTimeout(() => { b.textContent = "Copiar comando"; }, 1600);
 }
+async function copiarPrompt() {
+  const $ = id => inner.querySelector("#" + id), st = $("prompt-st");
+  await copyPrompt();
+  if ($("cmdbox").hidden) { st.textContent = "Preencha o que falta acima para salvar a configuração e gerar o prompt."; return; }
+  st.textContent = "Montando o prompt…";
+  try {
+    const r = await fetch("/api/prompt"), j = await r.json();
+    if (!r.ok) throw new Error(j.erro || "não consegui montar o prompt.");
+    try { await navigator.clipboard.writeText(j.prompt); st.textContent = "Prompt copiado (" + (j.prompt.length / 1000).toFixed(0) + " mil caracteres)."; $("prompt-fallback").hidden = true; }
+    catch (e) { const ta = $("prompt-text"); ta.value = j.prompt; $("prompt-fallback").hidden = false; ta.focus(); ta.select(); st.textContent = "O navegador bloqueou a área de transferência: o texto está selecionado abaixo, use Ctrl+C."; }
+  } catch (e) { st.textContent = e.message; }
+}
 async function enviarMp3(arq) {
   const st = inner.querySelector("#mp3-st"); if (!arq) return;
   st.textContent = "Enviando…";
@@ -498,6 +520,7 @@ document.addEventListener("click", e => {
   if (!e.target.closest(".tip-body")) inner.querySelectorAll(".opt.tip-open").forEach(o => { o.classList.remove("tip-open"); o.querySelector(".tip-btn").setAttribute("aria-expanded", "false"); });
   if (e.target.closest("#copy")) { copyPrompt(); return; }
   if (e.target.closest("#copy-cmd")) { copiarComando(); return; }
+  if (e.target.closest("#copy-prompt")) { copiarPrompt(); return; }
   if (e.target.closest("#use-dur")) { S.voiceover = false; const cb = inner.querySelector("#f-voiceover"); if (cb) cb.checked = false; refresh(); inner.querySelector("#f-sec")?.focus(); return; }
   if (e.target.closest("[data-example]")) {
     S.topic = STYLES[current].ex; const ta = inner.querySelector("#f-topic"); ta.value = S.topic; inner.querySelector("#topic-err").hidden = true; ta.classList.remove("bad"); refresh(); ta.focus(); return;

@@ -9,6 +9,7 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { raiz, lerProduto, opcao } from "./lib/ambiente.mjs";
 import { gerarVitrine } from "./vitrine.mjs";
+import { montarPrompt } from "./montar-prompt.mjs";
 
 const MB = 1024 * 1024;
 export const LIMITES = { audio: 50 * MB, json: 64 * 1024, estilo: 24 * MB, imagem: 4 * MB };
@@ -262,6 +263,12 @@ export function criarPainel({ base = raiz } = {}) {
       const caminho = url.pathname === "/" ? "/painel/index.html" : url.pathname;
 
       if (req.method === "GET" && caminho === "/api/estado") return responder(res, 200, estadoDoPainel(base));
+      if (req.method === "GET" && caminho === "/api/prompt") {
+        const projeto = lerJson(path.join(base, "projeto.json"));
+        if (!projeto) throw new Recusa(409, "salve a configuração do vídeo antes de copiar o prompt.");
+        try { return responder(res, 200, { prompt: montarPrompt(projeto) }); }
+        catch (e) { throw new Recusa(422, e.message); }
+      }
       if (req.method === "GET") {
         const alvo = path.join(base, ...caminho.split("/").filter(Boolean));
         if (!ESTATICOS.some(r => r.test(caminho)) || !alvo.startsWith(base + path.sep) || !fs.existsSync(alvo) || !fs.statSync(alvo).isFile()) throw new Recusa(404, "não encontrado.");
