@@ -39,7 +39,7 @@ Cada etapa é uma skill que vira um comando de barra (o prefixo vem de `produto.
 
 Recorte de Papel, Vidro Líquido, Isométrico em Linha, Vetor Flat e Pixel Art 8-bit. Veja cada um animado no painel (`npm run painel`).
 
-Quer um estilo próprio? Envie um vídeo de referência pelo painel: o produto extrai quadros, movimento e cores, e o agente escreve a direção de arte. O guia está em `estilos/_personalizado/CRIAR-ESTILO.md`.
+Quer um estilo próprio? Arraste um vídeo de referência para o painel: a própria página mede cores e ritmo, reconhece o tipo de visual e monta o template, que fica salvo em `estilos/`. O vídeo é lido no navegador e não sai do seu computador. Sem o painel, o guia está em `estilos/_personalizado/CRIAR-ESTILO.md`.
 
 ## Painel local
 
@@ -47,7 +47,7 @@ Quer um estilo próprio? Envie um vídeo de referência pelo painel: o produto e
 npm run painel
 ```
 
-Escolha o estilo, configure o vídeo, envie o MP3 da narração e crie estilos novos enviando vídeos. O painel só atende neste computador.
+Escolha o estilo (cada card tem uma cena animada), configure o vídeo, envie o MP3 da narração, cadastre as cores da sua marca e crie estilos novos a partir de um vídeo. Depois de salvar, cole o comando mostrado no seu agente. O painel só atende neste computador.
 
 ## Voz, legendas e publicação
 
@@ -77,4 +77,4 @@ Esta pasta é o **produto**: o modelo genérico, sem dados de ninguém. Cada pes
 
 ## Licenças de terceiros
 
-O Remotion, usado na renderização, é gratuito para uso individual e equipes pequenas; empresas maiores podem precisar de licença: <https://www.remotion.dev/license>. O FFmpeg segue a própria licença: <https://ffmpeg.org/legal.html>.
+O Remotion, usado na renderização, é gratuito para uso individual e equipes pequenas; empresas maiores podem precisar de licença: <https://www.remotion.dev/license>. O FFmpeg segue a própria licença: <https://ffmpeg.org/legal.html>. O painel inclui o mp4box.js (BSD-3-Clause), usado só para ler vídeos que o navegador não toca; o aviso de licença está no início de `painel/mp4box.js`.

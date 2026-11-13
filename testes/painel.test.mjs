@@ -26,7 +26,7 @@ const MP4 = Buffer.concat([Buffer.from([0, 0, 0, 24]), Buffer.from("ftypisom"), 
 
 test("nomes e assinaturas de arquivo", () => {
   assert.equal(nomeSeguro("Neon Retrô!! ../x"), "neon-retro-x");
-  assert.equal(nomeSeguro("???", "video"), "video");
+  assert.equal(nomeSeguro("???"), "estilo");
   assert.equal(assinatura(MP4), "mp4");
   assert.equal(assinatura(Buffer.from("ID3\u0004" + "\0".repeat(20))), "mp3");
   assert.equal(assinatura(Buffer.alloc(40)), null);
@@ -53,7 +53,7 @@ test("painel: estado, gravação, envio e proteções", async () => {
     assert.equal(estado.estilos.length, 5);
     assert.equal(estado.instancia, true);
     assert.equal((await fetch(url + "/")).status, 200);
-    assert.equal((await fetch(url + "/painel/painel.js")).status, 200);
+    assert.equal((await fetch(url + "/painel/app.js")).status, 200);
     assert.equal((await fetch(url + "/.env")).status, 404);
     assert.equal((await fetch(url + "/scripts/painel.mjs")).status, 404);
     assert.equal((await fetch(url + "/estilos/vetor-flat/prompt.md")).status, 404);
@@ -65,17 +65,42 @@ test("painel: estado, gravação, envio e proteções", async () => {
     assert.equal((await post(url + "/api/projeto", ok, { origin: "http://outro.site" })).status, 403);
     assert.equal((await post(url + "/api/projeto", { ...ok, estilo: "../.." })).status, 400);
 
-    const envio = (nome, corpo, tipo = "video") => fetch(`${url}/api/enviar?tipo=${tipo}&nome=${encodeURIComponent(nome)}`, { method: "POST", headers: { "x-painel": "1" }, body: corpo });
-    const bom = await envio("Meu Vídeo.mp4", MP4);
-    assert.equal(bom.status, 200);
-    assert.ok(fs.existsSync(path.join(base, "entrada", "referencia-meu-video.mp4")));
-    assert.equal((await envio("falso.mp4", Buffer.alloc(300))).status, 415);
-    assert.equal((await envio("texto.exe", MP4)).status, 415);
-    assert.equal((await envio("../../fuga.mp4", MP4)).status, 200);
-    assert.ok(fs.existsSync(path.join(base, "entrada", "referencia-fuga.mp4")));
+    const envio = (nome, corpo) => fetch(`${url}/api/enviar?nome=${encodeURIComponent(nome)}`, { method: "POST", headers: { "x-painel": "1" }, body: corpo });
+    const MP3 = Buffer.concat([Buffer.from([0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0, 0]), Buffer.alloc(300)]);
+    assert.equal((await envio("fala.mp3", MP3)).status, 200);
+    assert.ok(fs.existsSync(path.join(base, "entrada", "narracao.mp3")));
+    assert.equal((await envio("falso.mp3", Buffer.alloc(300))).status, 415);
+    assert.equal((await envio("video.mp4", MP4)).status, 415);
     assert.deepEqual(fs.readdirSync(path.join(base, "entrada")).filter(f => f.endsWith(".parcial")), []);
-    assert.equal((await post(url + "/api/extrair", { arquivo: "../../projeto.json", nome: "x" })).status, 400);
-    assert.equal((await post(url + "/api/extrair", { arquivo: "referencia-nao-existe.mp4", nome: "x" })).status, 404);
+
+    // estilo criado a partir de vídeo: salvar, aparecer no estado, ser usado no projeto, excluir
+    const JPG = "data:image/jpeg;base64," + Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(40)]).toString("base64");
+    const PNG = "data:image/png;base64," + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(40)]).toString("base64");
+    const estilo = { nome: "Neon {{x}} Retrô", subtitulo: "luz", motor: "Canvas", resumo: "r", aparencia: "a", melhorPara: "m", bomSaber: "b", temaExemplo: "t", rotulo: "neon retro", resumoPrompt: "A neon style.", cores: ["#112233", "nao-cor"], medidas: { len: 12, shots: 3, avgShot: 4, motion: 7, motionLabel: "calmo", aspect: "Vertical" } };
+    const corpo = { estilo, direcao: "## Art direction x", metricas: "- medidas", quadros: [JPG, JPG], movimento: [JPG], folha: PNG };
+    assert.equal((await post(url + "/api/estilo", { ...corpo, quadros: ["data:image/jpeg;base64," + Buffer.from("texto qualquer").toString("base64")] })).status, 400);
+    assert.equal((await post(url + "/api/estilo", { ...corpo, estilo: { ...estilo, nome: " " } })).status, 400);
+    const salvo = await post(url + "/api/estilo", corpo);
+    assert.equal(salvo.status, 200);
+    const { id } = await salvo.json();
+    assert.match(id, /^neon-x-retro$/);
+    assert.ok(fs.existsSync(path.join(base, "estilos", id, "referencia.png")));
+    assert.ok(fs.existsSync(path.join(base, "estilos", id, "referencia", "quadro-02.jpg")));
+    assert.ok(fs.existsSync(path.join(base, "estilos", id, "referencia", "movimento-01.jpg")));
+    const meta = JSON.parse(fs.readFileSync(path.join(base, "estilos", id, "estilo.json"), "utf8"));
+    assert.equal(meta.personalizado, true); assert.equal(meta.nome, "Neon x Retrô"); assert.deepEqual(meta.cores, ["#112233"]); assert.equal(meta.sequenciaMovimento, true);
+    assert.equal(JSON.parse(await (await post(url + "/api/estilo", corpo)).text()).id, id + "-2");
+    const depois = await (await fetch(url + "/api/estado")).json();
+    assert.equal(depois.personalizados.length, 2);
+    assert.equal(depois.personalizados[0].quadros.length, 2);
+    assert.equal((await fetch(url + depois.personalizados[0].quadros[0])).status, 200);
+    assert.equal((await post(url + "/api/projeto", { ...ok, estilo: id })).status, 200);
+    assert.equal((await post(url + "/api/estilo/excluir", { id: "vetor-flat" })).status, 403);
+    assert.ok(fs.existsSync(path.join(base, "estilos", "vetor-flat", "estilo.json")));
+    assert.equal((await post(url + "/api/estilo/excluir", { id: "../x" })).status, 400);
+    assert.equal((await post(url + "/api/estilo/excluir", { id })).status, 200);
+    assert.equal(fs.existsSync(path.join(base, "estilos", id)), false);
+    assert.equal((await post(url + "/api/estilo", corpo, { "x-painel": "0" })).status, 403);
   } finally { await fechar(); fs.rmSync(path.dirname(base), { recursive: true, force: true }); }
 });
 

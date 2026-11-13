@@ -16,7 +16,7 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 - `.env` — chaves do usuário. Nunca abra, mostre ou peça o conteúdo dele no chat; use o diagnóstico para saber o que está configurado.
 - `entrada/` — arquivos do usuário (narração MP3, vídeos de referência).
 - `vitrine/` — cenas animadas dos estilos (`node scripts/vitrine.mjs`), usadas também pelo painel.
-- `painel/` e `scripts/painel.mjs` — painel local (`npm run painel`): escolher estilo, configurar o vídeo, enviar a narração e criar estilo a partir de um vídeo enviado. Só atende em 127.0.0.1.
+- `painel/` e `scripts/painel.mjs` — painel local (`npm run painel`): escolher estilo, configurar o vídeo, enviar a narração e criar estilo a partir de um vídeo (lido no navegador; a página grava a folha, os quadros, `metricas.md`, `direcao.md` e `estilo.json` em `estilos/<id>/`). Só atende em 127.0.0.1.
 - `render/` — instalado só na instância pelo agente instalador (Remotion). Nunca faz parte do produto.
 - `README.md`, `INSTALAR.md`, `INSTALAR-COM-*.md` e `documentacao/onboarding-guiado.md` — instalação guiada por plataforma.
 - `documentacao/` — guias de configuração das chaves.

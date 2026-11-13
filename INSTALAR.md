@@ -41,7 +41,7 @@ e acesse o endereço mostrado no terminal (`http://127.0.0.1:4173/`).
 
 ## O painel local
 
-O painel mostra os 5 estilos com cena animada, deixa você configurar o vídeo (tema, formato, narração, legendas, cores), enviar o MP3 da narração e **enviar um vídeo de referência para criar um estilo novo**. Ele só atende neste computador e grava apenas em `projeto.json`, `marca.json`, `entrada/` e `estilos/`.
+O painel mostra os 5 estilos com cena animada, deixa você configurar o vídeo (tema, formato, narração, legendas, cores), enviar o MP3 da narração e **arrastar um vídeo de referência para criar um estilo novo**: a página lê o vídeo no navegador, mede cores e ritmo e monta o template, que fica salvo em `estilos/<nome>/` (folha de referência, quadros, medidas e direção de arte). O vídeo não sai do seu computador. O painel só atende neste computador e grava apenas em `projeto.json`, `marca.json`, `entrada/narracao.mp3` e `estilos/`.
 
 ## Remotion (renderização do MP4)
 

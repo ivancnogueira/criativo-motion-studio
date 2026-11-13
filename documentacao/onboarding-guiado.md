@@ -39,7 +39,7 @@ Pergunte o nome e as três cores (dominante, destaque, apoio). Se o usuário nã
 
 ## Marco 3 — Estilo
 
-Abra o painel (`npm run painel`) e peça ao usuário para escolher um estilo ou enviar um vídeo de referência. Para estilo novo, siga `estilos/_personalizado/CRIAR-ESTILO.md`.
+Abra o painel (`npm run painel`) e peça ao usuário para escolher um estilo ou arrastar um vídeo de referência na página (ela cria e salva o estilo sozinha). Só use `estilos/_personalizado/CRIAR-ESTILO.md` se ele preferir criar o estilo pela linha de comando.
 
 ## Marco 4 — Voz e legendas
 
