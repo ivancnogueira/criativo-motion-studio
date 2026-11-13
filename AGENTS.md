@@ -42,6 +42,8 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 
 Esta pasta pode ser o **produto** (o modelo genérico que é distribuído) ou uma **instância** (a cópia instalada na máquina de um usuário). É uma instância quando existe um arquivo `.env` nela.
 
+Para atualizar uma instância: `npm run atualizar` (clone) ou `npm run atualizar -- --simular --zip <arquivo>` e depois sem `--simular` (ZIP). Isso troca só os arquivos do produto e preserva os dados do cliente (`.env`, `marca.json`, `projeto.json`, `entrada/`, `saida/`, `runtime/`, `render/`, estilos criados). Nunca atualize copiando arquivos à mão nem extraindo o ZIP por cima.
+
 Para distribuir: `npm run empacotar -- <pasta-de-saida> --zip` gera o ZIP limpo (uma pasta só, sem dados de instância); sem `--zip` cria uma cópia em pasta, útil para testar a instalação sem tocar no produto.
 
 No produto, nunca rode a instalação, nunca produza vídeos e nunca grave dados reais de ninguém. As regras completas estão em `.agents/rules/protecao-dados-produto.md`; confira com `npm run verificar:produto`.

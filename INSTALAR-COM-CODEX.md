@@ -64,7 +64,13 @@ Regras fundamentais:
 - Se o clone pedir login ou falhar por falta de acesso, pare e me explique. Eu faço o login do git (por exemplo com gh auth login) ou uso o ZIP. Nunca peça um token no chat.
 ```
 
-Para atualizar depois: na pasta, peça ao agente para rodar `git pull` e `npm run instalar`.
+## Atualizar depois
+
+As atualizações trocam só o produto (código, skills, estilos nativos e documentação). **Seus dados nunca são tocados**: `.env`, `marca.json`, `projeto.json`, `entrada/`, `saida/`, `render/` e os estilos que você criou. Abra o agente na pasta e cole:
+
+```text
+Atualize o Criativo Motion Studio nesta pasta. Se ela for um clone do git, rode npm run atualizar. Se eu tiver baixado um ZIP novo, rode npm run atualizar -- --simular --zip CAMINHO-DO-ARQUIVO, me mostre o relatório e, com a minha confirmação, rode sem --simular. Nunca apague nem sobrescreva .env, marca.json, projeto.json, entrada, saida, render ou estilos criados por mim, e nunca abra o .env. Ao final, explique em português simples o que mudou.
+```
 
 ---
 

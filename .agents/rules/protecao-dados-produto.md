@@ -28,6 +28,15 @@ Se existir um arquivo `.env` nesta pasta, ela é uma instância e esta regra nã
 
 6. **Skills instaladas não voltam para o produto.** As cópias nas pastas globais das plataformas recebem o caminho da instância; a fonte em `skills/` usa apenas os marcadores `{{PASTA_DO_PRODUTO}}`, `{{PREFIXO}}` e `{{PRODUTO}}`.
 
+## Dados do cliente e atualizações
+
+Na instância, tudo o que não é arquivo do produto é dado do cliente e **nunca** pode ser sobrescrito por uma atualização, seja por `git pull`, seja por `npm run atualizar`: `.env`, `marca.json`, `projeto.json`, `entrada/` (menos `LEIA-ME.md`), `saida/`, `runtime/`, `render/`, `vitrine/estilos.js` e as pastas de estilos criados em `estilos/`.
+
+- A lista de arquivos do produto é única: `scripts/verificar-produto.mjs`. O atualizador só copia o que está nela; qualquer outro caminho vindo de um pacote é ignorado.
+- Nenhum arquivo versionado no git pode estar fora dessa lista (há um teste para isso). Assim o `git pull` nunca traz um arquivo para cima de um dado do cliente.
+- O atualizador nunca apaga arquivos do cliente e nunca lê o conteúdo do `.env`; ao final lista apenas os **nomes** de variáveis novas.
+- Ao criar uma pasta nova de dados do cliente, ela não entra na lista do produto e fica protegida automaticamente.
+
 ## Antes de distribuir
 
 ```

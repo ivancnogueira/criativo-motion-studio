@@ -65,6 +65,7 @@ As chaves ficam no `.env`, só no seu computador. Nunca as cole no chat. YouTube
 ```bash
 npm run instalar              # prepara a pasta e instala os comandos de barra
 npm run painel                # painel local
+npm run atualizar             # atualiza o produto sem tocar nos seus dados
 npm run diagnosticar          # o que está instalado e configurado
 npm run validar:integracoes   # testa as chaves preenchidas (só leitura)
 npm run desinstalar-skills    # remove os comandos de barra instalados

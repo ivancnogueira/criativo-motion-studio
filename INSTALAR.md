@@ -42,8 +42,12 @@ O instalador cria as pastas de trabalho, o `.env` a partir do `.env.example`, o 
 
 ## Atualizar
 
-- **Clone:** na pasta, `git pull` e depois `npm run instalar`.
-- **ZIP:** baixe o ZIP novo, extraia por cima da pasta atual (o `.env`, a marca, os estilos e as saídas são seus e não estão no ZIP) e rode `npm run instalar`.
+`npm run atualizar` troca só o que é do produto (scripts, skills, estilos nativos, painel e documentação) e **nunca toca nos seus dados**: `.env`, `marca.json`, `projeto.json`, `entrada/`, `saida/`, `runtime/`, `render/` e os estilos que você criou. No fim ele reinstala os comandos de barra e avisa se o `.env.example` ganhou variáveis novas.
+
+- **Clone:** `npm run atualizar`. Ele faz `git pull` só quando for seguro: se você alterou algum arquivo do produto, ele para e mostra quais, sem sobrescrever.
+- **ZIP:** baixe o ZIP novo e rode `npm run atualizar -- --zip caminho/do/arquivo.zip`. Para ver antes o que mudaria, acrescente `--simular`. Não extraia o ZIP por cima da pasta: use o comando.
+
+Os prompts de cada agente (arquivos `INSTALAR-COM-*.md`) têm um texto pronto de atualização.
 
 Depois, abra o painel:
 
