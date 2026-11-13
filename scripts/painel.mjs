@@ -210,7 +210,7 @@ export function gravarEstilo(base, d) {
     aparencia: texto(e.aparencia, 800, "o campo Como fica"), melhorPara: texto(e.melhorPara, 400, "o campo Melhor para"),
     bomSaber: texto(e.bomSaber, 500, "o campo Bom saber"), temaExemplo: texto(e.temaExemplo, 600, "o tema de exemplo"),
     rotulo: texto(e.rotulo, 200, "o rótulo") || nome, resumoPrompt: texto(e.resumoPrompt, 800, "o resumo do prompt"),
-    cores, sequenciaMovimento: imgM.length > 0, px: e.px === true, ...(medidas ? { medidas } : {}),
+    cores, sequenciaMovimento: imgM.length > 0, px: e.px === true, ...(e.rascunho === true ? { rascunho: true } : {}), ...(medidas ? { medidas } : {}),
   };
   const pasta = path.join(base, "estilos", id), tmp = path.join(base, "estilos", `.novo-${crypto.randomBytes(5).toString("hex")}`);
   try {

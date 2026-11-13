@@ -9,6 +9,12 @@ description: Extrator de estilos do {{PRODUTO}}. Cria um estilo visual novo a pa
 
 O objetivo é capturar a linguagem visual de um vídeo (cores, materiais, formas, tipografia, movimento, ritmo) para aplicá-la a outros assuntos. Nunca o conteúdo dele.
 
+## 0. O estilo já veio do painel?
+
+Se o usuário passou um id (por exemplo `/{{PREFIXO}}-extrator-de-estilos meu-estilo`) e `estilos/<id>/` já existe com `referencia.png`, `referencia/quadro-NN.jpg` e `"rascunho": true` em `estilo.json`, o estilo foi criado pelo painel **só por medidas** de cor, ritmo e bordas. A página não entende o conteúdo do vídeo, então o tipo de visual, o nome e o texto podem estar errados.
+
+Nesse caso pule os passos 1 e 2 e **refine**: abra a folha e os quadros (`referencia/quadro-NN.jpg`, `movimento-NN.jpg`), siga o passo 3 e reescreva `direcao.md` e os campos de `estilo.json` (`nome`, `subtitulo`, `motor`, `resumo`, `aparencia`, `melhorPara`, `bomSaber`, `temaExemplo`, `rotulo`, `resumoPrompt`) com o que você de fato vê. Mantenha `cores`, `medidas` e `metricas.md`. Ao terminar, **remova** o campo `rascunho` de `estilo.json`. Depois siga o passo 5.
+
 ## 1. Receber o vídeo
 
 Peça o arquivo de vídeo (o usuário pode colocá-lo em `entrada/`) e pergunte qual trecho representa melhor o estilo. O ideal são 8 a 15 segundos com bastante movimento. Combine um nome e derive o id: minúsculas, números e hífen.

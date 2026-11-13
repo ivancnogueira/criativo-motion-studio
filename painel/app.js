@@ -106,7 +106,7 @@ function renderGrid() {
   <li style="animation-delay:${.3 + Math.min(pos++, 8) * .06}s">
     <button class="card${s.custom ? " custom" : ""}" type="button" data-i="${i}" aria-haspopup="dialog">
       <span class="pin" aria-hidden="true"></span>
-      <span class="shot"><canvas ${s.px ? 'class="px"' : ""} width="640" height="360" role="img" aria-label="Quadro de exemplo no estilo ${esc(s.name)}"></canvas>${s.custom ? `<span class="badge">do vídeo</span>` : ""}</span>
+      <span class="shot"><canvas ${s.px ? 'class="px"' : ""} width="640" height="360" role="img" aria-label="Quadro de exemplo no estilo ${esc(s.name)}"></canvas>${s.custom ? `<span class="badge">${s.draft ? "rascunho" : "do vídeo"}</span>` : ""}</span>
       <span class="card-top"><span class="n">${numOf(i)}</span><span class="engine">${esc(s.engine)}</span></span>
       <h2>${esc(s.name)}<small>${esc(s.sub)}</small></h2>
       <p>${esc(s.teaser)}</p>
@@ -1347,12 +1347,12 @@ function autoPicks(m, f) {
   // tipo de visual: pontua cada família e fica com a mais forte
   const many = f.k90 > 700, few = f.k90 < 220;
   const sc = {
-    map: f.earth > .12 ? f.earth * 2.2 + f.water * 1.2 + (f.water > .05 ? .5 : 0) - (f.k90 < 60 ? .6 : 0) : 0,
+    map: f.earth > .12 && f.k90 > 450 && f.eq < .35 ? f.earth * 2.2 + f.water * 1.2 + (f.water > .05 ? .5 : 0) : 0,
     pixel: f.eq > .6 && f.k90 < 80 && f.edges > .13 && f.flatNoise < 1.5 ? 1.6 : 0,
     type: f.textCov > .1 && f.textFrames > .6 && f.k90 < 60 && f.edges < .1 ? 1.2 + f.textCov * 2 : f.textCov > .2 && f.textFrames > .6 && f.k90 < 400 ? 1 + f.textCov : 0,
     hand: f.bright > 62 && f.sat < .22 && f.darkEdge > .3 && f.k90 < 600 ? 1.15 : 0,
     paper: few && f.flatNoise > 2.2 && f.bright > 40 ? .95 + Math.min(.4, (f.flatNoise - 2.2) / 6) : 0,
-    flat: few ? 1 - Math.min(.5, f.flatNoise / 8) : f.k90 < 450 ? .55 : .15,
+    flat: few ? 1 - Math.min(.5, f.flatNoise / 8) : f.k90 < 450 ? (f.eq > .35 ? .9 : .55) : .15,
     "3d": f.smooth > .28 && f.flatNoise < 3 && f.k90 > 100 && f.k90 < 1600 ? .7 + f.smooth : 0,
     mixed: many ? .65 + Math.min(.4, f.lap / 30) : .2,
   };
@@ -1490,7 +1490,7 @@ function estiloDoServidor(p) {
   const j = p.json || {};
   return { id: p.id, custom: true, name: j.nome || p.id, sub: j.subtitulo || "", engine: j.motor || "", teaser: j.resumo || "", looks: j.aparencia || "",
     best: j.melhorPara || "", know: j.bomSaber || "", ex: j.temaExemplo || "", colors: j.cores || [], summary: j.resumoPrompt || "", styleLabel: j.rotulo || j.nome || p.id,
-    direction: p.direcao || "", metrics: j.medidas || null, metricsText: p.metricas || "", px: !!j.px, frames: p.quadros || [], burst: p.movimento || [] };
+    draft: !!j.rascunho, direction: p.direcao || "", metrics: j.medidas || null, metricsText: p.metricas || "", px: !!j.px, frames: p.quadros || [], burst: p.movimento || [] };
 }
 async function loadSaved() {
   const e = await api("/api/estado");
@@ -1508,6 +1508,7 @@ function customPanel(s) {
     <div class="refbox">
       <small class="k">Do vídeo de referência</small>
       <div class="summary">${chips.map(c => `<span>${esc(c)}</span>`).join("")}</div>
+      ${s.draft ? `<div class="field catch"><small>Rascunho medido</small><p>Este template foi montado só por medidas de cor, ritmo e bordas: a página não entende o que aparece no vídeo. Para o agente olhar os quadros de verdade e reescrever o estilo, cole no chat dele:</p><div class="cmdbox"><code id="cmd-refinar">/${BOOT.prefixo}-extrator-de-estilos ${esc(s.id)}</code><button type="button" class="mini" id="copy-refinar">Copiar comando</button></div></div>` : ""}
       <div class="ref-actions"><button type="button" class="mini danger" id="cr-delete">Excluir estilo</button></div>
       <p class="hint ref-remind">A folha de referência e os quadros ficam salvos em estilos/${esc(s.id)}/. O agente estuda esses arquivos ao produzir o vídeo, então não é preciso anexar nada.</p>
       <details class="dir"><summary>Ver a direção de estilo</summary><pre>${esc(s.direction)}</pre></details>
@@ -1521,7 +1522,7 @@ function resultBlock(r) {
   return `
     <div class="setup result">
       <span class="tape"></span>
-      <h3>2. Seu template<span>Montado automaticamente a partir do vídeo. Revise o que quiser e salve.</span></h3>
+      <h3>2. Seu template<span>Montado por medidas de cor, ritmo e bordas, sem entender o conteúdo do vídeo. Revise o que quiser e salve; depois o agente pode refinar olhando os quadros.</span></h3>
       ${CR.picks ? detectedLine() : ""}
       <div class="vbox frames">${CR.frames.slice(0, 8).map(fr => `<img src="${fr.url}" alt="Quadro em ${fmtS(fr.t)}">`).join("")}</div>
       <div class="sws big">${(r.colors || []).map(c => `<i style="background:${esc(c)}" title="${esc(c)}"></i>`).join("")}</div>
@@ -1557,7 +1558,7 @@ async function onSave() {
     const res = await api("/api/estilo", {
       id: r.name, direcao: r.direction, metricas: r.metricsText || "", quadros, movimento, folha,
       estilo: { nome: r.name, subtitulo: r.sub, motor: r.engine, resumo: r.teaser, aparencia: r.looks, melhorPara: r.best, bomSaber: r.know, temaExemplo: r.ex,
-        rotulo: r.styleLabel, resumoPrompt: r.summary, cores: r.colors, sequenciaMovimento: movimento.length > 0, medidas: r.metrics || null, px: !!r.px },
+        rotulo: r.styleLabel, resumoPrompt: r.summary, cores: r.colors, sequenciaMovimento: movimento.length > 0, medidas: r.metrics || null, px: !!r.px, rascunho: true },
     });
     resetCreator(); pendingOpen = res.id; await loadSaved();
   } catch (e) { say(e.message || "Não consegui salvar o estilo."); if (btn) btn.disabled = false; }
@@ -1589,6 +1590,7 @@ document.addEventListener("click", e => {
     if (CR.result && CR.result.origin !== "claude") { const open = !!inner.querySelector(".adjust[open]"); makeLocal(true); const y = sheet.scrollTop; rerenderCreator(); if (open) inner.querySelector(".adjust")?.setAttribute("open", ""); sheet.scrollTop = y; return; }
     const y = sheet.scrollTop; rerenderCreator(); sheet.scrollTop = y; return;
   }
+  if (e.target.closest("#copy-refinar")) { const b = e.target.closest("#copy-refinar"), t = document.getElementById("cmd-refinar").textContent; navigator.clipboard.writeText(t).then(() => { b.textContent = "Copiado"; }, () => { b.textContent = "Selecione e copie"; }); setTimeout(() => { b.textContent = "Copiar comando"; }, 1600); return; }
   if (e.target.closest("#cr-again")) { CR.result = null; CR.picks = null; CR.pname = ""; rerenderCreator(); return; }
   if (e.target.closest("#cr-cancel")) { ctrl && ctrl.abort(); return; }
   if (e.target.closest("#cr-change")) { resetCreator(); return rerenderCreator(); }

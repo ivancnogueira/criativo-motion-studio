@@ -21,6 +21,8 @@ Um estilo personalizado é uma pasta `estilos/<id>/` (id em minúsculas, só let
 6. Não altere `metricas.md` nem invente números.
 7. Teste: aponte `projeto.json` para o novo id e rode `node scripts/montar-prompt.mjs`. Atualize a vitrine com `node scripts/vitrine.mjs`.
 
+Estilos criados pelo painel chegam com `"rascunho": true` em `estilo.json`: foram montados só por medidas, sem entender o conteúdo do vídeo. O agente deve olhar os quadros, reescrever `direcao.md` e os campos de vitrine, manter `cores`, `medidas` e `metricas.md`, e remover o campo `rascunho`.
+
 Quem já tem uma folha de referência pronta (por exemplo, gerada pelo app original) pode salvá-la direto como `referencia.png` e pular o passo 1.
 
 Nunca cite o criador, canal, marca ou personagens do vídeo de referência, nem reaproveite o assunto dele.

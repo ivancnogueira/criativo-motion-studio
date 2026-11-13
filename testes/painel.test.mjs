@@ -79,7 +79,7 @@ test("painel: estado, gravação, envio e proteções", async () => {
     const JPG = "data:image/jpeg;base64," + Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(40)]).toString("base64");
     const PNG = "data:image/png;base64," + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(40)]).toString("base64");
     const estilo = { nome: "Neon {{x}} Retrô", subtitulo: "luz", motor: "Canvas", resumo: "r", aparencia: "a", melhorPara: "m", bomSaber: "b", temaExemplo: "t", rotulo: "neon retro", resumoPrompt: "A neon style.", cores: ["#112233", "nao-cor"], medidas: { len: 12, shots: 3, avgShot: 4, motion: 7, motionLabel: "calmo", aspect: "Vertical" } };
-    const corpo = { estilo, direcao: "## Art direction x", metricas: "- medidas", quadros: [JPG, JPG], movimento: [JPG], folha: PNG };
+    const corpo = { estilo: { ...estilo, rascunho: true }, direcao: "## Art direction x", metricas: "- medidas", quadros: [JPG, JPG], movimento: [JPG], folha: PNG };
     assert.equal((await post(url + "/api/estilo", { ...corpo, quadros: ["data:image/jpeg;base64," + Buffer.from("texto qualquer").toString("base64")] })).status, 400);
     assert.equal((await post(url + "/api/estilo", { ...corpo, estilo: { ...estilo, nome: " " } })).status, 400);
     const salvo = await post(url + "/api/estilo", corpo);
@@ -90,7 +90,7 @@ test("painel: estado, gravação, envio e proteções", async () => {
     assert.ok(fs.existsSync(path.join(base, "estilos", id, "referencia", "quadro-02.jpg")));
     assert.ok(fs.existsSync(path.join(base, "estilos", id, "referencia", "movimento-01.jpg")));
     const meta = JSON.parse(fs.readFileSync(path.join(base, "estilos", id, "estilo.json"), "utf8"));
-    assert.equal(meta.personalizado, true); assert.equal(meta.nome, "Neon x Retrô"); assert.deepEqual(meta.cores, ["#112233"]); assert.equal(meta.sequenciaMovimento, true);
+    assert.equal(meta.personalizado, true); assert.equal(meta.nome, "Neon x Retrô"); assert.deepEqual(meta.cores, ["#112233"]); assert.equal(meta.sequenciaMovimento, true); assert.equal(meta.rascunho, true);
     assert.equal(JSON.parse(await (await post(url + "/api/estilo", corpo)).text()).id, id + "-2");
     const depois = await (await fetch(url + "/api/estado")).json();
     assert.equal(depois.personalizados.length, 2);
