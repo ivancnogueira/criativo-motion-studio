@@ -1641,3 +1641,26 @@ document.addEventListener("click", e => {
 renderGrid();
 loadSaved();
 
+/* ---------- miniaturas da grade em movimento (só as visíveis; paradas com movimento reduzido) ---------- */
+(function animarGrade() {
+  if (reduce) return;
+  const visiveis = new Set();
+  const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) visiveis.add(e.target); else visiveis.delete(e.target); }), { threshold: .25 });
+  const observar = () => grid.querySelectorAll(".card[data-i] canvas").forEach(cv => obs.observe(cv));
+  new MutationObserver(observar).observe(grid, { childList: true });
+  observar();
+  const t0 = performance.now(); let ultimo = 0;
+  const laco = agora => {
+    requestAnimationFrame(laco);
+    if (agora - ultimo < 40 || !sheet.hidden || document.hidden) return;
+    ultimo = agora;
+    const t = (agora - t0) / 1000;
+    for (const cv of visiveis) {
+      const i = +cv.closest(".card").dataset.i, s = STYLES[i];
+      if (!s) continue;
+      try { if (s.custom) renderCustom(cv, s, t); else RENDER[i](cv, s.t + t); } catch (e) { visiveis.delete(cv); }
+    }
+  };
+  requestAnimationFrame(laco);
+})();
+
