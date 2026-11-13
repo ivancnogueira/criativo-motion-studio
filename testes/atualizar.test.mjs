@@ -147,3 +147,44 @@ test("nenhum arquivo versionado no git está fora da lista do produto", { skip: 
   assert.deepEqual(fora, [], "arquivos versionados que o git pull e a atualização tratariam como do produto, mas que são dados ou desenvolvimento");
   assert.ok(listarArquivos(raiz).length > 0);
 });
+
+const temGitComAtualizador = (() => {
+  if (!fs.existsSync(path.join(raiz, ".git"))) return false;
+  return spawnSync("git", ["cat-file", "-e", "HEAD:scripts/atualizar.mjs"], { cwd: raiz }).status === 0;
+})();
+
+test("clone: atualizar usa git pull, preserva os dados e recusa sobrescrever alteração local", { skip: !temGitComAtualizador }, () => {
+  const pasta = tmp();
+  const git = (cwd, ...args) => spawnSync("git", ["-c", "user.name=teste", "-c", "user.email=teste@example.com", "-c", "core.autocrlf=false", ...args], { cwd, encoding: "utf8" });
+  try {
+    assert.equal(git(pasta, "clone", "-q", "--bare", raiz, "remoto.git").status, 0);
+    assert.equal(git(pasta, "clone", "-q", "remoto.git", "cliente").status, 0);
+    assert.equal(git(pasta, "clone", "-q", "remoto.git", "autor").status, 0);
+    const cliente = path.join(pasta, "cliente"), autor = path.join(pasta, "autor");
+    escrever(cliente, ".env", "GROQ_API_KEY=segredo\n");
+    escrever(cliente, "marca.json", '{"nome":"Cliente"}');
+    escrever(cliente, "saida/v/a.html", "video");
+    escrever(cliente, "estilos/meu/estilo.json", '{"personalizado":true}');
+    assert.equal(git(cliente, "status", "--porcelain").stdout.trim(), "", "os dados do cliente não podem aparecer como alteração do git");
+    versao(autor, "9.0.0");
+    escrever(autor, "documentacao/nova.md", "nova");
+    git(autor, "add", "-A"); git(autor, "commit", "-q", "-m", "nova versão");
+    assert.equal(git(autor, "push", "-q", "origin", "HEAD:main").status, 0);
+
+    escrever(cliente, "README.md", ler(cliente, "README.md") + "\nminha edição");
+    const recusa = spawnSync(process.execPath, [path.join(cliente, "scripts", "atualizar.mjs"), "--sem-instalar"], { encoding: "utf8" });
+    assert.notEqual(recusa.status, 0);
+    assert.match(recusa.stderr, /não vou sobrescrevê-los/);
+    assert.match(ler(cliente, "README.md"), /minha edição/);
+    git(cliente, "checkout", "--", "README.md");
+
+    const ok = spawnSync(process.execPath, [path.join(cliente, "scripts", "atualizar.mjs"), "--sem-instalar"], { encoding: "utf8" });
+    assert.equal(ok.status, 0, ok.stderr + ok.stdout);
+    assert.match(ok.stdout, /→ 9\.0\.0/);
+    assert.equal(ler(cliente, "documentacao/nova.md"), "nova");
+    assert.equal(ler(cliente, ".env"), "GROQ_API_KEY=segredo\n");
+    assert.equal(ler(cliente, "marca.json"), '{"nome":"Cliente"}');
+    assert.equal(ler(cliente, "saida/v/a.html"), "video");
+    assert.equal(ler(cliente, "estilos/meu/estilo.json"), '{"personalizado":true}');
+  } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
+});
