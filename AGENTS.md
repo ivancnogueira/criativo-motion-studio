@@ -16,6 +16,7 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 - `.env` — chaves do usuário. Nunca abra, mostre ou peça o conteúdo dele no chat; use o diagnóstico para saber o que está configurado.
 - `entrada/` — arquivos do usuário (narração MP3, vídeos de referência).
 - `vitrine/` — cenas animadas dos estilos (`node scripts/vitrine.mjs`), usadas também pelo painel.
+- `kit/` — kit de movimento: motor de animação, pincéis dos cinco estilos, personagem articulado e peças animadas (`kit/LEIA-ME.md`; demonstração com `npm run kit`). É referência: em cada vídeo, copie para `saida/<nome>/kit/` e adapte.
 - `painel/` e `scripts/painel.mjs` — painel local (`npm run painel`): escolher estilo, configurar o vídeo, enviar a narração e criar estilo a partir de um vídeo (lido no navegador; a página grava a folha, os quadros, `metricas.md`, `direcao.md` e `estilo.json` em `estilos/<id>/`). Só atende em 127.0.0.1.
 - `render/` — instalado só na instância pelo agente instalador (Remotion). Nunca faz parte do produto.
 - `README.md`, `INSTALAR.md`, `INSTALAR-COM-*.md` e `documentacao/onboarding-guiado.md` — instalação guiada por plataforma.
@@ -58,6 +59,8 @@ Cada etapa tem uma skill em `skills/`: `criar-video` (conduz tudo), `roteiro`, `
 | `node scripts/validar-integracoes.mjs` | testa as chaves preenchidas, só por leitura |
 | `node scripts/narrar.mjs [--simular]` | gera `entrada/narracao.mp3` por API |
 | `node scripts/transcrever.mjs` | gera `saida/legendas/legendas.json` e `.srt` |
+| `node scripts/conferir-beats.mjs saida/<nome>/beats.json` | confere o plano de beats antes de animar |
+| `node scripts/medir-movimento.mjs saida/<nome>/video.mp4` | mede o movimento do vídeo pronto, lista trechos parados e gera folhas de quadros |
 | `node scripts/extrair-estilo.mjs <video> --id <id>` | material para um estilo novo |
 | `node scripts/publicar-reels.mjs --video … --legenda … [--confirmar]` | publica no Instagram; sem `--confirmar` só confere |
 
@@ -67,7 +70,8 @@ Publicar exige a palavra PUBLICAR do usuário na conversa.
 
 1. Rode `node scripts/montar-prompt.mjs`. Se der erro, mostre a mensagem ao usuário e pare.
 2. Leia `saida/prompt.md` inteiro e siga-o como a especificação do trabalho, com as adaptações abaixo.
-3. Não edite `estilos/` nem `blocos/` durante a produção de um vídeo.
+3. Não edite `estilos/`, `blocos/` nem `kit/` durante a produção de um vídeo.
+4. Planeje em beats (um por frase da narração) e use o kit de movimento como ponto de partida: tudo o que é falado aparece na tela no instante em que é dito, e nada fica parado. O kit é referência, não molde: crie peças e composições próprias para cada tema.
 
 ## Adaptações obrigatórias
 

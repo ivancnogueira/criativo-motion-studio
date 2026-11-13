@@ -20,7 +20,7 @@ Cada etapa tem um agente próprio. Siga as instruções da skill correspondente;
 | 2 | Estilo | `/{{PREFIXO}}-estilo` (ou `/{{PREFIXO}}-extrator-de-estilos`) | `estilo` e `paleta` em `projeto.json` |
 | 3 | Narração | `/{{PREFIXO}}-narracao` | `entrada/narracao.mp3` |
 | 4 | Legendas | `/{{PREFIXO}}-legendas` | `saida/legendas/legendas.json` e `.srt` |
-| 5 | Storyboard | `/{{PREFIXO}}-storyboard` | quadros aprovados |
+| 5 | Storyboard | `/{{PREFIXO}}-storyboard` | plano de beats (`beats.json`) e quadros aprovados |
 | 6 | Animação | `/{{PREFIXO}}-animar` | `saida/<nome>/index.html` |
 | 7 | Renderização | `/{{PREFIXO}}-renderizar` | `saida/<nome>/video.mp4` |
 | 8 | Revisão | `/{{PREFIXO}}-revisar` | relatório de qualidade |
@@ -30,7 +30,7 @@ Cada etapa tem um agente próprio. Siga as instruções da skill correspondente;
 
 1. Pergunte o tema e para qual rede é o vídeo. Padrão: vertical 9:16, 30 a 45 segundos, com narração e legendas.
 2. Defina `<nome>`: um nome curto para a pasta do vídeo, em minúsculas com hífen.
-3. Percorra as etapas em ordem. Etapas 3 e 4 são puladas em vídeo sem voz; a 5 é opcional (pergunte); a 9 só com pedido do usuário.
+3. Percorra as etapas em ordem. Etapas 3 e 4 são puladas em vídeo sem voz; na 5, o plano de beats é sempre feito e só a aprovação dos quadros é opcional (pergunte); a 9 só com pedido do usuário.
 4. Grave cada decisão em `projeto.json` assim que ela for tomada.
 5. Pare e espere o usuário somente onde a etapa exige: aprovar o roteiro, salvar o MP3 no modo manual, aprovar o storyboard e confirmar a publicação.
 
@@ -38,4 +38,5 @@ Cada etapa tem um agente próprio. Siga as instruções da skill correspondente;
 
 - Nunca peça, mostre ou grave chaves de API no chat. Elas ficam somente no `.env`; use `node scripts/diagnosticar.mjs` para saber o que está configurado.
 - Não edite `estilos/` nem `blocos/` durante a produção de um vídeo.
+- Qualidade antes de entregar: tudo o que é falado aparece na tela e nada fica parado. Se a revisão reprovar, volte ao animador em vez de entregar.
 - Só diga que algo está pronto depois de conferir o arquivo. Informe o que não pôde verificar.

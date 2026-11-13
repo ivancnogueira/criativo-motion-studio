@@ -7,7 +7,7 @@ import { raiz } from "./lib/ambiente.mjs";
 
 // O que faz parte do produto. Tudo fora desta lista é instância ou material de desenvolvimento.
 export const ARQUIVOS_DO_PRODUTO = [".env.example", ".gitattributes", ".gitignore", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALAR.md", "INSTALAR-COM-ANTIGRAVITY.md", "INSTALAR-COM-CLAUDE.md", "INSTALAR-COM-CODEX.md", "README.md", "marca.exemplo.json", "package.json", "produto.json", "projeto.exemplo.json"];
-export const PASTAS_DO_PRODUTO = [".agents", "blocos", "documentacao", "entrada", "estilos", "painel", "scripts", "skills", "testes", "vitrine"];
+export const PASTAS_DO_PRODUTO = [".agents", "blocos", "documentacao", "entrada", "estilos", "kit", "painel", "scripts", "skills", "testes", "vitrine"];
 const ESTILOS_DO_PRODUTO = ["_personalizado", "indice.json", "recorte-de-papel", "vidro-liquido", "isometrico-em-linha", "vetor-flat", "pixel-art-8-bit"];
 const IGNORAR = new Set(["node_modules", ".git"]);
 

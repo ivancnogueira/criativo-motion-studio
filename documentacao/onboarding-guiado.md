@@ -5,10 +5,10 @@ Roteiro que o agente instalador segue. É um processo contínuo: mostre os marco
 ## Marcos
 
 1. **Instalação** — Node.js 20+, FFmpeg, comandos de barra, `.env`, Remotion.
-2. **Marca** — nome e três cores (opcional; só para a paleta "marca").
-3. **Estilo** — escolher entre os 5 nativos pelo painel ou criar um estilo novo a partir de um vídeo.
-4. **Voz e legendas** — API de voz, ou narração manual; chave Groq para legendas.
-5. **Primeiro vídeo** — tema, storyboard (se ligado), animação, revisão e MP4.
+2. **Chaves e credenciais** — o usuário preenche o `.env`: voz, legendas e, se quiser publicar, Instagram. Parada obrigatória.
+3. **Marca** — nome e três cores (opcional; só para a paleta "marca").
+4. **Estilo** — escolher entre os 5 nativos pelo painel ou criar um estilo novo a partir de um vídeo.
+5. **Primeiro vídeo** — tema, plano de beats, storyboard (se ligado), animação, revisão e MP4.
 6. **Publicação** — opcional; só com a palavra PUBLICAR do usuário.
 
 ## Regras do agente
@@ -33,22 +33,31 @@ Roteiro que o agente instalador segue. É um processo contínuo: mostre os marco
    - avise o usuário sobre a licença: <https://www.remotion.dev/license>.
 5. `npm run diagnosticar` e mostre o resultado em linguagem simples.
 
-## Marco 2 — Marca
+## Marco 2 — Chaves e credenciais
+
+Não pule este marco e não siga para o próximo sem uma resposta do usuário.
+
+1. Rode `npm run diagnosticar` e mostre, em uma tabela simples, o que cada chave libera e o que está faltando:
+   - **Voz** (ElevenLabs, Fish Audio ou MiniMax): narração gerada automaticamente. Sem ela, o usuário grava ou gera o MP3 por fora e salva em `entrada/narracao.mp3`.
+   - **Groq**: legendas sincronizadas e a divisão do vídeo pelas frases da narração. Recomendada para todo vídeo com voz.
+   - **Instagram (Meta) e GitHub**: publicação automática de Reels. Opcional.
+2. Pergunte quais ele quer configurar agora. Para cada uma, guie passo a passo com o guia correspondente (`documentacao/configurar-voz.md`, `configurar-apis.md`, `configurar-meta.md`, `configurar-github.md`): onde criar a conta, onde copiar a chave e em qual linha do `.env` colar.
+3. Diga onde está o arquivo `.env` (caminho completo) e como abrir. O usuário cola as chaves no arquivo e avisa quando salvar. Nunca peça a chave no chat nem abra o arquivo.
+4. Rode `npm run validar:integracoes` e mostre o que passou e o que falhou. Repita até passar, ou até o usuário decidir deixar para depois.
+5. Só avance quando o usuário disser que terminou ou que quer pular. Registre o que ficou sem configurar e avise de novo na etapa que depender disso.
+
+## Marco 3 — Marca
 
 Pergunte o nome e as três cores (dominante, destaque, apoio). Se o usuário não tiver, pule: a paleta "estilo" funciona sem marca. Grave pelo painel ou em `marca.json`.
 
-## Marco 3 — Estilo
+## Marco 4 — Estilo
 
 Abra o painel (`npm run painel`) e peça ao usuário para escolher um estilo ou arrastar um vídeo de referência na página (ela cria e salva o estilo sozinha). Só use `estilos/_personalizado/CRIAR-ESTILO.md` se ele preferir criar o estilo pela linha de comando.
 
-## Marco 4 — Voz e legendas
-
-Pergunte se o usuário tem API de voz. Se tiver, oriente `documentacao/configurar-voz.md`; se não, ele gera o MP3 em um serviço e salva em `entrada/narracao.mp3` (o painel também recebe o arquivo). Legendas: `documentacao/configurar-apis.md`. Valide com `npm run validar:integracoes`.
-
 ## Marco 5 — Primeiro vídeo
 
-Use `/motion-criar-video`. Ele conduz roteiro, estilo, narração, legendas, storyboard, animação, renderização e revisão. Termine mostrando o caminho do `index.html` e do MP4.
+Use `/motion-criar-video`. Ele conduz roteiro, estilo, narração, legendas, plano de beats, storyboard, animação, renderização e revisão. Sem chave de voz, o usuário salva o MP3 em `entrada/narracao.mp3` (o painel também recebe o arquivo). Termine mostrando o caminho do `index.html` e do MP4.
 
 ## Marco 6 — Publicação
 
-Só se o usuário quiser. Siga `documentacao/configurar-meta.md` e `documentacao/configurar-github.md`, rode a conferência sem `--confirmar` e publique apenas depois da palavra PUBLICAR.
+Só se o usuário quiser. Se as chaves de publicação não foram configuradas no marco 2, siga `documentacao/configurar-meta.md` e `documentacao/configurar-github.md` agora; rode a conferência sem `--confirmar` e publique apenas depois da palavra PUBLICAR.

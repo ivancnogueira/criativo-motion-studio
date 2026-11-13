@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kit de movimento — demonstração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@600;800&family=JetBrains+Mono:wght@700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #10141c; color: #e8edf5; font: 15px/1.45 Inter, "Segoe UI", Arial, sans-serif; display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; padding: 20px; min-height: 100vh; box-sizing: border-box; }
+  .palco { display: flex; align-items: center; justify-content: center; min-width: 0; }
+  canvas { max-width: 100%; max-height: calc(100vh - 40px); border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.5); background: #000; }
+  aside { display: flex; flex-direction: column; gap: 16px; }
+  h1 { font-size: 18px; margin: 0; } p { margin: 0; color: #a9b4c6; }
+  .grupo { display: flex; flex-wrap: wrap; gap: 8px; }
+  button { font: inherit; font-weight: 600; padding: 8px 12px; border-radius: 8px; border: 1px solid #2c3648; background: #1a2130; color: inherit; cursor: pointer; }
+  button[aria-pressed="true"] { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+  input[type=range] { width: 100%; }
+  code { background: #1a2130; padding: 1px 5px; border-radius: 4px; }
+  @media (max-width: 800px) { body { grid-template-columns: 1fr; } canvas { max-height: 70vh; } }
+</style>
+</head>
+<body>
+<div class="palco"><canvas id="tela"></canvas></div>
+<aside>
+  <h1>Kit de movimento</h1>
+  <p>As mesmas peças e os mesmos movimentos, no acabamento de cada estilo. São referências: cada vídeo cria as suas próprias cenas.</p>
+  <div><p>Estilo</p><div class="grupo" id="estilos"></div></div>
+  <div><p>Formato</p><div class="grupo" id="formatos"><button data-v="1">Vertical</button><button data-v="0">Horizontal</button></div></div>
+  <div><p>Trechos</p><div class="grupo" id="trechos"></div></div>
+  <div><button id="tocar">Pausar</button> <span id="tempo"></span><input id="linha" type="range" min="0" max="1" step="0.001" value="0"></div>
+  <p>Código em <code>kit/</code>; a cena de exemplo está em <code>kit/exemplo.js</code> e o guia em <code>kit/LEIA-ME.md</code>.</p>
+</aside>
+<script type="module">
+import { criarExemplo } from "./exemplo.js";
+import { tocar } from "./tocador.js";
+const ESTILOS = [["papel", "Recorte de Papel"], ["flat", "Vetor Flat"], ["pixel", "Pixel Art"], ["traco", "Isométrico em Linha"], ["vidro", "Vidro Líquido"]];
+const par = new URLSearchParams(location.search);
+let estilo = par.get("estilo") || "papel", vertical = par.get("v") !== "0";
+const tela = document.getElementById("tela"), linha = document.getElementById("linha"), tempo = document.getElementById("tempo");
+let filme = criarExemplo(estilo, { vertical });
+const toc = tocar(tela, filme, { escala: .5, aoAtualizar: t => { linha.value = t / filme.duracao; tempo.textContent = `${t.toFixed(1)} s de ${filme.duracao.toFixed(0)} s`; } });
+window.kit = { toc, ir: t => { toc.pausar(); toc.ir(t); } };
+function refazer() {
+  filme = criarExemplo(estilo, { vertical }); toc.trocarFilme(filme);
+  document.querySelectorAll("#estilos button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === estilo));
+  document.querySelectorAll("#formatos button").forEach(b => b.setAttribute("aria-pressed", (b.dataset.v === "1") === vertical));
+  const tr = document.getElementById("trechos"); tr.innerHTML = "";
+  filme.beats.forEach((b, i) => { const x = document.createElement("button"); x.textContent = i + 1; x.title = `${b.de} s`; x.onclick = () => toc.ir(b.de + .01); tr.append(x); });
+}
+for (const [v, nome] of ESTILOS) { const b = document.createElement("button"); b.textContent = nome; b.dataset.v = v; b.onclick = () => { estilo = v; refazer(); }; document.getElementById("estilos").append(b); }
+document.querySelectorAll("#formatos button").forEach(b => b.onclick = () => { vertical = b.dataset.v === "1"; refazer(); });
+document.getElementById("tocar").onclick = e => { toc.alternar(); e.target.textContent = toc.tocando ? "Pausar" : "Tocar"; };
+linha.oninput = () => toc.ir(linha.value * filme.duracao);
+refazer();
+if (par.get("t") !== null) window.kit.ir(+par.get("t")); else document.fonts.ready.then(() => toc.tocar());
+</script>
+</body>
+</html>
