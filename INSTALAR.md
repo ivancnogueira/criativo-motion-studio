@@ -6,22 +6,31 @@ O Criativo Motion Studio funciona dentro do seu agente de código: **Claude Code
 
 - **Node.js 20 ou superior** — [baixar](https://nodejs.org). Confira com `node --version`.
 - **Um agente de código** instalado: Claude Code, Codex ou Antigravity.
-- **Git** — [baixar](https://git-scm.com), só para o modo de instalação por clone.
+- **Git** — [baixar](https://git-scm.com), só se for instalar por clone.
 - **FFmpeg** — necessário para extrair estilos de vídeos e conferir o MP4. Windows: `winget install Gyan.FFmpeg`. Mac: `brew install ffmpeg`. Linux: `sudo apt install ffmpeg`.
 
-## Modo 1 — Instalação assistida pelo agente (recomendado)
+## Como você recebeu o produto?
 
-Abra uma janela vazia do seu agente e cole o prompt do seu caso:
+| Forma | Quando usar |
+|---|---|
+| **ZIP** | Você baixou um arquivo da área de membros. É o caminho mais simples e não precisa de conta no GitHub nem de git. |
+| **Clone** | Você tem acesso ao repositório privado no GitHub (convite por e-mail) e git instalado. Recebe atualizações com `git pull`. |
 
-| Seu agente | Prompt pronto |
+Nos dois casos o agente conduz tudo. Abra a janela do seu agente e cole o prompt da sua opção:
+
+| Seu agente | Prompts prontos (A: ZIP, B: clone) |
 |---|---|
 | Claude Code | [INSTALAR-COM-CLAUDE.md](INSTALAR-COM-CLAUDE.md) |
 | Codex | [INSTALAR-COM-CODEX.md](INSTALAR-COM-CODEX.md) |
 | Antigravity | [INSTALAR-COM-ANTIGRAVITY.md](INSTALAR-COM-ANTIGRAVITY.md) |
 
-O agente baixa o projeto, instala os comandos de barra no seu computador, prepara o Remotion e conduz a configuração em marcos, até o primeiro vídeo.
+O agente instala os comandos de barra no seu computador, prepara o Remotion e conduz a configuração em marcos, até o primeiro vídeo.
 
-## Modo 2 — Instalação manual
+**Importante:** os comandos de barra ficam ligados à pasta onde você instalou. Escolha uma pasta definitiva. Se mover ou apagar a pasta, rode `npm run instalar` de novo na pasta nova.
+
+## Instalação manual
+
+Com o ZIP: extraia, abra um terminal na pasta e rode `npm run instalar`. Com acesso ao repositório:
 
 ```bash
 git clone https://github.com/ivancnogueira/criativo-motion-studio.git
@@ -30,6 +39,11 @@ npm run instalar
 ```
 
 O instalador cria as pastas de trabalho, o `.env` a partir do `.env.example`, o `projeto.json`, instala as skills nas pastas globais das plataformas que encontrar e mostra um diagnóstico. Para escolher a plataforma: `npm run instalar -- --plataforma claude` (ou `codex`, `antigravity`, `todas`).
+
+## Atualizar
+
+- **Clone:** na pasta, `git pull` e depois `npm run instalar`.
+- **ZIP:** baixe o ZIP novo, extraia por cima da pasta atual (o `.env`, a marca, os estilos e as saídas são seus e não estão no ZIP) e rode `npm run instalar`.
 
 Depois, abra o painel:
 

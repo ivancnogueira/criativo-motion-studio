@@ -11,7 +11,7 @@ import { validarIntegracoes } from "../scripts/validar-integracoes.mjs";
 import { coresDominantes, medidasDeCor, textoMetricas } from "../scripts/extrair-estilo.mjs";
 import { gerarVitrine } from "../scripts/vitrine.mjs";
 import { verificarProduto, pertenceAoProduto } from "../scripts/verificar-produto.mjs";
-import { empacotar } from "../scripts/empacotar.mjs";
+import { empacotar, empacotarZip } from "../scripts/empacotar.mjs";
 import { montarPrompt } from "../scripts/montar-prompt.mjs";
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "motion-teste-"));
@@ -188,4 +188,15 @@ test("verificação acusa arquivos de instância e dados reais; empacotar copia 
   for (const esperado of [/caminho local/, /credencial/, /GROQ_API_KEY deve ficar vazio/, /valores null/]) assert.match(motivos, esperado);
   assert.throws(() => empacotar(path.join(tmp(), "outra"), base), /dados reais/);
   assert.throws(() => empacotar(path.join(base, "dentro"), base), /fora da pasta/);
+});
+
+test("empacotar --zip gera um zip com uma pasta só e sem dados de instância", () => {
+  const pasta = fs.mkdtempSync(path.join(os.tmpdir(), "motion-zip-teste-"));
+  try {
+    const r = empacotarZip(pasta);
+    assert.match(path.basename(r.zip), /^criativo-motion-studio-\d+\.\d+\.\d+\.zip$/);
+    assert.ok(r.arquivos > 50 && r.bytes > 10000);
+    assert.equal(fs.readFileSync(r.zip).subarray(0, 2).toString("latin1"), "PK");
+    assert.throws(() => empacotarZip(path.join(process.cwd(), "dentro-do-produto")), /fora da pasta do produto/);
+  } finally { fs.rmSync(pasta, { recursive: true, force: true }); }
 });
