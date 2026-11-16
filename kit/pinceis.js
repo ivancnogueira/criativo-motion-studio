@@ -166,12 +166,14 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
         tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
       } else if (tipo === "pixel") {
         usar(f); tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd");
+        // "tinta" é quase a cor do fundo no pixel: forma grande nessa cor ganha borda de um pixel na cor de sombra
+        if (f === cores.tinta) { const [x0, y0, x1, y1] = caixa(pts); if (Math.max(x1 - x0, y1 - y0) > pixel * 7) { usar(cores.sombra); c.save(); c.lineJoin = "miter"; c.strokeStyle = cores.sombra; c.lineWidth = pixel * 1.4; c.stroke(); c.restore(); } }
       } else if (tipo === "traco") {
         const L = perimetro(pts), k = clamp(p.revelar);
         c.save(); c.lineJoin = c.lineCap = "round";
         tracar([pts, ...furos]); c.globalAlpha *= clamp((k - .55) / .45); c.fillStyle = misturarCor(cores.fundo, f, .16); c.fill("evenodd"); c.restore();
         c.save(); c.lineJoin = c.lineCap = "round"; tracar([pts, ...furos]); if (k < 1) c.setLineDash([L * k, L * 2]);
-        c.shadowColor = f; c.shadowBlur = 10; c.strokeStyle = f; c.lineWidth = 3.5; c.stroke(); c.restore();
+        const ft = visivel(f); c.shadowColor = ft; c.shadowBlur = 10; c.strokeStyle = ft; c.lineWidth = 3.5; c.stroke(); c.restore();
       } else {
         const [x0, y0, x1, y1] = caixa(pts);
         c.save(); if (prof > 0) { c.shadowColor = rgba(f, .45); c.shadowBlur = 26 * prof; c.shadowOffsetY = 8 * prof; }
@@ -192,7 +194,7 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     /** Linha aberta por pontos. opções: tracejado [risco, vão], desloc (anima o tracejado), fechar. */
     linha(pts, cor = "tinta", w = 6, { tracejado, desloc = 0, fechar = false } = {}) {
       if (pts.length < 2) return;
-      const c = p.c, f = p.cor(cor); if (tipo === "pixel") usar(f);
+      const c = p.c, f = visivel(p.cor(cor)); if (tipo === "pixel") usar(f);
       c.save(); c.lineJoin = c.lineCap = tipo === "pixel" ? "butt" : "round"; c.strokeStyle = f; c.lineWidth = tipo === "pixel" ? Math.max(pixel, Math.round(w / pixel) * pixel) : w;
       if (tracejado) { c.setLineDash(tracejado); c.lineDashOffset = -desloc; }
       if (tipo === "traco") { c.shadowColor = f; c.shadowBlur = 10; }
@@ -233,6 +235,8 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     },
   };
 
+  // no traco, o cartão ("claro") é quase da cor do fundo: o contorno ganha um tom intermediário para aparecer
+  const visivel = f => tipo === "traco" && f === cores.claro && /^#[0-9a-f]{6}$/i.test(f) && /^#[0-9a-f]{6}$/i.test(cores.tinta) ? misturarCor(f, cores.tinta, .42) : f;
   function usar(h) { if (/^#[0-9a-f]{6}$/i.test(h) && !usadas.has(h)) usadas.set(h, hex(h)); }
   function escrever(c, f) {
     c.save(); c.font = `${f.peso} ${f.tam}px ${FONTE}`; c.textAlign = f.alinhar; c.textBaseline = f.base; c.fillStyle = f.cor;

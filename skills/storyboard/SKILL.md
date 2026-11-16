@@ -12,7 +12,7 @@ description: Artista de storyboard do {{PRODUTO}}. Planeja o vídeo cena a cena 
 1. Grave `"storyboard": true` em `projeto.json` e rode `node scripts/montar-prompt.mjs`.
 2. Leia `saida/prompt.md` inteiro. A seção de storyboard do prompt define o que entregar; siga-a com as adaptações de `AGENTS.md`.
 3. Se houver `saida/<nome>/roteiro.md`, use a tabela de cenas dele como ponto de partida. Com narração, alinhe os tempos de cada cena a `saida/legendas/legendas.json`.
-4. Leia `kit/LEIA-ME.md` para saber quais peças e movimentos já existem e o que precisará ser desenhado para este tema.
+4. Leia `kit/LEIA-ME.md` e busque no índice as peças de cada coisa citada na narração (`node scripts/pecas.mjs <palavra>`), para saber o que já existe e o que precisará ser desenhado para este tema.
 
 ## 2. Plano de beats
 
@@ -35,7 +35,8 @@ Divida a narração em beats, um por frase. Grave `saida/<nome>/beats.json`, uma
 - `move`: pelo menos três movimentos por beat.
 - `momentos`: um acontecimento novo a cada 2 a 4 segundos, com o tempo.
 - `entrada` e `transicao`: nunca iguais às do beat anterior.
-- `pecasNovas`: o que será desenhado especialmente para este vídeo.
+- Pessoas em cena: escolha do elenco diverso (`node scripts/pecas.mjs --elenco`) e cite os ids em `mostra`, variando idade, gênero e tom de pele.
+- `pecasNovas`: o que será desenhado especialmente para este vídeo, depois de conferir no índice que não existe pronto. Todo beat precisa de algo próprio do tema, não só de peças da biblioteca.
 
 Confira o plano e corrija os avisos:
 

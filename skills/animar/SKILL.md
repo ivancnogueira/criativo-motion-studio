@@ -21,9 +21,10 @@ Rode `node scripts/montar-prompt.mjs` e leia `saida/prompt.md` inteiro. Ele é a
 
 ## 3. Preparar o kit de movimento
 
-1. Leia `kit/LEIA-ME.md` e o beat "cena" de `kit/exemplo.js`. Se puder, veja a demonstração (`npm run kit`).
-2. Copie a pasta `kit/` para `saida/<nome>/kit/`. Trabalhe nessa cópia e mude o que precisar; nunca edite `kit/` do produto.
-3. O kit é **referência para não começar do zero, não um molde**. Você é livre para desenhar, animar e estruturar do seu jeito, desde que cumpra as regras de movimento abaixo e o prompt do estilo. Se o estilo pedir outro motor (WebGL, Three.js, SVG), use `kit/movimento.js` para tempos, poses e curvas e desenhe com o motor do estilo.
+1. Leia `kit/LEIA-ME.md` e o beat "cena" de `kit/exemplo.js`. Se puder, veja a galeria (`npm run kit`).
+2. Para cada coisa citada no plano de beats, busque no índice antes de desenhar: `node scripts/pecas.mjs <palavra>` (ou leia `kit/indice.json`). A busca mostra o exemplo de uso e as opções. O que existir, use e adapte; o que não existir ou for específico do tema, desenhe.
+3. Copie a pasta `kit/` para `saida/<nome>/kit/`. Trabalhe nessa cópia e mude o que precisar; nunca edite `kit/` do produto.
+4. O kit é **referência para não começar do zero, não um molde**. Você é livre para desenhar, animar e estruturar do seu jeito, desde que cumpra as regras de movimento abaixo e o prompt do estilo. Se o estilo pedir outro motor (WebGL, Three.js, SVG), use `kit/movimento.js` para tempos, poses e curvas e desenhe com o motor do estilo.
 
 ## 4. Construir
 
@@ -32,13 +33,14 @@ Crie `saida/<nome>/index.html` com os arquivos de apoio na mesma pasta.
 - **Relógio único:** toda a animação deriva de um tempo `t` em segundos, para que qualquer instante possa ser desenhado sob demanda.
 - **Um beat por frase:** os tempos vêm de `legendas.json` (`beatsPorFrases`, `tempoDaPalavra`). Cada pessoa, lugar, objeto e ação citados na frase aparece na tela quando a palavra é dita. Se a narração diz "soldados com câmeras", há soldados com câmeras, fazendo algo.
 - **Ilustre, não rotule:** uma etiqueta com a palavra não substitui a imagem. Texto na tela só resume.
-- **Peças próprias do tema:** em cada vídeo, desenhe pelo menos uma peça nova por beat para o que é específico do assunto (copie a mais parecida do catálogo e mude, ou crie do zero). Um vídeo só com peças do catálogo fica genérico.
+- **Peças próprias do tema:** a biblioteca resolve o genérico (uma pessoa, um carro, um gráfico); em cada vídeo, desenhe pelo menos uma peça nova por beat para o que é específico do assunto (copie a mais parecida da biblioteca e mude, ou crie do zero, seguindo a convenção de `kit/pecas/_comum.js`). Um vídeo só com peças prontas fica genérico.
 - **Três camadas de movimento:** tudo entra, vive enquanto está na tela e sai. Pelo menos três coisas se movendo a qualquer momento, e um acontecimento novo a cada 2 a 4 segundos.
 - **Personagens atuam:** andam, param, apontam, reagem ao que acontece. Nunca um boneco em pé parado.
+- **Elenco variado:** quando o tema não pede uma pessoa específica, use o elenco diverso de `kit/elenco.js` (`K.pessoa`, `K.escolherElenco`) e varie idade, gênero e tom de pele entre os personagens, em vez de repetir o mesmo boneco.
 - **Planos e câmera:** fundo, meio e frente; aproxime no momento importante.
 - **Variedade:** não repita a mesma entrada nem a mesma transição duas vezes seguidas, e não reaproveite a composição de um beat no seguinte.
 - **Transições com peso:** nada de corte seco, a não ser de propósito.
-- **Legendas na tela:** quando `legendas` estiver ligado, desenhe os `blocos` de `legendas.json`, destacando a palavra falada no momento. Poucas palavras por vez, fonte grande, alto contraste, dentro da área segura.
+- **Legendas na tela:** quando `legendas` estiver ligado, use o estilo de `estiloLegenda` de `projeto.json` com `K.legenda(p, legendas, t, { estilo })` de `kit/legendas.js` (padrão `bloco`), ajustando fonte e cores ao prompt do estilo. Poucas palavras por vez, fonte grande, alto contraste, dentro da área segura.
 - **Área segura do vertical:** nada importante no topo nem nos 20% inferiores.
 
 ## 5. Conferir antes de entregar

@@ -5,6 +5,7 @@
   "narracao": false,
   "roteiro": "",
   "legendas": false,
+  "estiloLegenda": "bloco",
   "duracaoSegundos": 30,
   "vertical": false,
   "musica": true,

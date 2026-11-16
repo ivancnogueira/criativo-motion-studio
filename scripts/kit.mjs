@@ -1,4 +1,4 @@
-// Abre a demonstração do kit de movimento (kit/demo.html) em um endereço local.
+// Abre a galeria do kit de movimento (kit/demo.html: peças, legendas e cenas) em um endereço local.
 // uso: node scripts/kit.mjs [--porta 4174]
 import fs from "node:fs";
 import http from "node:http";
@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { raiz, opcao } from "./lib/ambiente.mjs";
 
-const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8" };
+const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
 
 export function criarServidorDoKit(base = raiz) {
   const pasta = path.join(base, "kit");

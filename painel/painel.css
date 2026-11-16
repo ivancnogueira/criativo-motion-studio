@@ -202,6 +202,8 @@ textarea, .num {
   font-family: var(--hand); font-size: 19px; line-height: 1.4; resize: vertical; transition: box-shadow .15s, border-color .15s;
 }
 textarea::placeholder { color: #8C8F96; }
+.sel { width: 100%; border: 2.2px solid var(--ink); border-radius: 6px 3px 8px 3px; background: #fff; padding: 9px 12px; font-family: var(--hand); font-size: 19px; color: var(--ink); }
+.sel:focus { outline: none; box-shadow: 3px 3px 0 var(--blue); border-color: var(--blue); }
 textarea:focus, .num:focus { outline: none; box-shadow: 3px 3px 0 var(--blue); border-color: var(--blue); }
 #f-topic { min-height: 104px; }
 #f-script { min-height: 80px; }

@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ESTILOS_DE_LEGENDA, LEGENDA_PADRAO, conferirEstiloDeLegenda } from "../kit/legendas.js";
 
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ler = p => fs.readFileSync(path.join(raiz, p), "utf8");
@@ -82,12 +83,15 @@ export function montarPrompt(p, estiloEmMemoria) {
   const roteiro = String(p.roteiro || "").trim().replace(/\s+/g, " ").replace(/"/g, "'");
   const seg = Math.round(+p.duracaoSegundos || 0);
   if (!narracao && seg <= 0) throw new Error("duracaoSegundos deve ser maior que zero (ou ligue a narração)");
+  // estilo da legenda na tela: conferido sempre que vier preenchido, usado quando há legendas
+  const estiloLegenda = conferirEstiloDeLegenda(p.estiloLegenda == null || p.estiloLegenda === "" ? LEGENDA_PADRAO : p.estiloLegenda);
+  const legendaNaTela = ` On-screen caption style: "${estiloLegenda}" (${ESTILOS_DE_LEGENDA[estiloLegenda].nome}) — draw it with legenda(p, dados, t, { estilo: "${estiloLegenda}" }) from kit/legendas.js, adapted to this style's typography and palette.`;
   const mapa = {
     TOPIC: tema,
     STORYBOARD: p.storyboard ? "Enabled" : "Disabled",
     VOICEOVER: narracao ? "Enabled — attached MP3" : "Disabled",
     TRANSCRIPT: narracao && roteiro ? `"${roteiro}"` : '""',
-    SUBTITLES: narracao && p.legendas ? "Generate SRT, with optional on-screen display" : "Disabled",
+    SUBTITLES: narracao && p.legendas ? "Generate SRT, with optional on-screen display." + legendaNaTela : "Disabled",
     DURATION: narracao ? "Not used — the runtime follows the attached voiceover's actual decoded length" : textoDuracao(seg),
     FORMAT: p.vertical ? "Vertical, 9:16" : "Horizontal, 16:9",
     RESOLUTION: p.vertical ? "1080 × 1920" : "1920 × 1080",

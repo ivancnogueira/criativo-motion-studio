@@ -1,11 +1,12 @@
 # Kit de movimento
 
-Peças e movimentos prontos para a animação não começar do zero nem ficar parada. Veja tudo funcionando com `npm run kit` (abre `kit/demo.html`, com os cinco estilos).
+Peças e movimentos prontos para a animação não começar do zero nem ficar parada. Veja tudo funcionando com `npm run kit`: galeria de peças por categoria com busca, elenco de personagens, estilos de legenda e cenas de exemplo, nos cinco estilos.
 
 ## O kit é referência, não molde
 
 - **Use como ponto de partida.** Copie `kit/` para `saida/<nome>/kit/` e mude o que quiser nessa cópia. Nunca edite `kit/` do produto durante um vídeo.
-- **Cada vídeo precisa de peças próprias.** O catálogo cobre o genérico (pessoas, casa, documento, veículo). O que é específico do tema você desenha: copie a peça mais parecida e mude as formas, ou crie do zero com `p.forma`, `p.capsula`, `p.linha` e `p.texto`. Um vídeo feito só com peças do catálogo fica igual aos outros.
+- **Busque antes de desenhar.** A biblioteca tem centenas de peças; procure no índice (abaixo) antes de criar algo do zero.
+- **Cada vídeo precisa de peças próprias.** A biblioteca cobre o genérico (pessoas, animais, veículos, objetos, ícones). O que é específico do tema você desenha: copie a peça mais parecida e mude as formas, ou crie do zero com `p.forma`, `p.capsula`, `p.linha` e `p.texto`. Um vídeo feito só com peças prontas fica igual aos outros.
 - **Varie de propósito.** Troque elenco, cores, poses, entradas e transições entre cenas e entre vídeos. Nunca a mesma entrada ou a mesma transição duas vezes seguidas.
 - **O prompt do estilo manda.** Os pincéis são referência em Canvas 2D. Se o estilo pedir WebGL, Three.js ou SVG, use `movimento.js` (que só devolve números) para tempos, poses e curvas, e desenhe com o motor do estilo. Paleta, tipografia e acabamento são os do prompt.
 - **Estilos criados pelo usuário:** comece pelo pincel mais próximo, passe a paleta de `metricas.md` em `paleta` e ajuste o acabamento na sua cópia até bater com a folha de referência.
@@ -16,10 +17,45 @@ Peças e movimentos prontos para a animação não começar do zero nem ficar pa
 |---|---|
 | `movimento.js` | Motor sem desenho: curvas, entradas, saídas, movimento contínuo, beats, sincronia com a fala, caminhos, câmera, esqueleto e atuação de personagem |
 | `pinceis.js` | `criarPincel(estilo)`: as mesmas formas no acabamento de cada estilo (papel, flat, pixel, traco, vidro) |
-| `pecas.js` | Personagem articulado, elenco, cenários e objetos animados; legendas na tela |
+| `pecas.js` | Reúne tudo: `import * as K from "./kit/pecas.js"` dá acesso a todas as peças e às legendas |
+| `pecas/<categoria>.js` | A biblioteca, um arquivo por categoria (`base.js` tem o personagem e as peças originais; `_comum.js` tem a convenção e os apoios) |
+| `indice.json` | Índice gerado do código: nome, categoria, palavras-chave, opções e exemplo de cada peça; elenco e legendas |
+| `elenco.js` | Elenco diverso pronto: `pessoa(p, id, { pose, t })` e `escolherElenco` |
+| `legendas.js` | Estilos de legenda na tela |
+| `galeria.js`, `contexto-falso.js` | Grade da galeria e um contexto de canvas que só mede, usado nos testes |
 | `filme.js` | `criarFilme({ beats })`: junta os beats em `desenhar(ctx, t)` com transições |
 | `tocador.js` | `tocar(canvas, filme, { audio })`: tocar, pausar, buscar e seguir o áudio |
 | `exemplo.js` | Filme de demonstração; o beat "cena" é um modelo de composição |
+
+## Achar e usar uma peça
+
+```
+node scripts/pecas.mjs exército        # busca por palavra (ignora acento e plural); mostra o exemplo de uso e as opções
+node scripts/pecas.mjs --categorias    # lista as categorias e quantas peças cada uma tem
+node scripts/pecas.mjs --categoria animais
+```
+
+Ou leia `kit/indice.json`, ou abra a galeria (`npm run kit`) e clique na peça. Toda peça segue a mesma forma:
+
+```js
+p.em({ x: 540, y: 1300, s: 1.2 }, () => K.tanque(p, { t }));            // posição e escala por fora; opções por dentro
+p.em(combinar({ x: 300, y: 900 }, entrada("pop", k)), () => K.cofre(p, { k: prog(L, 1, 2), t }));
+```
+
+- Desenhada em torno da origem: o que fica no chão tem a base em `y = 0`; ícones e efeitos ficam centrados.
+- Passe sempre `t` (a peça tem movimento próprio). `k`, quando existe, é o progresso de 0 a 1 que você controla (abrir, encher, traçar).
+- Cores por papel (`cor: "c2"`), então a peça acompanha a paleta do estilo ou da marca.
+- Gente variada: o elenco diverso tem crianças, adolescentes, adultos e idosos de vários gêneros, tons de pele e cabelos, com hijab, turbante, cadeira de rodas, bengala e gestante. `K.pessoa(p, "idosaNegra", { pose: atuar(L, roteiro), virado: -1, t })`; `K.escolherElenco({ n: 5, idade: "adulto" })` sorteia ids com tons de pele diferentes para uma cena com várias pessoas. Liste com `node scripts/pecas.mjs --elenco [filtro]` ou veja na aba Personagens. Varie o elenco entre cenas e entre vídeos.
+- Profissões: `K.medico(p, { pose, virado, t })` e as demais profissões aceitam as mesmas opções do `personagem`; os nomes de `TIPOS`, penteados, chapéus e acessórios estão em `elenco` no índice. Ex.: `K.personagem(p, { ...K.TIPOS.bombeiro, rosto: "bigode", pose: atuar(L, roteiro), t })`.
+- Peça nova para o tema: copie a mais parecida para o arquivo do seu vídeo e mude. A convenção está no topo de `kit/pecas/_comum.js`. Mexeu em `kit/pecas/` do produto? Rode `node scripts/pecas.mjs --gerar`.
+
+## Legendas na tela
+
+```js
+sobre: q => K.legenda(q.p, legendas, q.t, { estilo: projeto.estiloLegenda })
+```
+
+O estilo vem de `estiloLegenda` em `projeto.json`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop` ou `contorno`; veja todos tocando na aba Legendas da galeria. Opções: `y`, `tam`, `largura`, `cor`, `destaque`, `fundo`, `maiusculas` e, no estilo `chave`, `chaves: ["palavra"]`. Um nome que não existe dá erro com a lista de opções. Ajuste tipografia e cores ao prompt do estilo; mantenha a legenda fora dos 20% inferiores do vertical.
 
 ## Receita de uma cena viva
 
@@ -42,7 +78,7 @@ const filme = criarFilme({ largura: 1080, altura: 1920, estilo: "recorte-de-pape
         () => K.ovni(p, { t, feixe: E.sai(prog(L, 2.6, 3.4)) }));                                   // chega na hora e continua vivo
   } },
   // ...um beat por frase
-], sobre: q => K.legendas(q.p, legendas, q.t) });
+], sobre: q => K.legenda(q.p, legendas, q.t, { estilo: "karaoke" }) });
 ```
 
 Regras que fazem a diferença:
@@ -60,7 +96,7 @@ Regras que fazem a diferença:
 
 **pinceis.js** — `criarPincel(estilo, { paleta })` devolve `p`: `p.forma(pontos, cor, { prof, furos })`, `p.circulo`, `p.elipse`, `p.retangulo`, `p.capsula(a, b, largura, cor)`, `p.linha(pontos, cor, largura, { tracejado, desloc })`, `p.seta`, `p.texto(s, x, y, { tam, cor })`, `p.etiqueta(s, x, y, { fundo, ponta })`, `p.em(transformacao, fn)`, `p.alfa`, `p.recortar`, `p.tracar(k, fn)`, `p.fundo(t)`, `p.ritmo(t)`. Cores por papel: `fundo, tinta, claro, c1, c2, c3, c4, pele0…pele5`, ou um hex. Formas auxiliares: `retP, retArredP, circP, capsulaP, rotP`.
 
-**pecas.js** — `personagem(p, { pose, virado, roupa, chapeu, expressao, naMao, t })`, elenco em `TIPOS` (soldado, ribeirinho, cientista, executiva, operario, jovem, idoso, crianca). Cenário: `chao, montanhas, arvore, nuvem, sol, estrelas, agua, chuva, casa, predio`. Objetos: `documento, pilhaDePaginas, papeisVoando, pasta, cadeado, chave, camera, cameraFoto, celular, computador, veiculo, barco, ovni, foguete, fogo, lampada, engrenagem, relogio, moeda, coracao, alerta, pino, termometro, bateria, raio, balao, graficoBarras, graficoLinha, graficoPizza, carimbo, marca, lupa, caixa, envelope, megafone, trofeu, bandeira, escudo, rede, bracoGrande`. Legendas: `legendas(p, dados, t)`. Os parâmetros de cada peça estão no comentário acima da função.
+**pecas/base.js** — `personagem(p, { pose, virado, roupa, penteado, chapeu, rosto, noTronco, nasCostas, expressao, naMao, t })`, elenco em `TIPOS` (soldado, ribeirinho, cientista, executiva, operario, jovem, idoso, crianca e as profissões de `pecas/pessoas.js`). Cenário: `chao, montanhas, arvore, nuvem, sol, estrelas, agua, chuva, casa, predio`. Objetos: `documento, pilhaDePaginas, papeisVoando, pasta, cadeado, chave, camera, cameraFoto, celular, computador, veiculo, barco, ovni, foguete, fogo, lampada, engrenagem, relogio, moeda, coracao, alerta, pino, termometro, bateria, raio, balao, graficoBarras, graficoLinha, graficoPizza, carimbo, marca, lupa, caixa, envelope, megafone, trofeu, bandeira, escudo, rede, bracoGrande`. As demais categorias (pessoas, animais, natureza, cidade, transporte, tecnologia, dinheiro, saúde, comida, casa, ciência, história, esporte, símbolos, gráficos, efeitos) estão no índice. Os parâmetros de cada peça estão no comentário acima da função.
 
 **filme.js** — `criarFilme({ largura, altura, estilo, paleta, beats, transicao, fundo, sobre })` → `{ desenhar(ctx, t), duracao, beatEm(t) }`. Transições: `empurrar, cortina, rasgo, iris, blocos, zoom, virar, corte`.
 

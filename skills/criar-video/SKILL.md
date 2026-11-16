@@ -19,7 +19,7 @@ Cada etapa tem um agente próprio. Siga as instruções da skill correspondente;
 | 1 | Roteiro | `/{{PREFIXO}}-roteiro` | `saida/<nome>/roteiro.md` e campo `roteiro` |
 | 2 | Estilo | `/{{PREFIXO}}-estilo` (ou `/{{PREFIXO}}-extrator-de-estilos`) | `estilo` e `paleta` em `projeto.json` |
 | 3 | Narração | `/{{PREFIXO}}-narracao` | `entrada/narracao.mp3` |
-| 4 | Legendas | `/{{PREFIXO}}-legendas` | `saida/legendas/legendas.json` e `.srt` |
+| 4 | Legendas | `/{{PREFIXO}}-legendas` | `saida/legendas/legendas.json`, `.srt` e `estiloLegenda` em `projeto.json` |
 | 5 | Storyboard | `/{{PREFIXO}}-storyboard` | plano de beats (`beats.json`) e quadros aprovados |
 | 6 | Animação | `/{{PREFIXO}}-animar` | `saida/<nome>/index.html` |
 | 7 | Renderização | `/{{PREFIXO}}-renderizar` | `saida/<nome>/video.mp4` |
@@ -37,6 +37,7 @@ Cada etapa tem um agente próprio. Siga as instruções da skill correspondente;
 ## Regras
 
 - Nunca peça, mostre ou grave chaves de API no chat. Elas ficam somente no `.env`; use `node scripts/diagnosticar.mjs` para saber o que está configurado.
-- Não edite `estilos/` nem `blocos/` durante a produção de um vídeo.
+- Não edite `estilos/`, `blocos/` nem `kit/` durante a produção de um vídeo.
+- O kit tem uma biblioteca de peças prontas: no storyboard e na animação, busque no índice antes de desenhar do zero (`node scripts/pecas.mjs <palavra>`), e desenhe peças próprias para o que é específico do tema.
 - Qualidade antes de entregar: tudo o que é falado aparece na tela e nada fica parado. Se a revisão reprovar, volte ao animador em vez de entregar.
 - Só diga que algo está pronto depois de conferir o arquivo. Informe o que não pôde verificar.

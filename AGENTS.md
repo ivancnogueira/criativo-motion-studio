@@ -16,7 +16,7 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 - `.env` — chaves do usuário. Nunca abra, mostre ou peça o conteúdo dele no chat; use o diagnóstico para saber o que está configurado.
 - `entrada/` — arquivos do usuário (narração MP3, vídeos de referência).
 - `vitrine/` — cenas animadas dos estilos (`node scripts/vitrine.mjs`), usadas também pelo painel.
-- `kit/` — kit de movimento: motor de animação, pincéis dos cinco estilos, personagem articulado e peças animadas (`kit/LEIA-ME.md`; demonstração com `npm run kit`). É referência: em cada vídeo, copie para `saida/<nome>/kit/` e adapte.
+- `kit/` — kit de movimento: motor de animação, pincéis dos cinco estilos, personagem articulado, biblioteca de peças animadas por categoria (`kit/pecas/`, com índice em `kit/indice.json`), elenco diverso de personagens (`kit/elenco.js`) e estilos de legenda (`kit/legendas.js`). Guia em `kit/LEIA-ME.md`; galeria com `npm run kit`; busca com `npm run pecas -- <palavra>`. É referência: em cada vídeo, copie para `saida/<nome>/kit/` e adapte.
 - `painel/` e `scripts/painel.mjs` — painel local (`npm run painel`): escolher estilo, configurar o vídeo, enviar a narração e criar estilo a partir de um vídeo (lido no navegador; a página grava a folha, os quadros, `metricas.md`, `direcao.md` e `estilo.json` em `estilos/<id>/`). Só atende em 127.0.0.1.
 - `render/` — instalado só na instância pelo agente instalador (Remotion). Nunca faz parte do produto.
 - `README.md`, `INSTALAR.md`, `INSTALAR-COM-*.md` e `documentacao/onboarding-guiado.md` — instalação guiada por plataforma.
@@ -33,6 +33,7 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 | `narracao` | `true` = usar `entrada/narracao.mp3`; a duração segue o áudio |
 | `roteiro` | texto da narração (opcional) |
 | `legendas` | `true` = legendas na tela a partir de `saida/legendas/legendas.json`, mais o SRT (só com narração) |
+| `estiloLegenda` | visual da legenda na tela, de `kit/legendas.js`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop` ou `contorno` |
 | `duracaoSegundos` | duração quando não há narração |
 | `vertical` | `true` = 9:16 (1080×1920); `false` = 16:9 (1920×1080) |
 | `musica`, `efeitos` | áudio gerado em código |
@@ -60,6 +61,7 @@ Cada etapa tem uma skill em `skills/`: `criar-video` (conduz tudo), `roteiro`, `
 | `node scripts/narrar.mjs [--simular]` | gera `entrada/narracao.mp3` por API |
 | `node scripts/transcrever.mjs` | gera `saida/legendas/legendas.json` e `.srt` |
 | `node scripts/conferir-beats.mjs saida/<nome>/beats.json` | confere o plano de beats antes de animar |
+| `node scripts/pecas.mjs <palavra>` | busca peças prontas do kit (`--categorias` lista as categorias; `--gerar` refaz `kit/indice.json` depois de mudar `kit/pecas/`) |
 | `node scripts/medir-movimento.mjs saida/<nome>/video.mp4` | mede o movimento do vídeo pronto, lista trechos parados e gera folhas de quadros |
 | `node scripts/extrair-estilo.mjs <video> --id <id>` | material para um estilo novo |
 | `node scripts/publicar-reels.mjs --video … --legenda … [--confirmar]` | publica no Instagram; sem `--confirmar` só confere |
@@ -71,7 +73,7 @@ Publicar exige a palavra PUBLICAR do usuário na conversa.
 1. Rode `node scripts/montar-prompt.mjs`. Se der erro, mostre a mensagem ao usuário e pare.
 2. Leia `saida/prompt.md` inteiro e siga-o como a especificação do trabalho, com as adaptações abaixo.
 3. Não edite `estilos/`, `blocos/` nem `kit/` durante a produção de um vídeo.
-4. Planeje em beats (um por frase da narração) e use o kit de movimento como ponto de partida: tudo o que é falado aparece na tela no instante em que é dito, e nada fica parado. O kit é referência, não molde: crie peças e composições próprias para cada tema.
+4. Planeje em beats (um por frase da narração) e use o kit de movimento como ponto de partida: tudo o que é falado aparece na tela no instante em que é dito, e nada fica parado. Antes de desenhar algo do zero, busque no índice (`node scripts/pecas.mjs <palavra>`). O kit é referência, não molde: crie peças e composições próprias para o que é específico de cada tema.
 
 ## Adaptações obrigatórias
 

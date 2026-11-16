@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { raiz, lerProduto, opcao } from "./lib/ambiente.mjs";
 import { gerarVitrine } from "./vitrine.mjs";
 import { montarPrompt } from "./montar-prompt.mjs";
+import { conferirEstiloDeLegenda, LEGENDA_PADRAO, ESTILOS_DE_LEGENDA } from "../kit/legendas.js";
 
 const MB = 1024 * 1024;
 export const LIMITES = { audio: 50 * MB, json: 64 * 1024, estilo: 24 * MB, imagem: 4 * MB };
@@ -60,6 +61,8 @@ export function validarProjeto(dados, { estilos, atual = {} }) {
   if (!narracao && !(duracao >= 5 && duracao <= 600)) throw new Recusa(400, "a duração deve ficar entre 5 segundos e 10 minutos.");
   const paleta = String(dados.paleta || "estilo");
   if (!["estilo", "marca", "personalizada"].includes(paleta)) throw new Recusa(400, "paleta desconhecida.");
+  let estiloLegenda;
+  try { estiloLegenda = conferirEstiloDeLegenda(dados.estiloLegenda ?? atual.estiloLegenda ?? LEGENDA_PADRAO); } catch (e) { throw new Recusa(400, e.message); }
   const cores = {};
   for (const k of ["dominante", "destaque", "apoio"]) {
     const v = String(dados.cores?.[k] ?? atual.cores?.[k] ?? "");
@@ -68,7 +71,7 @@ export function validarProjeto(dados, { estilos, atual = {} }) {
   }
   return {
     ...atual, estilo, tema, storyboard: dados.storyboard === true, narracao, roteiro,
-    legendas: narracao && dados.legendas === true,
+    legendas: narracao && dados.legendas === true, estiloLegenda,
     duracaoSegundos: duracao >= 5 && duracao <= 600 ? duracao : Number(atual.duracaoSegundos) || 30,
     vertical: dados.vertical === true, musica: dados.musica === true, efeitos: dados.efeitos === true,
     paleta, cores, testeDeEstilo: dados.testeDeEstilo !== false,
@@ -112,6 +115,7 @@ export function estadoDoPainel(base = raiz) {
   return {
     produto: produto.nome, prefixo: produto.prefixo, versao: produto.versao, instancia: fs.existsSync(path.join(base, ".env")),
     estilos, personalizados, comecePor: indice.comecePor || [],
+    legendas: Object.entries(ESTILOS_DE_LEGENDA).map(([id, e]) => ({ id, nome: e.nome, descricao: e.descricao })),
     projeto: lerJson(path.join(base, "projeto.json")) || lerJson(path.join(base, "projeto.exemplo.json"), {}),
     projetoSalvo: fs.existsSync(path.join(base, "projeto.json")),
     marca: lerJson(path.join(base, "marca.json")),

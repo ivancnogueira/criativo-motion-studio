@@ -61,12 +61,12 @@ const TIPS = {
   brand: "Usa as três cores da sua marca no lugar das cores do estilo. A técnica e o acabamento do estilo continuam iguais.",
 };
 /* ---------- state ---------- */
-const DEF = { brandName: "", b1: "#2563EB", b2: "#F59E0B", b3: "#10B981", styleTest: true, topic: "", storyboard: false, voiceover: false, script: "", subtitles: false, min: 0, sec: 30, vertical: false, music: true, sfx: true, palette: "style", c1: "#2563EB", c2: "#F59E0B", c3: "#10B981" };
+const DEF = { brandName: "", b1: "#2563EB", b2: "#F59E0B", b3: "#10B981", styleTest: true, topic: "", storyboard: false, voiceover: false, script: "", subtitles: false, captionStyle: "bloco", min: 0, sec: 30, vertical: false, music: true, sfx: true, palette: "style", c1: "#2563EB", c2: "#F59E0B", c3: "#10B981" };
 let S = { ...DEF, ...(BOOT.marca ? { brandName: BOOT.marca.nome, b1: BOOT.marca.cores.dominante, b2: BOOT.marca.cores.destaque, b3: BOOT.marca.cores.apoio } : {}) };
 if (BOOT.projetoSalvo) {
   const p = BOOT.projeto, seg = Math.max(0, Math.round(+p.duracaoSegundos || 30));
   Object.assign(S, { styleTest: p.testeDeEstilo !== false, topic: p.tema || "", storyboard: !!p.storyboard, voiceover: !!p.narracao, script: p.roteiro || "",
-    subtitles: !!p.legendas, min: Math.floor(seg / 60), sec: seg % 60, vertical: !!p.vertical, music: p.musica !== false, sfx: p.efeitos !== false,
+    subtitles: !!p.legendas, captionStyle: (BOOT.legendas || []).some(l => l.id === p.estiloLegenda) ? p.estiloLegenda : "bloco", min: Math.floor(seg / 60), sec: seg % 60, vertical: !!p.vertical, music: p.musica !== false, sfx: p.efeitos !== false,
     palette: ({ estilo: "style", marca: "brand", personalizada: "custom" })[p.paleta] || "style" });
   if (p.cores) Object.assign(S, { c1: p.cores.dominante || S.c1, c2: p.cores.destaque || S.c2, c3: p.cores.apoio || S.c3 });
 }
@@ -238,6 +238,11 @@ function body(s, i) {
               <textarea id="f-script" rows="2" placeholder="Cole o que a narração diz">${esc(S.script)}</textarea>
             </div>
             ${chk("f-subtitles", "Adicionar legendas", S.subtitles, "arquivo SRT + botão de legendas", "subtitles")}
+            <div class="script-f" id="cap-style" ${S.subtitles ? "" : "hidden"}>
+              <label class="step-h small" for="f-capstyle">Estilo da legenda na tela</label>
+              <select id="f-capstyle" class="sel">${(BOOT.legendas || []).map(l => `<option value="${l.id}" ${l.id === S.captionStyle ? "selected" : ""}>${esc(l.nome)}</option>`).join("")}</select>
+              <p class="hint" id="cap-desc">${esc((BOOT.legendas || []).find(l => l.id === S.captionStyle)?.descricao || "")} Veja todos tocando com <code>npm run kit</code>, aba Legendas.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -328,7 +333,7 @@ function durPresets(s) {
 }
 function refresh() {
   const $ = id => inner.querySelector("#" + id); if (!$("summary")) return;
-  $("vo-on").hidden = !S.voiceover; $("dur-vo").hidden = !S.voiceover; $("dur-box").classList.toggle("off", S.voiceover);
+  $("vo-on").hidden = !S.voiceover; $("dur-vo").hidden = !S.voiceover; if ($("cap-style")) $("cap-style").hidden = !S.subtitles; $("dur-box").classList.toggle("off", S.voiceover);
   inner.querySelectorAll("#dur-box input, #dur-box .chip").forEach(el => el.disabled = S.voiceover); $("pal-custom").hidden = S.palette !== "custom"; $("pal-brand").hidden = S.palette !== "brand";
   const n = secs();
   inner.querySelectorAll("[data-preset]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.preset === n)));
@@ -458,7 +463,7 @@ async function copyPrompt() {
       BOOT.marca = r.marca;
     }
     await api("/api/projeto", {
-      estilo: STYLES[current].id, tema: S.topic, storyboard: S.storyboard, narracao: S.voiceover, roteiro: S.script, legendas: S.subtitles,
+      estilo: STYLES[current].id, tema: S.topic, storyboard: S.storyboard, narracao: S.voiceover, roteiro: S.script, legendas: S.subtitles, estiloLegenda: S.captionStyle,
       duracaoSegundos: n, vertical: S.vertical, musica: S.music, efeitos: S.sfx,
       paleta: ({ style: "estilo", brand: "marca", custom: "personalizada" })[S.palette] || "estilo",
       cores: { dominante: S.c1, destaque: S.c2, apoio: S.c3 }, testeDeEstilo: S.styleTest,
@@ -556,6 +561,7 @@ document.addEventListener("change", e => {
   if (e.target.id === "f-mp3") { enviarMp3(e.target.files[0]); e.target.value = ""; return; }
   const map = { "f-styletest": "styleTest", "f-storyboard": "storyboard", "f-voiceover": "voiceover", "f-subtitles": "subtitles", "f-music": "music", "f-sfx": "sfx" };
   if (map[e.target.id]) { S[map[e.target.id]] = e.target.checked; refresh(); return; }
+  if (e.target.id === "f-capstyle") { S.captionStyle = e.target.value; const d = inner.querySelector("#cap-desc"), l = (BOOT.legendas || []).find(x => x.id === S.captionStyle); if (d && l) d.firstChild.textContent = l.descricao + " "; refresh(); return; }
   if (e.target.name === "fmt") { S.vertical = e.target.value === "v"; refresh(); }
   if (e.target.name === "pal") { S.palette = e.target.value; refresh(); }
 });
