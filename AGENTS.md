@@ -33,7 +33,7 @@ Este repositório gera vídeos de motion graphics em HTML/JavaScript a partir de
 | `narracao` | `true` = usar `entrada/narracao.mp3`; a duração segue o áudio |
 | `roteiro` | texto da narração (opcional) |
 | `legendas` | `true` = legendas na tela a partir de `saida/legendas/legendas.json`, mais o SRT (só com narração) |
-| `estiloLegenda` | visual da legenda na tela, de `kit/legendas.js`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop` ou `contorno` |
+| `estiloLegenda` | visual da legenda na tela, de `kit/legendas.js`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop`, `contorno`, `editorial`, `podcast`, `minimal` ou `impacto` |
 | `duracaoSegundos` | duração quando não há narração |
 | `vertical` | `true` = 9:16 (1080×1920); `false` = 16:9 (1920×1080) |
 | `musica`, `efeitos` | áudio gerado em código |

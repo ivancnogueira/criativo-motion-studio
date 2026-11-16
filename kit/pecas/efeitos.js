@@ -463,3 +463,9 @@ export function vibracao(p, { larg = 320, cor = "c1", objeto = true, t = 0 } = {
   const pulo = Math.abs(Math.sin(tt * 9)) * w * .015;
   for (const lado of [-1, 1]) for (let i = 0; i < 2; i++) { const x = lado * w * (.07 + i * .08); p.linha([[x, w * .21 + pulo], [x + lado * w * .055, w * .31 + pulo]], sf, grosso(p, w * .026)); }
 }
+
+/** Confete e brilhos para uma celebração. Chaves: celebração, confete, brilho, festa */
+export function celebracaoBrilhante(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => confete(p, { t }));
+  p.em({ x: 85, s: .55 }, () => brilho(p, { t }));
+}

@@ -418,3 +418,9 @@ export function pinguim(p, { larg = 220, cor = "c1", t = 0 } = {}) {
     olho(p, w * .1, -w * .88, w * .034, tt, .05);
   });
 }
+
+/** Cachorro e gato animados lado a lado. Chaves: pets, cachorro, gato, animais */
+export function duplaDePets(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => cachorro(p, { t }));
+  p.em({ x: 85, s: .55 }, () => gato(p, { t }));
+}

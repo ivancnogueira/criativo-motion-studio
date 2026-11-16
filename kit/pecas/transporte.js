@@ -459,3 +459,9 @@ export function submarino(p, { larg = 380, cor = "c2", t = 0 } = {}) {
     for (const x of [-.14, .06, .26]) { p.circulo(w * x, w * .03, w * .05, "claro", { prof: 0, liso: true }); p.circulo(w * x, w * .03, w * .028, "c4", { prof: 0, liso: true }); }
   });
 }
+
+/** Bicicleta e ônibus para cenas de mobilidade. Chaves: transporte, mobilidade, ônibus, bicicleta */
+export function mobilidadeUrbana(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => bicicleta(p, { t }));
+  p.em({ x: 85, s: .55 }, () => onibus(p, { t }));
+}

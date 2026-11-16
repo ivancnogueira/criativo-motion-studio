@@ -422,3 +422,9 @@ export function rins(p, { larg = 300, cor = "c1", cor2 = "c2", t = 0 } = {}) {
     }
   });
 }
+
+/** Seringa e frasco de remédio em cena médica. Chaves: saúde, remédio, seringa, medicina */
+export function cuidadosMedicos(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => seringa(p, { t }));
+  p.em({ x: 85, s: .55 }, () => frascoDeRemedio(p, { t }));
+}

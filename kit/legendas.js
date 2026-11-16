@@ -114,6 +114,57 @@ export const ESTILOS_DE_LEGENDA = {
       }
     },
   },
+  editorial: {
+    nome: "Editorial serifado", descricao: "Palavra-chave em serifada itálica, com texto de apoio discreto e entrada suave.",
+    desenhar(c) {
+      const { p, tam } = c, limpas = c.ps.map(w => semAcento(w.palavra));
+      let alvo = limpas.findIndex(s => c.chaves.some(k => s.startsWith(k)));
+      if (alvo < 0) alvo = limpas.reduce((m, s, i) => s.length > limpas[m].length ? i : m, 0);
+      const apoio = c.ps.filter((_, i) => i !== alvo).map(w => w.palavra).join(" ");
+      const palavra = c.ps[alvo].palavra, fonte = 'Georgia, serif', grande = Math.min(tam * 1.8, c.largura * tam * 1.8 / Math.max(1, p.medir(palavra, { tam: tam * 1.8, fonte, italico: true })));
+      const pequeno = Math.min(tam * .62, c.largura * tam * .62 / Math.max(1, p.medir(apoio, { tam: tam * .62 })));
+      const k = E.sai(clamp((c.t - c.ps[alvo].inicio + .12) / .28));
+      p.em({ y: (1 - c.e) * tam * .3 }, () => {
+        if (apoio) escrever(p, apoio, 0, -tam * .64, { tam: pequeno, cor: c.cor, borda: c.borda, grosso: .035 });
+        p.em({ s: .92 + .08 * k }, () => p.texto(palavra, 0, tam * .28, { tam: grande, cor: c.destaque, fonte, italico: true, peso: 700 }));
+      });
+    },
+  },
+  podcast: {
+    nome: "Podcast em destaque", descricao: "Texto em caixa alta inclinado, com destaque colorido e sombra para entrevistas.", maiusculas: true,
+    desenhar(c) {
+      const { p, tam } = c, L = dispor(p, c.ps.map((_, i) => c.txt(i)), c);
+      p.em({ s: .92 + .08 * c.e }, () => {
+        for (const it of L.itens) {
+          const destaque = it.i === c.atual, k = E.sai(clamp((c.t - c.ps[it.i].inicio + .04) / .18));
+          p.em({ x: it.x, y: it.y, s: destaque ? .96 + .04 * k : 1 }, () => {
+            p.texto(it.s, tam * .045, tam * .07, { tam, cor: "#17110e", italico: true });
+            p.texto(it.s, 0, 0, { tam, cor: destaque ? c.destaque : c.cor, italico: true });
+          });
+        }
+      });
+    },
+  },
+  minimal: {
+    nome: "Minimal por palavra", descricao: "Uma palavra limpa por vez, com entrada discreta e sem caixa.",
+    desenhar(c) {
+      const s = c.txt(c.atual), tam = Math.min(c.tam * 1.15, c.largura * c.tam * 1.15 / Math.max(1, c.p.medir(s, { tam: c.tam * 1.15 })));
+      const k = E.sai(clamp((c.t - c.ps[c.atual].inicio + .06) / .16));
+      c.p.alfa(.6 + .4 * k, () => escrever(c.p, s, 0, (1 - k) * tam * .14, { tam, cor: c.cor, borda: c.borda, grosso: .035 }));
+    },
+  },
+  impacto: {
+    nome: "Impacto em camadas", descricao: "Palavras empilhadas, com a atual ampliada e sublinhado animado.",
+    desenhar(c) {
+      const { p, tam } = c, textos = c.ps.map((_, i) => c.txt(i));
+      const L = dispor(p, textos, { ...c, tams: textos.map((_, i) => i === c.atual ? tam * 1.25 : tam * .85) });
+      for (const it of L.itens) {
+        const ativa = it.i === c.atual;
+        escrever(p, it.s, it.x, it.y, { tam: it.tam, cor: ativa ? c.destaque : c.cor, borda: c.borda, grosso: .035 });
+        if (ativa) { const k = E.sai(clamp((c.t - c.ps[it.i].inicio + .05) / .2)); p.linha([[it.esq, it.y + it.tam * .58], [it.esq + it.w * k, it.y + it.tam * .58]], c.destaque, Math.max(2, tam * .045)); }
+      }
+    },
+  },
   contorno: {
     nome: "Duas linhas com contorno", descricao: "Letras grandes em maiúsculas com contorno grosso, em até duas linhas; a palavra falada muda de cor.", maiusculas: true, estreito: .78, maior: 1.12,
     desenhar(c) {

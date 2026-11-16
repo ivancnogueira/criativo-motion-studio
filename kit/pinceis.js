@@ -206,12 +206,12 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     },
 
     /** Texto. opções: tam, cor, peso, alinhar (left, center, right), base, maiusculas. */
-    texto(s, x, y, { tam = 44, cor = "tinta", peso = 800, alinhar = "center", base = "middle", espaco = 0 } = {}) {
-      const f = { s: String(s), x, y, tam, cor: p.cor(cor), peso, alinhar, base, espaco };
+    texto(s, x, y, { tam = 44, cor = "tinta", peso = 800, alinhar = "center", base = "middle", espaco = 0, fonte = FONTE, italico = false } = {}) {
+      const f = { s: String(s), x, y, tam, cor: p.cor(cor), peso, alinhar, base, espaco, fonte: tipo === "pixel" ? FONTE : fonte, italico };
       if (tipo === "pixel") { f.tam = Math.max(pixel * 3, Math.round(tam * .62 / pixel) * pixel); f.m = p.c.getTransform(); f.a = p.c.globalAlpha; filaTexto.push(f); }
       else escrever(p.c, f);
     },
-    medir(s, { tam = 44, peso = 800 } = {}) { const c = p.c; c.save(); c.font = `${peso} ${tipo === "pixel" ? Math.max(pixel * 3, Math.round(tam * .62 / pixel) * pixel) : tam}px ${FONTE}`; const w = c.measureText(String(s)).width; c.restore(); return tipo === "pixel" ? w * 1.02 : w; },
+    medir(s, { tam = 44, peso = 800, fonte = FONTE, italico = false } = {}) { const c = p.c; c.save(); c.font = `${italico ? "italic " : ""}${peso} ${tipo === "pixel" ? Math.max(pixel * 3, Math.round(tam * .62 / pixel) * pixel) : tam}px ${tipo === "pixel" ? FONTE : fonte}`; const w = c.measureText(String(s)).width; c.restore(); return tipo === "pixel" ? w * 1.02 : w; },
     /** Faixa com texto: a etiqueta de cada estilo. opções: tam, cor do texto, fundo, rot, ponta (recorte em V). */
     etiqueta(s, x, y, { tam = 40, cor = "claro", fundo = "c1", rot = 0, ponta = false, prof = 1 } = {}) {
       const w = p.medir(s, { tam }) + tam * 1.3, h = tam * 1.75;
@@ -239,7 +239,7 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
   const visivel = f => tipo === "traco" && f === cores.claro && /^#[0-9a-f]{6}$/i.test(f) && /^#[0-9a-f]{6}$/i.test(cores.tinta) ? misturarCor(f, cores.tinta, .42) : f;
   function usar(h) { if (/^#[0-9a-f]{6}$/i.test(h) && !usadas.has(h)) usadas.set(h, hex(h)); }
   function escrever(c, f) {
-    c.save(); c.font = `${f.peso} ${f.tam}px ${FONTE}`; c.textAlign = f.alinhar; c.textBaseline = f.base; c.fillStyle = f.cor;
+    c.save(); c.font = `${f.italico ? "italic " : ""}${f.peso} ${f.tam}px ${f.fonte}`; c.textAlign = f.alinhar; c.textBaseline = f.base; c.fillStyle = f.cor;
     try { c.letterSpacing = f.espaco + "px"; } catch (e) { /* navegador sem suporte */ }
     if (tipo === "traco") { c.shadowColor = f.cor; c.shadowBlur = 8; }
     if (tipo === "vidro") { c.shadowColor = "rgba(0,0,0,.35)"; c.shadowBlur = 10; c.shadowOffsetY = 2; }

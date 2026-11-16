@@ -389,3 +389,9 @@ export function gota(p, { larg = 200, cor = "", t = 0 } = {}) {
     p.linha(arcoP(0, 0, R * .64, 115, 190, 8), maisClaro(p, cor, .7), R * .16);
   });
 }
+
+/** Jardim com girassol e flor balançando. Chaves: jardim, flores, natureza, plantas */
+export function jardimFlorido(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => girassol(p, { t }));
+  p.em({ x: 85, s: .55 }, () => flor(p, { t }));
+}

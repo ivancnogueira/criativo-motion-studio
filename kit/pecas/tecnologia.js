@@ -440,3 +440,9 @@ export function bracoRobotico(p, { alt = 380, cor = "c2", t = 0 } = {}) {
     p.circulo(j[0], j[1], h * r, "tinta", { prof: 0, liso: true }); p.circulo(j[0], j[1], h * r * .42, Math.sin(tt * 5 + r * 90) > 0 ? "c3" : "claro", { prof: 0, liso: true });
   }
 }
+
+/** Notebook e mouse para cenas de trabalho digital. Chaves: trabalho, computador, notebook, mouse */
+export function estacaoDeTrabalho(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => notebook(p, { t }));
+  p.em({ x: 85, s: .55 }, () => mouse(p, { t }));
+}

@@ -538,3 +538,9 @@ export function coliseu(p, { larg = 420, cor = "c2", t = 0 } = {}) {
   p.forma(fachada, cor, { prof: 2, furos });
   p.recortar(fachada, () => { for (const y of [-H * .28, -H * .56, -H * .84]) p.linha([[-w * .5, y], [w * .5, y]], esc, w * .014); });
 }
+
+/** Espada e escudo para uma cena medieval. Chaves: medieval, espada, escudo, história */
+export function defesaMedieval(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => espada(p, { t }));
+  p.em({ x: 85, s: .55 }, () => escudoMedieval(p, { t }));
+}

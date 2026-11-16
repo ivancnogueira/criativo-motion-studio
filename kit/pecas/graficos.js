@@ -476,3 +476,9 @@ export function checklist(p, { larg = 320, itens = ["Planejar", "Gravar", "Edita
     });
   });
 }
+
+/** Métrica e gráfico para apresentar resultados. Chaves: resultados, métrica, gráfico, dados */
+export function painelDeResultados(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => cartaoDeMetrica(p, { t }));
+  p.em({ x: 85, s: .55 }, () => tendencia(p, { t }));
+}

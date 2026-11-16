@@ -446,3 +446,9 @@ export const CATALOGO = {
   cenario: { chao, montanhas, arvore, nuvem, sol, estrelas, agua, chuva, casa, predio },
   objetos: { documento, pilhaDePaginas, papeisVoando, pasta, cadeado, chave, camera, cameraFoto, celular, computador, veiculo, barco, ovni, foguete, fogo, lampada, engrenagem, relogio, moeda, coracao, alerta, pino, termometro, bateria, raio, balao, graficoBarras, graficoLinha, graficoPizza, carimbo, marca, lupa, caixa, envelope, megafone, trofeu, bandeira, escudo, rede, bracoGrande },
 };
+
+/** Cidade ao longe com prédios e nuvens em movimento. Chaves: cidade, horizonte, nuvens, cenário */
+export function cidadeAoLonge(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => predio(p, { t }));
+  p.em({ x: 85, s: .55 }, () => nuvem(p, { t }));
+}

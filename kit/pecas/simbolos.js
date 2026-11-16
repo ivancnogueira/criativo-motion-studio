@@ -180,3 +180,9 @@ export function reciclar(p, { larg = 280, cor = "c3", t = 0 } = {}) {
     for (let i = 0; i < 3; i++) { const a = v(i), b = v(i + 1); p.seta([[lerp(a[0], b[0], .2), lerp(a[1], b[1], .2)], [lerp(a[0], b[0], .68), lerp(a[1], b[1], .68)]], [cor, "c1", "c2"][i], larg * .075); }
   });
 }
+
+/** Sino e selo para representar confirmação. Chaves: confirmação, notificação, sino, verificado */
+export function confirmacaoNotificada(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => sino(p, { t }));
+  p.em({ x: 85, s: .55 }, () => seloVerificado(p, { t }));
+}

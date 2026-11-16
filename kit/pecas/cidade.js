@@ -419,3 +419,9 @@ export function skyline(p, { larg = 420, alt = 0, cor = "c4", n = 6, semente = 0
   p.alfa(.35 + .3 * Math.sin(tt * 3.1), () => p.circulo(alto[0], -alto[1] - w * .012, w * (.03 + .014 * Math.sin(tt * 3.1)), "c1", D));
   p.circulo(alto[0], -alto[1] - w * .012, w * (pisca ? .02 : .013), pisca ? "c1" : cor, D);
 }
+
+/** Escola e casas do bairro com movimento. Chaves: bairro, escola, cidade, prédio */
+export function bairroEscolar(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => escola(p, { t }));
+  p.em({ x: 85, s: .55 }, () => loja(p, { t }));
+}

@@ -409,3 +409,9 @@ export function talheres(p, { alt = 360, cor = "c4", t = 0 } = {}) {
   });
   p.em({ x: Math.sin(ang) * a * .47 + a * .05, y: -Math.cos(ang) * a * .47, s: Math.sin(f * Math.PI) + .001, r: f * 2 }, () => p.forma(estrelaP(0, 0, a * .09, a * .028, 4), sobreFundo(p), { prof: 0, liso: true }));
 }
+
+/** Café e pão animados para o café da manhã. Chaves: café, pão, manhã, comida */
+export function cafeDaManha(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => cafe(p, { t }));
+  p.em({ x: 85, s: .55 }, () => pao(p, { t }));
+}

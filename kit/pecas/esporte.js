@@ -546,3 +546,9 @@ export function paletaDePintura(p, { larg = 380, t = 0 } = {}) {
     });
   });
 }
+
+/** Halter e cronômetro para um treino animado. Chaves: treino, força, halter, cronômetro */
+export function treinoDeForca(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => halter(p, { t }));
+  p.em({ x: 85, s: .55 }, () => cronometro(p, { t }));
+}

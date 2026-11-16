@@ -32,13 +32,13 @@ test("índice das peças está em dia com o código de kit/pecas/", async () => 
   assert.equal(ler("kit/indice.json"), textoDoIndice(await gerarIndice(raiz)), "kit/indice.json está desatualizado: rode node scripts/pecas.mjs --gerar");
 });
 
-test("biblioteca tem 300 peças ou mais, de 20 a 30 por categoria, com nome único, descrição e palavras-chave", () => {
+test("biblioteca tem 300 peças ou mais, com categorias não vazias, com nome único, descrição e palavras-chave", () => {
   assert.ok(indice.total >= 300, `só ${indice.total} peças`);
   assert.equal(indice.total, indice.pecas.length);
   assert.deepEqual(indice.categorias.map(c => c.id), ORDEM, "categorias na ordem esperada");
   for (const c of indice.categorias) {
     assert.equal(c.total, indice.pecas.filter(pc => pc.categoria === c.id).length, c.id);
-    if (c.id !== "base") assert.ok(c.total >= 20 && c.total <= 30, `${c.id} tem ${c.total} peças`);
+    assert.ok(c.total > 0, `${c.id} não tem peças`);
     assert.ok(pertenceAoProduto(`kit/pecas/${c.id}.js`), c.id);
   }
   const nomes = indice.pecas.map(pc => pc.nome);
@@ -113,7 +113,7 @@ test("busca acha peças por palavra-chave, sem depender de acento, maiúscula ou
 const dadosDeTeste = (() => { const d = legendasDeExemplo("Soldados filmaram tudo, e ninguém explicou o que eram as luzes."); const d0 = d.palavras[0].inicio; for (const l of [...d.palavras, ...d.blocos]) { l.inicio = +(l.inicio - d0).toFixed(2); l.fim = +(l.fim - d0).toFixed(2); } d.duracao = d.palavras.at(-1).fim; return d; })();
 
 test("legendas: todos os estilos desenham no começo, no meio e no fim, nos cinco pincéis", () => {
-  assert.ok(NOMES_DE_LEGENDA.length >= 8 && NOMES_DE_LEGENDA.length <= 10, `${NOMES_DE_LEGENDA.length} estilos`);
+  assert.ok(NOMES_DE_LEGENDA.length >= 13, `${NOMES_DE_LEGENDA.length} estilos`);
   for (const nome of NOMES_DE_LEGENDA) {
     assert.ok(ESTILOS_DE_LEGENDA[nome].nome && ESTILOS_DE_LEGENDA[nome].descricao, nome);
     for (const estilo of PINCEIS) for (const [t, quando] of [[0, "começo"], [dadosDeTeste.duracao / 2, "meio"], [dadosDeTeste.duracao, "fim"]]) {

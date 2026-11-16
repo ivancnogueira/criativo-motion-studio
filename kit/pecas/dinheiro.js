@@ -416,3 +416,9 @@ export function organograma(p, { larg = 400, cor = "c1", cor2 = "c3", filhos = 3
     p.circulo(lerp(cam[s][0], cam[s + 1][0], u), lerp(cam[s][1], cam[s + 1][1], u), w * (px ? .034 : .028), "c2", { prof: 0, liso: true });
   }
 }
+
+/** Cartão e maquininha para ilustrar pagamento. Chaves: pagamento, cartão, maquininha, dinheiro */
+export function pagamentoDigital(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => cartaoDeCredito(p, { t }));
+  p.em({ x: 85, s: .55 }, () => maquininha(p, { t }));
+}

@@ -454,3 +454,9 @@ export function despertador(p, { larg = 260, cor = "c1", t = 0 } = {}) {
     p.circulo(0, cy, w * .035, "c2", { prof: 0, liso: true });
   });
 }
+
+/** Poltrona e livro para uma cena de leitura. Chaves: leitura, livro, sofá, casa */
+export function cantinhoDeLeitura(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => sofa(p, { t }));
+  p.em({ x: 85, s: .55 }, () => livro(p, { t }));
+}

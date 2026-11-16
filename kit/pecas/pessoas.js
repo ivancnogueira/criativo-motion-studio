@@ -689,3 +689,9 @@ export function familia(p, { larg = 420, t = 0 } = {}) {
   sai.push(c);
   return sai;
 }
+
+/** Equipe de saúde com médico e enfermeira em atuação. Chaves: equipe, saúde, médico, enfermeira */
+export function equipeDeSaude(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => medico(p, { t }));
+  p.em({ x: 85, s: .55 }, () => enfermeira(p, { t }));
+}

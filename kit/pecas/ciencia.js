@@ -506,3 +506,9 @@ export function constelacao(p, { larg = 380, cor = "c4", cor2 = "c3", k = 1, t =
     p.em({ x, y, s, r: Math.sin(tt + i) * .2 }, () => { p.forma(estrelaP(0, 0, R, R * .4, 4), cor, { prof: 2, liso: true }); p.circulo(0, 0, R * .35, maisClaro(p, cor, .5), { prof: 0, liso: true }); });
   });
 }
+
+/** Microscópio e molécula em cena de pesquisa. Chaves: ciência, pesquisa, microscópio, molécula */
+export function pesquisaBiologica(p, { t = 0 } = {}) {
+  p.em({ x: -85, s: .55 }, () => microscopio(p, { t }));
+  p.em({ x: 85, s: .55 }, () => molecula(p, { t }));
+}

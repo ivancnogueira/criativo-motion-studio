@@ -55,7 +55,7 @@ p.em(combinar({ x: 300, y: 900 }, entrada("pop", k)), () => K.cofre(p, { k: prog
 sobre: q => K.legenda(q.p, legendas, q.t, { estilo: projeto.estiloLegenda })
 ```
 
-O estilo vem de `estiloLegenda` em `projeto.json`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop` ou `contorno`; veja todos tocando na aba Legendas da galeria. Opções: `y`, `tam`, `largura`, `cor`, `destaque`, `fundo`, `maiusculas` e, no estilo `chave`, `chaves: ["palavra"]`. Um nome que não existe dá erro com a lista de opções. Ajuste tipografia e cores ao prompt do estilo; mantenha a legenda fora dos 20% inferiores do vertical.
+O estilo vem de `estiloLegenda` em `projeto.json`: `bloco` (padrão), `palavra`, `karaoke`, `caixa`, `maquina`, `chave`, `faixa`, `pop`, `contorno`, `editorial`, `podcast`, `minimal` ou `impacto`; veja todos tocando na aba Legendas da galeria. Opções: `y`, `tam`, `largura`, `cor`, `destaque`, `fundo`, `maiusculas` e, nos estilos `chave` e `editorial`, `chaves: ["palavra"]`. Um nome que não existe dá erro com a lista de opções. Ajuste tipografia e cores ao prompt do estilo; mantenha a legenda fora dos 20% inferiores do vertical.
 
 ## Receita de uma cena viva
 

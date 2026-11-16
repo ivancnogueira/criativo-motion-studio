@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const raizPadrao = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 /** Ordem das categorias no índice e na galeria; as que não estiverem aqui vão para o fim, em ordem alfabética. */
-export const ORDEM = ["base", "pessoas", "animais", "natureza", "cidade", "transporte", "tecnologia", "dinheiro", "saude", "comida", "casa", "ciencia", "historia", "esporte", "simbolos", "graficos", "efeitos"];
+export const ORDEM = ["base", "pessoas", "animais", "natureza", "cidade", "transporte", "tecnologia", "comunicacao", "dinheiro", "saude", "comida", "casa", "ciencia", "historia", "esporte", "simbolos", "graficos", "efeitos"];
 
 const fechar = (s, i, abre, fecha) => { let n = 0; for (let j = i; j < s.length; j++) { if (s[j] === abre) n++; else if (s[j] === fecha && --n === 0) return j; } return -1; };
 const limpo = s => s.replace(/\s+/g, " ").trim();
