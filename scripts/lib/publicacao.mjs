@@ -1,10 +1,11 @@
 // Hospedagem pública no GitHub e publicação de Reels pela API oficial da Meta.
 import fs from "node:fs";
 import path from "node:path";
-import { exigir } from "./ambiente.mjs";
+import { exigir, requisitar } from "./ambiente.mjs";
 
 const esperar = ms => new Promise(r => setTimeout(r, ms));
 const LIMITE_GITHUB = 95 * 1024 * 1024; // a Contents API recusa arquivos de 100 MB ou mais
+const LIMITE_CAPA = 8 * 1024 * 1024;
 
 export function normalizarLegenda(texto) {
   return String(texto || "").replace(/\\n/g, "\n").replace(/\r\n?/g, "\n").trim();
@@ -20,7 +21,15 @@ export function conferirPublicacao({ video, legenda, capa, env }) {
     if (tamanho < 10_000) problemas.push("o vídeo está vazio ou corrompido");
     if (tamanho > LIMITE_GITHUB) problemas.push(`o vídeo tem ${(tamanho / 1048576).toFixed(0)} MB; o limite para hospedar é 95 MB`);
   }
-  if (capa && !fs.existsSync(capa)) problemas.push(`capa não encontrada: ${capa}`);
+  if (capa) {
+    if (!fs.existsSync(capa)) problemas.push(`capa não encontrada: ${capa}`);
+    else {
+      if (![".jpg", ".jpeg", ".png"].includes(path.extname(capa).toLowerCase())) problemas.push("a capa precisa ser .jpg ou .png");
+      const tamCapa = fs.statSync(capa).size;
+      if (tamCapa < 100) problemas.push("a capa está vazia ou corrompida");
+      if (tamCapa > LIMITE_CAPA) problemas.push(`a capa tem ${(tamCapa / 1048576).toFixed(1)} MB; o limite é 8 MB`);
+    }
+  }
   const texto = normalizarLegenda(legenda);
   if (!texto) problemas.push("legenda vazia");
   if (texto.length > 2200) problemas.push(`legenda com ${texto.length} caracteres; o Instagram aceita até 2200`);
@@ -42,19 +51,19 @@ export async function hospedarNoGithub({ arquivo, destino, env, fetchFn = fetch 
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${caminho}`;
   const headers = { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "x-github-api-version": "2022-11-28", "content-type": "application/json" };
   let sha;
-  const atual = await fetchFn(`${url}?ref=${encodeURIComponent(branch)}`, { headers });
+  const atual = await requisitar(fetchFn, `${url}?ref=${encodeURIComponent(branch)}`, { headers }, { rotulo: "GitHub", timeoutMs: 30_000 });
   if (atual.ok) sha = (await atual.json()).sha;
   else if (atual.status !== 404) throw new Error(`GitHub recusou a leitura (HTTP ${atual.status}). Verifique o token e o repositório.`);
-  const r = await fetchFn(url, {
+  const r = await requisitar(fetchFn, url, {
     method: "PUT", headers,
     body: JSON.stringify({ message: `publica ${destino}`, branch, content: fs.readFileSync(arquivo).toString("base64"), ...(sha ? { sha } : {}) }),
-  });
+  }, { rotulo: "GitHub", timeoutMs: 120_000 });
   if (!r.ok) throw new Error(`GitHub recusou o envio (HTTP ${r.status}). Verifique se o token tem Contents: write neste repositório.`);
   return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${caminho}`;
 }
 
 async function chamarMeta(fetchFn, url, opcoes) {
-  const r = await fetchFn(url, opcoes);
+  const r = await requisitar(fetchFn, url, opcoes, { rotulo: "Meta API", timeoutMs: 45_000 });
   const d = await r.json().catch(() => ({}));
   if (!r.ok || d.error) throw new Error(`Meta API recusou a operação (${d.error?.code || r.status}): ${d.error?.error_user_msg || d.error?.message || ""}`);
   return d;

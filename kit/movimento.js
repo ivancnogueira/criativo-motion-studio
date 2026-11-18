@@ -127,11 +127,21 @@ export function fase(t, de, ate, { entra = .5, sai = .35 } = {}) {
 export const escalonar = (i, local, { atraso = .12, dur = .5, espera = 0 } = {}) => clamp((local - espera - i * atraso) / dur);
 
 const semAcento = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const raizPalavra = s => { const w = semAcento(s); return w.length > 4 ? w.replace(/(oes|aes|ais|eis|es|s)$/, "") : w; };
+const palavrasIguais = (a, b) => {
+  const x = semAcento(a), y = semAcento(b);
+  if (!x || !y) return false;
+  if (x === y || raizPalavra(x) === raizPalavra(y)) return true;
+  return x.length >= 4 && y.length >= 4 && (x.startsWith(y.slice(0, 4)) || y.startsWith(x.slice(0, 4))) && Math.abs(x.length - y.length) <= 2;
+};
 /** Em que segundo a palavra é falada. `legendas` é o conteúdo de saida/legendas/legendas.json.
     `ocorrencia` escolhe a 1ª, 2ª... vez. Devolve null se a palavra não for dita. */
 export function tempoDaPalavra(legendas, palavra, ocorrencia = 1) {
-  const alvo = semAcento(palavra); let n = 0;
-  for (const w of legendas?.palavras || []) if (semAcento(w.palavra).startsWith(alvo) && ++n === ocorrencia) return w.inicio;
+  const alvo = semAcento(palavra), raizAlvo = raizPalavra(palavra); let n = 0;
+  for (const w of legendas?.palavras || []) {
+    const limpa = semAcento(w.palavra);
+    if ((limpa.startsWith(alvo) || (raizAlvo && raizPalavra(limpa) === raizAlvo)) && ++n === ocorrencia) return w.inicio;
+  }
   return null;
 }
 /** Divide a narração em beats pelas palavras que abrem cada frase.
@@ -143,11 +153,22 @@ export function beatsPorFrases(legendas, inicios) {
     const alvo = String(ini).trim().split(/\s+/).map(semAcento).filter(Boolean);
     let achou = -1;
     for (let j = i; j <= ps.length - alvo.length && achou < 0; j++) if (alvo.every((a, k) => semAcento(ps[j + k].palavra) === a)) achou = j;
+    if (achou < 0) {
+      for (let j = i; j <= ps.length - alvo.length && achou < 0; j++) if (alvo.every((a, k) => palavrasIguais(ps[j + k].palavra, a))) achou = j;
+    }
     if (achou < 0) throw new Error(`a narração não tem o trecho "${ini}" depois de ${i ? ps[i - 1].fim.toFixed(1) + " s" : "o início"}`);
     cortes.push(achou); i = achou + alvo.length;
   }
   const fim = legendas.duracao || ps.at(-1)?.fim || 0;
   return cortes.map((c, n) => ({ de: n === 0 ? 0 : ps[c].inicio, ate: n + 1 < cortes.length ? ps[cortes[n + 1]].inicio : fim, texto: ps.slice(c, cortes[n + 1] ?? ps.length).map(w => w.palavra).join(" ") }));
+}
+
+function apareceEmMostra(mostra, termo) {
+  const bruto = JSON.stringify(mostra || []).toLowerCase();
+  if (bruto.includes(String(termo).toLowerCase())) return true;
+  const tokens = bruto.normalize("NFD").replace(/[̀-ͯ]/g, "").split(/[^a-z0-9]+/).filter(Boolean).map(raizPalavra);
+  const partes = String(termo).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(s => s.length > 2).map(raizPalavra);
+  return partes.length > 0 && partes.every(p => tokens.some(tk => tk === p || tk.startsWith(p) || p.startsWith(tk)));
 }
 
 /** Confere um plano de beats antes de animar. Cada beat: { de, ate, fala, mostra: [..], move: [..], entrada, transicao }.
@@ -160,7 +181,7 @@ export function conferirBeats(beats, { maxParado = 4, minMovimentos = 3 } = {}) 
     if (!b.mostra?.length) av.push(`${n}: não diz o que aparece na tela.`);
     if ((b.move?.length || 0) < minMovimentos) av.push(`${n}: só ${b.move?.length || 0} coisa(s) em movimento; precisa de pelo menos ${minMovimentos}.`);
     if (b.ate - b.de > maxParado && (b.momentos?.length || 0) < Math.floor((b.ate - b.de) / maxParado)) av.push(`${n}: dura ${(b.ate - b.de).toFixed(1)} s sem novos momentos; acrescente um acontecimento a cada ${maxParado} s.`);
-    for (const p of b.palavrasChave || []) if (!JSON.stringify(b.mostra || []).toLowerCase().includes(String(p).toLowerCase())) av.push(`${n}: a palavra "${p}" é falada mas não aparece em "mostra".`);
+    for (const p of b.palavrasChave || []) if (!apareceEmMostra(b.mostra, p)) av.push(`${n}: a palavra "${p}" é falada mas não aparece em "mostra".`);
     const a = beats[i - 1];
     if (a) {
       if (a.transicao && a.transicao === b.transicao) av.push(`${n}: mesma transição do beat anterior (${b.transicao}).`);

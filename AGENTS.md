@@ -61,6 +61,7 @@ Cada etapa tem uma skill em `skills/`: `criar-video` (conduz tudo), `roteiro`, `
 | `node scripts/narrar.mjs [--simular]` | gera `entrada/narracao.mp3` por API |
 | `node scripts/transcrever.mjs` | gera `saida/legendas/legendas.json` e `.srt` |
 | `node scripts/conferir-beats.mjs saida/<nome>/beats.json` | confere o plano de beats antes de animar |
+| `node scripts/conferir-video.mjs saida/<nome>/video.mp4` | confere assinatura MP4, resolução, duração, áudio e tamanho do vídeo exportado |
 | `node scripts/pecas.mjs <palavra>` | busca peças prontas do kit (`--categorias` lista as categorias; `--gerar` refaz `kit/indice.json` depois de mudar `kit/pecas/`) |
 | `node scripts/medir-movimento.mjs saida/<nome>/video.mp4` | mede o movimento do vídeo pronto, lista trechos parados e gera folhas de quadros |
 | `node scripts/extrair-estilo.mjs <video> --id <id>` | material para um estilo novo |

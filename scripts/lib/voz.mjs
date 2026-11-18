@@ -1,29 +1,29 @@
 // Provedores de voz. Todos têm a mesma forma: (texto, env, fetchFn) → Buffer com o MP3.
-import { exigir, falhaDeApi } from "./ambiente.mjs";
+import { exigir, falhaDeApi, requisitar } from "./ambiente.mjs";
 
 async function elevenlabs(texto, env, fetchFn) {
   const voz = exigir(env, "ELEVENLABS_VOICE_ID");
-  const r = await fetchFn(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voz)}?output_format=mp3_44100_128`, {
+  const r = await requisitar(fetchFn, `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voz)}?output_format=mp3_44100_128`, {
     method: "POST",
     headers: { "xi-api-key": exigir(env, "ELEVENLABS_API_KEY"), "content-type": "application/json", accept: "audio/mpeg" },
     body: JSON.stringify({ text: texto, model_id: env.ELEVENLABS_MODEL || "eleven_multilingual_v2" }),
-  });
+  }, { rotulo: "ElevenLabs", timeoutMs: 60_000 });
   if (!r.ok) throw await falhaDeApi("ElevenLabs", r);
   return Buffer.from(await r.arrayBuffer());
 }
 
 async function fishaudio(texto, env, fetchFn) {
-  const r = await fetchFn("https://api.fish.audio/v1/tts", {
+  const r = await requisitar(fetchFn, "https://api.fish.audio/v1/tts", {
     method: "POST",
     headers: { authorization: `Bearer ${exigir(env, "FISH_AUDIO_API_KEY")}`, "content-type": "application/json", model: env.FISH_AUDIO_MODEL || "s2.1-pro" },
     body: JSON.stringify({ text: texto, reference_id: exigir(env, "FISH_AUDIO_VOICE_ID"), format: "mp3", mp3_bitrate: 128, language: "pt-BR" }),
-  });
+  }, { rotulo: "Fish Audio", timeoutMs: 60_000 });
   if (!r.ok) throw await falhaDeApi("Fish Audio", r);
   return Buffer.from(await r.arrayBuffer());
 }
 
 async function minimax(texto, env, fetchFn) {
-  const r = await fetchFn("https://api.minimax.io/v1/t2a_v2", {
+  const r = await requisitar(fetchFn, "https://api.minimax.io/v1/t2a_v2", {
     method: "POST",
     headers: { authorization: `Bearer ${exigir(env, "MINIMAX_API_KEY")}`, "content-type": "application/json" },
     body: JSON.stringify({
@@ -31,7 +31,7 @@ async function minimax(texto, env, fetchFn) {
       voice_setting: { voice_id: exigir(env, "MINIMAX_VOICE_ID"), speed: 1, vol: 1, pitch: 0 },
       audio_setting: { sample_rate: 32000, bitrate: 128000, format: "mp3", channel: 1 },
     }),
-  });
+  }, { rotulo: "MiniMax", timeoutMs: 60_000 });
   if (!r.ok) throw await falhaDeApi("MiniMax", r);
   const dados = await r.json();
   if (dados.base_resp && dados.base_resp.status_code !== 0) throw new Error(`MiniMax recusou o pedido (${dados.base_resp.status_code}): ${String(dados.base_resp.status_msg || "").slice(0, 200)}`);

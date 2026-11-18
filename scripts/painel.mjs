@@ -91,7 +91,21 @@ export function validarMarca(dados) {
 }
 
 const lerJson = (arquivo, reserva = null) => { try { return JSON.parse(fs.readFileSync(arquivo, "utf8")); } catch { return reserva; } };
-const gravarJson = (arquivo, dados) => fs.writeFileSync(arquivo, JSON.stringify(dados, null, 2) + "\n");
+function renomearAtomico(origem, destino) {
+  for (let t = 0; ; t++) {
+    try { fs.renameSync(origem, destino); return; }
+    catch (e) {
+      if (t >= 4 || !["EPERM", "EACCES", "EBUSY"].includes(e.code)) throw e;
+      try { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 20 * (t + 1)); } catch {}
+    }
+  }
+}
+function gravarJson(arquivo, dados) {
+  fs.mkdirSync(path.dirname(arquivo), { recursive: true });
+  const tmp = `${arquivo}.${crypto.randomBytes(4).toString("hex")}.tmp`;
+  try { fs.writeFileSync(tmp, JSON.stringify(dados, null, 2) + "\n"); renomearAtomico(tmp, arquivo); }
+  finally { fs.rmSync(tmp, { force: true }); }
+}
 const lerTexto = arquivo => { try { return fs.readFileSync(arquivo, "utf8").trim(); } catch { return ""; } };
 const arquivosNumerados = (pasta, prefixo) => { try { return fs.readdirSync(pasta).filter(f => new RegExp(`^${prefixo}-\\d{2}\\.jpg$`).test(f)).sort(); } catch { return []; } };
 
@@ -167,7 +181,7 @@ function receberAudio(req, base, nome) {
       if (encerrado) return;
       if (!conferido) return abortar(new Recusa(400, "arquivo vazio ou pequeno demais."));
       encerrado = true;
-      fs.renameSync(parcial, path.join(entrada, "narracao.mp3"));
+      renomearAtomico(parcial, path.join(entrada, "narracao.mp3"));
       ok({ arquivo: "narracao.mp3", megabytes: +(total / MB).toFixed(1) });
     });
     req.pipe(saida);
@@ -225,7 +239,7 @@ export function gravarEstilo(base, d) {
     fs.writeFileSync(path.join(tmp, "direcao.md"), direcao + "\n");
     fs.writeFileSync(path.join(tmp, "metricas.md"), texto(d.metricas, 6000, "as medidas") + "\n");
     gravarJson(path.join(tmp, "estilo.json"), meta);
-    fs.renameSync(tmp, pasta);
+    renomearAtomico(tmp, pasta);
   } catch (err) {
     fs.rmSync(tmp, { recursive: true, force: true });
     throw err instanceof Recusa ? err : new Recusa(500, "não foi possível gravar o estilo.");

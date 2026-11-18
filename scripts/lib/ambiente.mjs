@@ -82,3 +82,29 @@ export async function falhaDeApi(rotulo, resposta) {
   try { detalhe = (await resposta.text()).slice(0, 300); } catch {}
   return new Error(`${rotulo} recusou o pedido (HTTP ${resposta.status})${detalhe ? ": " + detalhe : ""}`);
 }
+
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+const TRANSITORIO = new Set([408, 429, 502, 503, 504]);
+
+// Executa fetch com tempo limite e nova tentativa automática para falhas transitórias (429/502/503/504 ou queda rápida).
+export async function requisitar(fetchFn, url, opcoes = {}, { timeoutMs = 45_000, tentativas = 2, intervaloMs = fetchFn === fetch ? 500 : 0, rotulo = "A API" } = {}) {
+  let ultimoErro;
+  for (let t = 1; t <= tentativas; t++) {
+    try {
+      const sinal = opcoes.signal ?? (timeoutMs > 0 ? AbortSignal.timeout(timeoutMs) : undefined);
+      const r = await fetchFn(url, sinal ? { ...opcoes, signal: sinal } : opcoes);
+      if (r && TRANSITORIO.has(r.status) && t < tentativas) {
+        if (intervaloMs > 0) await esperar(intervaloMs * t);
+        continue;
+      }
+      return r;
+    } catch (e) {
+      ultimoErro = e?.name === "TimeoutError" || e?.name === "AbortError"
+        ? new Error(`${rotulo} demorou demais para responder (limite de ${Math.round(timeoutMs / 1000)} s).`)
+        : e;
+      if (t >= tentativas) throw ultimoErro;
+      if (intervaloMs > 0) await esperar(intervaloMs * t);
+    }
+  }
+  throw ultimoErro;
+}

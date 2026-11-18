@@ -24,6 +24,7 @@
     "pecas": "node scripts/pecas.mjs",
     "medir-movimento": "node scripts/medir-movimento.mjs",
     "conferir-beats": "node scripts/conferir-beats.mjs",
+    "conferir-video": "node scripts/conferir-video.mjs",
     "extrair-estilo": "node scripts/extrair-estilo.mjs",
     "verificar:produto": "node scripts/verificar-produto.mjs",
     "empacotar": "node scripts/empacotar.mjs",

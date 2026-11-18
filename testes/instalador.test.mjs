@@ -16,10 +16,17 @@ function homeFalso(...pastas) {
 }
 const prefixo = lerProduto().prefixo;
 
-test("detecta só as plataformas presentes", () => {
-  assert.deepEqual(detectar(homeFalso(".claude")), ["claude"]);
-  assert.deepEqual(detectar(homeFalso(".codex", ".gemini")), ["codex", "antigravity"]);
-  assert.deepEqual(detectar(homeFalso()), []);
+test("detecta só as plataformas presentes e isola CODEX_HOME em home customizado", () => {
+  const anterior = process.env.CODEX_HOME;
+  try {
+    process.env.CODEX_HOME = homeFalso("codex-global");
+    assert.deepEqual(detectar(homeFalso(".claude")), ["claude"]);
+    assert.deepEqual(detectar(homeFalso(".codex", ".gemini")), ["codex", "antigravity"]);
+    assert.deepEqual(detectar(homeFalso()), []);
+  } finally {
+    if (anterior === undefined) delete process.env.CODEX_HOME;
+    else process.env.CODEX_HOME = anterior;
+  }
 });
 
 test("recusa plataforma desconhecida", () => {

@@ -45,9 +45,14 @@ function rasgar(pts, semente, j = 2.2, step = 26) {
   }
   return out;
 }
-const hex = h => { h = h.replace("#", ""); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+const hex = h => {
+  let s = String(h || "").trim().replace(/^#/, "");
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-f]{6}$/i.test(s)) return [0, 0, 0];
+  return [0, 2, 4].map(i => parseInt(s.slice(i, i + 2), 16));
+};
 /** Mistura duas cores hex: k = 0 é `a`, k = 1 é `b`. */
-export function misturarCor(a, b, k) { const x = hex(a), y = hex(b); return "#" + x.map((v, i) => Math.round(v + (y[i] - v) * k).toString(16).padStart(2, "0")).join(""); }
+export function misturarCor(a, b, k) { const x = hex(a), y = hex(b); return "#" + x.map((v, i) => clamp(Math.round(v + (y[i] - v) * k), 0, 255).toString(16).padStart(2, "0")).join(""); }
 const rgba = (h, a) => { const [r, g, b] = hex(h); return `rgba(${r},${g},${b},${a})`; };
 
 const texturas = {};

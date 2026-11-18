@@ -86,8 +86,10 @@ function extrairZip(zip, destino) {
 
 async function baixar(url, destino) {
   if (!/^https:\/\//i.test(url)) throw new Error("o endereço precisa começar com https://");
-  const r = await fetch(url, { redirect: "follow" });
+  const r = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(60_000) });
   if (!r.ok) throw new Error(`o download falhou (${r.status}).`);
+  const declarado = Number(r.headers?.get?.("content-length") || 0);
+  if (declarado > 200 * 1024 * 1024) throw new Error("o arquivo é grande demais para ser o produto.");
   const bytes = Buffer.from(await r.arrayBuffer());
   if (bytes.length > 200 * 1024 * 1024) throw new Error("o arquivo é grande demais para ser o produto.");
   if (bytes.subarray(0, 2).toString("latin1") !== "PK") throw new Error("o endereço não devolveu um arquivo ZIP.");

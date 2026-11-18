@@ -44,6 +44,10 @@ Pergunte ao usuário qual visual ele quer e grave em `estiloLegenda` de `projeto
 | `chave` | a palavra mais importante maior e colorida | vendas, dados, conceitos |
 | `faixa` | faixa escura de lado a lado | tom jornalístico, vídeo horizontal |
 | `pop` | cada palavra aparece quicando | humor, público jovem |
+| `editorial` | palavra-chave em serifada itálica com texto de apoio | análises, ensaios, cultura |
+| `podcast` | caixa alta inclinada com destaque colorido e sombra | cortes de podcast, entrevistas |
+| `minimal` | uma palavra limpa por vez, entrada discreta sem caixa | vídeos calmos, estética limpa |
+| `impacto` | palavras empilhadas com a atual ampliada e sublinhada | frases fortes, listas e chamadas |
 | `contorno` | maiúsculas com contorno grosso, até duas linhas | cenas cheias, alto contraste |
 
 O usuário pode ver todos tocando com `npm run kit`, aba Legendas. O painel também tem essa escolha. Um nome fora da lista faz `node scripts/montar-prompt.mjs` parar com erro.

@@ -3,6 +3,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+export const homePadrao = () => os.homedir();
+const pastaCodex = home => (home === homePadrao() && process.env.CODEX_HOME) ? process.env.CODEX_HOME : path.join(home, ".codex");
+
 export const PLATAFORMAS = {
   claude: {
     nome: "Claude Code",
@@ -11,8 +14,8 @@ export const PLATAFORMAS = {
   },
   codex: {
     nome: "Codex",
-    sinal: home => [process.env.CODEX_HOME || path.join(home, ".codex")],
-    destinos: home => [path.join(process.env.CODEX_HOME || path.join(home, ".codex"), "skills")],
+    sinal: home => [pastaCodex(home)],
+    destinos: home => [path.join(pastaCodex(home), "skills")],
   },
   antigravity: {
     nome: "Antigravity",
@@ -21,8 +24,6 @@ export const PLATAFORMAS = {
     destinos: home => [path.join(home, ".gemini", "config", "skills"), path.join(home, ".gemini", "antigravity", "skills")],
   },
 };
-
-export const homePadrao = () => os.homedir();
 
 export function detectar(home = homePadrao()) {
   return Object.keys(PLATAFORMAS).filter(id => PLATAFORMAS[id].sinal(home).some(p => fs.existsSync(p)));

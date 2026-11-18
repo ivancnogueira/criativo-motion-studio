@@ -35,10 +35,11 @@ export function listarArquivos(base, dir = "") {
 const PADROES = [
   { nome: "caminho local desta máquina", re: /[A-Za-z]:\\(?:Users|PROJETOS|Documents)\\|\/(?:Users|home)\/[A-Za-z0-9._-]+\// },
   { nome: "e-mail", re: /[A-Za-z0-9._%+-]+@(?!anthropic\.com|example\.com)[A-Za-z0-9.-]+\.[A-Za-z]{2,}/ },
-  { nome: "credencial", re: /\b(?:gsk_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|EAA[A-Za-z0-9]{30,})\b/ },
+  { nome: "credencial", re: /\b(?:gsk_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|sk_[A-Za-z0-9]{20,}|EAA[A-Za-z0-9]{30,})\b/ },
   { nome: "publicação ou perfil real", re: /instagram\.com\/(?:p|reel|reels)\/[A-Za-z0-9_-]{5,}|tiktok\.com\/@[A-Za-z0-9._]+\/video|youtu\.be\/[A-Za-z0-9_-]{6,}/ },
   { nome: "marca real", re: /ideias\s+artificiais|escola\s*de\s*ferramentas|navibotlab/i },
 ];
+const MARCADORES_SKILL = new Set(["PASTA_DO_PRODUTO", "PREFIXO", "PRODUTO"]);
 const TEXTO = new Set([".md", ".mjs", ".js", ".json", ".html", ".css", ".txt", ".example", ".yml", ".yaml", ""]);
 
 export function verificarProduto(base = raiz) {
@@ -47,10 +48,16 @@ export function verificarProduto(base = raiz) {
   for (const rel of arquivos) {
     if (!pertenceAoProduto(rel)) { problemas.push({ arquivo: rel, motivo: "não faz parte do produto (arquivo de instância ou de desenvolvimento)" }); continue; }
     if (rel === "scripts/verificar-produto.mjs" || !TEXTO.has(path.extname(rel).toLowerCase())) continue;
-    const linhas = fs.readFileSync(path.join(base, rel), "utf8").split("\n");
+    const conteudo = fs.readFileSync(path.join(base, rel), "utf8");
+    const linhas = conteudo.split("\n");
     for (const p of PADROES) {
       const n = linhas.findIndex(l => p.re.test(l));
       if (n >= 0) problemas.push({ arquivo: `${rel}:${n + 1}`, motivo: p.nome });
+    }
+    if (/^skills\/[^/]+\/SKILL\.md$/.test(rel)) {
+      for (const m of conteudo.matchAll(/\{\{(\w+)\}\}/g)) {
+        if (!MARCADORES_SKILL.has(m[1])) problemas.push({ arquivo: rel, motivo: `marcador desconhecido {{${m[1]}}}` });
+      }
     }
   }
   for (const [arq, campo] of [[".env.example", null], ["marca.exemplo.json", "json"]]) {

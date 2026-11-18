@@ -4,10 +4,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { raiz, lerEnv, exigir, opcao, falhaDeApi } from "./lib/ambiente.mjs";
+import { raiz, lerEnv, exigir, opcao, falhaDeApi, requisitar } from "./lib/ambiente.mjs";
+
+const LIMITE_WHISPER = 25 * 1024 * 1024;
 
 export async function transcrever(arquivo, env, fetchFn = fetch) {
   if (!fs.existsSync(arquivo)) throw new Error(`áudio não encontrado: ${arquivo}`);
+  const tamanho = fs.statSync(arquivo).size;
+  if (tamanho < 100) throw new Error("o arquivo de áudio está vazio ou corrompido.");
+  if (tamanho > LIMITE_WHISPER) throw new Error(`o áudio tem ${(tamanho / 1048576).toFixed(1)} MB; o limite de transcrição é 25 MB.`);
   const chave = exigir(env, "GROQ_API_KEY");
   const form = new FormData();
   form.append("file", new Blob([fs.readFileSync(arquivo)], { type: "audio/mpeg" }), path.basename(arquivo));
@@ -15,7 +20,7 @@ export async function transcrever(arquivo, env, fetchFn = fetch) {
   form.append("response_format", "verbose_json");
   form.append("timestamp_granularities[]", "word");
   form.append("language", "pt");
-  const r = await fetchFn("https://api.groq.com/openai/v1/audio/transcriptions", { method: "POST", headers: { authorization: `Bearer ${chave}` }, body: form });
+  const r = await requisitar(fetchFn, "https://api.groq.com/openai/v1/audio/transcriptions", { method: "POST", headers: { authorization: `Bearer ${chave}` }, body: form }, { rotulo: "Groq", timeoutMs: 90_000 });
   if (!r.ok) throw await falhaDeApi("Groq", r);
   const d = await r.json();
   const palavras = (d.words || []).map(w => ({ palavra: String(w.word).trim(), inicio: Number(w.start), fim: Number(w.end) })).filter(w => w.palavra);

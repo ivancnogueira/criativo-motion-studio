@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as M from "../kit/movimento.js";
+import { misturarCor } from "../kit/pinceis.js";
 import { medirQuadros, trechosParados, relatorio } from "../scripts/medir-movimento.mjs";
 import { pertenceAoProduto } from "../scripts/verificar-produto.mjs";
 
@@ -45,18 +46,28 @@ const legendas = { duracao: 9, palavras: "Em 1977 a ordem chegou. Ribeirinhos vi
 
 test("sincronia: acha o tempo de uma palavra e divide a narração em beats por frase", () => {
   assert.equal(M.tempoDaPalavra(legendas, "ribeirinhos"), 4);
+  assert.equal(M.tempoDaPalavra(legendas, "ribeirinho"), 4, "aceita singular para palavra no plural");
   assert.equal(M.tempoDaPalavra(legendas, "inexistente"), null);
   const b = M.beatsPorFrases(legendas, ["Em 1977", "Ribeirinhos viram", "Soldados"]);
   assert.deepEqual(b.map(x => [x.de, x.ate]), [[0, 4], [4, 6.4], [6.4, 9]]);
+  const bFlex = M.beatsPorFrases(legendas, ["Em 1977", "Ribeirinho viram", "Soldado"]);
+  assert.deepEqual(bFlex.map(x => [x.de, x.ate]), [[0, 4], [4, 6.4], [6.4, 9]]);
   assert.throws(() => M.beatsPorFrases(legendas, ["Frase que não existe"]), /não tem o trecho/);
 });
 
 test("conferirBeats aponta beat sem imagem, parado, repetido e com palavra que não aparece", () => {
-  const bom = { de: 0, ate: 3, fala: "x", palavrasChave: ["soldados"], mostra: ["soldados marchando"], move: ["a", "b", "c"], entrada: "pop", transicao: "rasgo" };
+  const bom = { de: 0, ate: 3, fala: "x", palavrasChave: ["soldados", "câmeras"], mostra: ["soldado marchando com camera"], move: ["a", "b", "c"], entrada: "pop", transicao: "rasgo" };
   assert.deepEqual(M.conferirBeats([bom]), []);
   const avisos = M.conferirBeats([bom, { de: 3, ate: 12, fala: "y", palavrasChave: ["câmeras"], mostra: ["um texto"], move: ["a"], entrada: "pop", transicao: "rasgo" }]).join("\n");
   for (const esperado of [/só 1 coisa/, /sem novos momentos/, /"câmeras" é falada/, /mesma transição/, /mesma entrada/]) assert.match(avisos, esperado);
   assert.match(M.conferirBeats([{ de: 0, ate: 2, move: ["a", "b", "c"] }]).join("\n"), /não diz o que aparece/);
+});
+
+test("pincéis: misturarCor aceita hex curto (#RGB) e protege contra overshoot sem gerar NaN", () => {
+  assert.equal(misturarCor("#000", "#fff", 0.5), "#808080");
+  assert.equal(misturarCor("#112233", "#aabbcc", 2), "#ffffff");
+  assert.equal(misturarCor("#112233", "#aabbcc", -1), "#000000");
+  assert.equal(misturarCor("invalido", "#ffffff", 0.5), "#808080");
 });
 
 test("caminho anda em velocidade constante e câmera interpola", () => {

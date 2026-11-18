@@ -13,6 +13,8 @@ import { gerarVitrine } from "../scripts/vitrine.mjs";
 import { verificarProduto, pertenceAoProduto } from "../scripts/verificar-produto.mjs";
 import { empacotar, empacotarZip } from "../scripts/empacotar.mjs";
 import { montarPrompt } from "../scripts/montar-prompt.mjs";
+import { requisitar } from "../scripts/lib/ambiente.mjs";
+import { avaliarMetadadosVideo, conferirVideo } from "../scripts/conferir-video.mjs";
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "motion-teste-"));
 const resposta = (corpo, { ok = true, status = 200, binario } = {}) => ({
@@ -72,6 +74,20 @@ test("transcrição: lê palavras da resposta e exige a chave", async () => {
   assert.match(pedido.url, /api\.groq\.com/);
   await assert.rejects(transcrever(audio, {}, fetchFn), /GROQ_API_KEY não foi preenchido/);
   await assert.rejects(transcrever(path.join(tmp(), "nao-existe.mp3"), { GROQ_API_KEY: "x" }, fetchFn), /não encontrado/);
+  const vazio = path.join(tmp(), "vazio.mp3");
+  fs.writeFileSync(vazio, Buffer.alloc(10));
+  await assert.rejects(transcrever(vazio, { GROQ_API_KEY: "x" }, fetchFn), /vazio ou corrompido/);
+});
+
+test("rede: requisitar repete em erro transitório (503/429) e traduz timeout sem expor segredos", async () => {
+  let tentativas = 0;
+  const r = await requisitar(async () => (++tentativas < 2 ? resposta("ocupado", { ok: false, status: 503 }) : resposta({ ok: 1 })), "https://x.y", {}, { tentativas: 2, rotulo: "Serviço" });
+  assert.equal(r.status, 200);
+  assert.equal(tentativas, 2);
+  await assert.rejects(
+    requisitar(async () => { const e = new Error("aborted"); e.name = "TimeoutError"; throw e; }, "https://x.y", {}, { tentativas: 1, timeoutMs: 5000, rotulo: "Groq" }),
+    /Groq demorou demais para responder \(limite de 5 s\)/
+  );
 });
 
 const envPublicacao = { META_API_VERSION: "v25.0", INSTAGRAM_BUSINESS_ID: "123", INSTAGRAM_ACCESS_TOKEN: SEGREDO, GITHUB_PAGES_OWNER: "dono", GITHUB_PAGES_REPO: "repo", GITHUB_PAGES_TOKEN: SEGREDO };
@@ -88,6 +104,10 @@ test("publicação: conferência aponta cada problema sem rede", () => {
   assert.ok(conferirPublicacao({ video, legenda: "x".repeat(2201), env: envPublicacao }).some(p => /2200/.test(p)));
   const mov = path.join(dir, "v.mov"); fs.writeFileSync(mov, Buffer.alloc(20000));
   assert.ok(conferirPublicacao({ video: mov, legenda: "ok", env: envPublicacao }).some(p => /\.mp4/.test(p)));
+  const capaRuim = path.join(dir, "capa.bmp"); fs.writeFileSync(capaRuim, Buffer.alloc(50));
+  const probsCapa = conferirPublicacao({ video, legenda: "ok", capa: capaRuim, env: envPublicacao });
+  assert.ok(probsCapa.some(p => /capa precisa ser \.jpg ou \.png/.test(p)));
+  assert.ok(probsCapa.some(p => /capa está vazia/.test(p)));
   assert.equal(normalizarLegenda("a\\nb\r\nc "), "a\nb\nc");
 });
 
@@ -184,10 +204,29 @@ test("verificação acusa arquivos de instância e dados reais; empacotar copia 
   escrever("documentacao/guia.md", "pasta " + ["C:", "Users", "fulano", "x"].join("\\"));
   escrever(".env.example", "GROQ_API_KEY=" + "gsk_" + "a".repeat(24) + "\n");
   escrever("marca.exemplo.json", JSON.stringify({ nome: "Marca Real", cores: {} }));
+  escrever("skills/a/SKILL.md", "use {{MARCADOR_INVENTADO}}");
   const motivos = verificarProduto(base).problemas.map(p => p.motivo).join(" | ");
-  for (const esperado of [/caminho local/, /credencial/, /GROQ_API_KEY deve ficar vazio/, /valores null/]) assert.match(motivos, esperado);
+  for (const esperado of [/caminho local/, /credencial/, /GROQ_API_KEY deve ficar vazio/, /valores null/, /marcador desconhecido \{\{MARCADOR_INVENTADO\}\}/]) assert.match(motivos, esperado);
   assert.throws(() => empacotar(path.join(tmp(), "outra"), base), /dados reais/);
   assert.throws(() => empacotar(path.join(base, "dentro"), base), /fora da pasta/);
+});
+
+test("conferir-video: valida resolução, duração, presença de áudio e assinatura MP4", () => {
+  const infoOk = { streams: [{ codec_type: "video", codec_name: "h264", width: 1080, height: 1920 }, { codec_type: "audio", codec_name: "aac" }], format: { duration: "30.2", size: "5000000" } };
+  assert.equal(avaliarMetadadosVideo(infoOk, { vertical: true, narracao: true }, { duracaoEsperada: 30 }).ok, true);
+  const infoRuim = { streams: [{ codec_type: "video", codec_name: "h264", width: 1920, height: 1080 }], format: { duration: "18.0", size: "5000000" } };
+  const r = avaliarMetadadosVideo(infoRuim, { vertical: true, narracao: true }, { duracaoEsperada: 30 });
+  assert.equal(r.ok, false);
+  assert.ok(r.problemas.some(p => /resolução 1920×1080/.test(p)));
+  assert.ok(r.problemas.some(p => /duração de 18\.0 s/.test(p)));
+  assert.ok(r.problemas.some(p => /falta trilha de áudio/.test(p)));
+
+  const dir = tmp();
+  const falsoMp4 = path.join(dir, "falso.mp4");
+  fs.writeFileSync(falsoMp4, Buffer.alloc(20_000, 1));
+  const conf = conferirVideo(falsoMp4, { projeto: { vertical: true } });
+  assert.equal(conf.ok, false);
+  assert.match(conf.problemas[0], /container MP4 válido/);
 });
 
 test("empacotar --zip gera um zip com uma pasta só e sem dados de instância", () => {

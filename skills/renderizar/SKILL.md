@@ -19,20 +19,22 @@ Não troque de aba durante a exportação: o navegador reduz a velocidade de aba
 
 ## 2. Conferir o arquivo
 
-Com `ffprobe` disponível:
+Rode o verificador técnico do vídeo:
 
 ```
-ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate:format=duration,size -of json saida/<nome>/video.mp4
+node scripts/conferir-video.mjs saida/<nome>/video.mp4
 ```
 
-Verifique e relate:
+Se a exportação do navegador tiver saído sem a voz da narração, junte o áudio de `entrada/narracao.mp3` com `node scripts/conferir-video.mjs saida/<nome>/video.mp4 --juntar-audio`.
 
-- resolução igual à configurada (1080 × 1920 no vertical, 1920 × 1080 no horizontal);
+O comando confere (usando `ffprobe` quando disponível) e você deve relatar:
+
+- assinatura MP4 real e resolução igual à configurada (1080 × 1920 no vertical, 1920 × 1080 no horizontal);
 - duração igual à da narração, ou à configurada quando não há voz, com tolerância de meio segundo;
 - trilha de áudio presente quando há narração, música ou efeitos;
 - tamanho abaixo de 95 MB, limite para publicar pelo `/{{PREFIXO}}-publicar`.
 
-Sem `ffprobe`, diga que não foi possível conferir e peça ao usuário para assistir ao arquivo.
+Sem `ffprobe`, diga que não foi possível medir os fluxos internos e peça ao usuário para assistir ao arquivo.
 
 ## 3. Se algo estiver errado
 

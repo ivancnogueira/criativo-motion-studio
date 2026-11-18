@@ -150,8 +150,11 @@ test("estiloLegenda inválido dá erro claro; o campo está no exemplo, no AGENT
   assert.equal(validarProjeto(base, { estilos }).estiloLegenda, "bloco");
   assert.throws(() => validarProjeto({ ...base, estiloLegenda: "neon" }, { estilos }), /estiloLegenda "neon" não existe/);
   assert.ok(NOMES_DE_LEGENDA.includes(JSON.parse(ler("projeto.exemplo.json")).estiloLegenda));
-  const agents = ler("AGENTS.md"), painel = ler("painel/app.js");
-  for (const nome of NOMES_DE_LEGENDA) assert.ok(agents.includes("`" + nome + "`"), `AGENTS.md cita ${nome}`);
+  const agents = ler("AGENTS.md"), painel = ler("painel/app.js"), skillLegendas = ler("skills/legendas/SKILL.md");
+  for (const nome of NOMES_DE_LEGENDA) {
+    assert.ok(agents.includes("`" + nome + "`"), `AGENTS.md cita ${nome}`);
+    assert.ok(skillLegendas.includes("`" + nome + "`"), `skills/legendas/SKILL.md cita ${nome}`);
+  }
   assert.match(painel, /estiloLegenda/);
   assert.deepEqual(indice.legendas.map(l => l.id), NOMES_DE_LEGENDA);
 });
