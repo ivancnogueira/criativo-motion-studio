@@ -26,12 +26,12 @@ function alcancar(dx, dy, H) {
   return [(Math.atan2(dx, dy) - Math.atan2(b * Math.sin(c), a + b * Math.cos(c))) / RAD, c / RAD];
 }
 const maoPor = (p, pt, H, pele) => p.circulo(pt[0], pt[1], H * .04, pele, L);
-/** Cabelo escuro que aparece em todo estilo: no pixel, "tinta" some no fundo, então vira um grafite que se destaca dele. */
-const cabeloEscuro = p => p.estilo === "pixel" ? misturarCor(p.cor("sombra"), p.cor("claro"), .2) : "tinta";
+/** Cabelo escuro que aparece em todo estilo: no pixel e toon, "tinta" some no fundo, então vira um grafite que se destaca dele. */
+const cabeloEscuro = p => (p.estilo === "pixel" || p.estilo === "toon") ? misturarCor(p.cor("sombra"), p.cor("claro"), .2) : "tinta";
 /** Cabelo e barba grisalhos (cinza-claro) em qualquer estilo. */
-const grisalho = p => p.estilo === "traco" || p.estilo === "vidro" ? misturarCor(p.cor("tinta"), p.cor("fundo"), .18) : misturarCor(p.cor("claro"), p.cor("tinta"), .3);
+const grisalho = p => p.tintaClara ? misturarCor(p.cor("tinta"), p.cor("fundo"), .18) : misturarCor(p.cor("claro"), p.cor("tinta"), .3);
 /** Traje espacial branco ou cinza-claro: no flat e no papel o branco puro sumiria no fundo claro. */
-const trajeEspacial = p => p.estilo === "traco" || p.estilo === "vidro" ? "tinta" : p.estilo === "pixel" ? "claro" : misturarCor(p.cor("claro"), p.cor("tinta"), .17);
+const trajeEspacial = p => p.tintaClara ? "tinta" : (p.estilo === "pixel" || p.estilo === "toon") ? "claro" : misturarCor(p.cor("claro"), p.cor("tinta"), .17);
 
 /* ================================================================ PENTEADOS (p, r, cor) */
 const calota = (p, r, cor, a0 = 168, a1 = 345, k = 1.07) => p.forma(arcoP(-r * .04, -r * .06, r * k, a0, a1), cor, D);

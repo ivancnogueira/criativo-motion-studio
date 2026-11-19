@@ -23,11 +23,11 @@ import { clamp } from "../movimento.js";
 export const TAU = Math.PI * 2;
 const HEX = /^#[0-9a-f]{6}$/i;
 /** Tom mais escuro de uma cor (papel ou hex), para o lado de trás ou a sombra de uma peça. */
-export const escuro = (p, cor, k = .2) => { const h = p.cor(cor); return HEX.test(h) ? misturarCor(h, p.cor("tinta") === h ? "#000000" : (p.estilo === "traco" || p.estilo === "vidro" ? p.cor("fundo") : "#000000"), k) : h; };
+export const escuro = (p, cor, k = .2) => { const h = p.cor(cor); return HEX.test(h) ? misturarCor(h, p.cor("tinta") === h ? "#000000" : (p.tintaClara ? p.cor("fundo") : "#000000"), k) : h; };
 /** Tom mais claro de uma cor (papel ou hex), para brilho e destaque. */
 export const maisClaro = (p, cor, k = .25) => { const h = p.cor(cor); return HEX.test(h) ? misturarCor(h, "#FFFFFF", k) : h; };
-/** Cor que aparece sobre o fundo em qualquer estilo, para traços e brilhos soltos (no pixel, "tinta" some no fundo). */
-export const sobreFundo = p => p.estilo === "pixel" ? "claro" : "tinta";
+/** Cor que aparece sobre o fundo em qualquer estilo, para traços e brilhos soltos (no pixel/toon, "tinta" some no fundo). */
+export const sobreFundo = p => (p.estilo === "pixel" || p.estilo === "toon") ? "claro" : "tinta";
 /** Pontos de um arco de círculo entre dois ângulos em graus (0 = direita, 90 = baixo). */
 export function arcoP(cx, cy, r, a0, a1, n = 0) { n = n || Math.max(8, Math.round(Math.abs(a1 - a0) / 12)); return Array.from({ length: n + 1 }, (_, i) => { const a = (a0 + (a1 - a0) * i / n) * Math.PI / 180; return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; }); }
 /** Pontos de uma estrela de n pontas (R raio de fora, r raio de dentro). */

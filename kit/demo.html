@@ -9,34 +9,39 @@
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
-  body { margin: 0; background: #10141c; color: #e8edf5; font: 15px/1.45 Inter, "Segoe UI", Arial, sans-serif; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; padding: 20px; min-height: 100vh; }
-  .palco { display: flex; align-items: flex-start; justify-content: center; min-width: 0; }
-  canvas { max-width: 100%; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,.5); background: #000; }
-  body[data-aba=demo] canvas { max-height: calc(100vh - 40px); }
+  body { margin: 0; background: #0A0D16; color: #F1F5F9; font: 14px/1.5 Inter, "Segoe UI", Arial, sans-serif; display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+  aside { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; align-self: start; height: 100vh; overflow: auto; padding: 18px 16px; background: #0E121E; border-right: 1px solid rgba(148,163,184,.16); }
+  .palco { display: flex; align-items: flex-start; justify-content: center; min-width: 0; padding: 24px; }
+  canvas { max-width: 100%; border-radius: 16px; border: 1px solid rgba(148,163,184,.18); box-shadow: 0 16px 48px rgba(0,0,0,.5); background: #000; }
+  body[data-aba=demo] canvas { max-height: calc(100vh - 48px); }
   body[data-aba=galeria] canvas, body[data-aba=personagens] canvas { cursor: pointer; }
-  aside { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; align-self: start; max-height: calc(100vh - 40px); overflow: auto; padding-right: 4px; }
-  h1 { font-size: 18px; margin: 0; } p { margin: 0; color: #a9b4c6; } h2 { font-size: 15px; margin: 0 0 4px; }
-  .grupo { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-  button { font: inherit; font-weight: 600; padding: 7px 11px; border-radius: 8px; border: 1px solid #2c3648; background: #1a2130; color: inherit; cursor: pointer; }
-  button[aria-pressed="true"], button[aria-selected="true"] { background: #3b82f6; border-color: #3b82f6; color: #fff; }
-  button:focus-visible, input:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
-  button small { opacity: .7; font-weight: 600; }
-  .abas { display: flex; gap: 6px; }
-  .abas button { flex: 1; }
-  input[type=range] { width: 100%; }
-  input[type=search], input[type=text] { width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid #2c3648; background: #0c1018; color: inherit; }
-  code { background: #1a2130; padding: 1px 5px; border-radius: 4px; font-size: 13px; word-break: break-word; }
-  .ficha { border: 1px solid #2c3648; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .ficha pre { margin: 0; white-space: pre-wrap; word-break: break-word; background: #0c1018; padding: 8px; border-radius: 6px; font: 12.5px/1.45 "JetBrains Mono", Consolas, monospace; }
+  h1 { font-size: 17px; margin: 0; } p { margin: 0; color: #94A3B8; font-size: 13px; } h2 { font-size: 15px; margin: 0 0 4px; }
+  .link-estudio { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 10px; background: rgba(99,102,241,.16); color: #A5B4FC; text-decoration: none; font-weight: 600; font-size: 12.5px; border: 1px solid rgba(99,102,241,.3); }
+  .link-estudio:hover { background: rgba(99,102,241,.28); color: #fff; }
+  .grupo { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  button { font: inherit; font-weight: 600; font-size: 12.5px; padding: 6px 10px; border-radius: 9px; border: 1px solid rgba(148,163,184,.22); background: #161C2E; color: inherit; cursor: pointer; }
+  button:hover { border-color: rgba(165,180,252,.5); }
+  button[aria-pressed="true"], button[aria-selected="true"] { background: #6366F1; border-color: #6366F1; color: #fff; }
+  button:focus-visible, input:focus-visible { outline: 2px solid #14B8A6; outline-offset: 2px; }
+  button small { opacity: .75; font-weight: 600; }
+  .abas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  input[type=range] { width: 100%; accent-color: #6366F1; }
+  input[type=search], input[type=text] { width: 100%; font: inherit; padding: 8px 10px; border-radius: 9px; border: 1px solid rgba(148,163,184,.22); background: #0A0D16; color: inherit; }
+  code { background: #161C2E; padding: 1px 6px; border-radius: 5px; font-size: 12px; word-break: break-word; }
+  .ficha { border: 1px solid rgba(148,163,184,.22); background: #161C2E; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .ficha pre { margin: 0; white-space: pre-wrap; word-break: break-word; background: #0A0D16; padding: 8px; border-radius: 8px; font: 12px/1.45 "JetBrains Mono", Consolas, monospace; }
   .pager { display: flex; align-items: center; gap: 8px; }
   [hidden] { display: none !important; }
-  @media (max-width: 1100px) { body { grid-template-columns: 1fr; } aside { position: static; max-height: none; } }
+  @media (max-width: 1024px) { body { grid-template-columns: 1fr; } aside { position: static; height: auto; border-right: 0; border-bottom: 1px solid rgba(148,163,184,.16); } }
 </style>
 </head>
 <body data-aba="galeria">
-<div class="palco"><canvas id="tela" aria-label="Demonstração do kit de movimento"></canvas></div>
 <aside>
-  <h1>Kit de movimento</h1>
+  <div>
+    <h1>Kit de movimento</h1>
+    <p>Estúdio &amp; biblioteca 2D / 3D</p>
+  </div>
+  <a class="link-estudio" href="/galeria">Abrir Dashboard Unificado (/galeria) →</a>
   <div class="abas" role="tablist">
     <button role="tab" data-aba="galeria">Galeria</button>
     <button role="tab" data-aba="personagens">Personagens</button>
@@ -88,6 +93,7 @@
   </section>
   <p>Guia em <code>kit/LEIA-ME.md</code>.</p>
 </aside>
+<div class="palco"><canvas id="tela" aria-label="Demonstração do kit de movimento"></canvas></div>
 <script type="module">
 import { criarExemplo } from "./exemplo.js";
 import { tocar } from "./tocador.js";
@@ -98,7 +104,25 @@ import * as K from "./pecas.js";
 import { CICLOS } from "./movimento.js";
 
 const $ = id => document.getElementById(id);
-const ESTILOS = [["papel", "Recorte de Papel"], ["flat", "Vetor Flat"], ["pixel", "Pixel Art"], ["traco", "Isométrico em Linha"], ["vidro", "Vidro Líquido"]];
+const ESTILOS = [
+  ["papel", "Recorte de Papel"],
+  ["flat", "Vetor Flat"],
+  ["pixel", "Pixel Art"],
+  ["traco", "Isométrico em Linha"],
+  ["vidro", "Vidro Líquido"],
+  ["3d", "3D Toy & Massinha"],
+  ["toon", "3D Cel-Shading"],
+  ["neon", "3D Neon & HUD"],
+  ["aquarela", "Aquarela"],
+  ["riso", "Risografia"],
+  ["retro", "Rubber Hose 1930"],
+  ["quadro", "Quadro Branco"],
+  ["bento", "Bento UI"],
+  ["cinetico", "Tipografia Cinética"],
+  ["mapa", "Mapa & Satélite"],
+  ["colagem", "Colagem Editorial"],
+  ["bauhaus", "Bauhaus"],
+];
 const par = new URLSearchParams(location.search);
 const indice = await (await fetch("./indice.json")).json();
 const norm = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();

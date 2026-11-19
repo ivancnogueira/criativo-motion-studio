@@ -14,9 +14,42 @@ export const PALETAS = {
   pixel: { fundo: "#141528", tinta: "#0C0D1C", claro: "#F2F0DA", c1: "#4A86D4", c2: "#F47E74", c3: "#73D9C9", c4: "#F5AE69", sombra: "#282B4D" },
   traco: { fundo: "#0C1726", tinta: "#F6F5EF", claro: "#1A2A3A", c1: "#38D8D2", c2: "#FFAF65", c3: "#648CFF", c4: "#A8F2D2", sombra: "rgba(0,0,0,.4)" },
   vidro: { fundo: "#0A1120", tinta: "#F2F7FF", claro: "#15243C", c1: "#599CFF", c2: "#FFC7AB", c3: "#65D9D3", c4: "#B8ABFF", sombra: "rgba(0,0,0,.35)" },
+  "3d": { fundo: "#ECEEF8", tinta: "#1E243B", claro: "#FFFFFF", c1: "#5B6CFF", c2: "#FF785A", c3: "#14C8A8", c4: "#FFC84D", sombra: "rgba(30,36,59,.22)" },
+  toon: { fundo: "#18132B", tinta: "#0D0917", claro: "#FFF8EC", c1: "#FF4D6D", c2: "#FFD166", c3: "#38D6FF", c4: "#9B72FF", sombra: "rgba(13,9,23,.48)" },
+  neon: { fundo: "#070816", tinta: "#E9F4FF", claro: "#111734", c1: "#00F5D4", c2: "#FF3CAC", c3: "#6C63FF", c4: "#FFE66D", sombra: "rgba(0,245,212,.25)" },
+  aquarela: { fundo: "#FAF6EE", tinta: "#2B303A", claro: "#FFFDF8", c1: "#4C7EA8", c2: "#E07A5F", c3: "#81B29A", c4: "#F2CC8F", sombra: "rgba(43,48,58,.14)" },
+  riso: { fundo: "#F4EFE4", tinta: "#1D264B", claro: "#FFFBF2", c1: "#FF48B0", c2: "#FF6C2F", c3: "#00A95C", c4: "#0078BF", sombra: "rgba(29,38,75,.20)" },
+  retro: { fundo: "#F1E8D6", tinta: "#181412", claro: "#FBF7EE", c1: "#D95D39", c2: "#E8B954", c3: "#5C8078", c4: "#967AA1", sombra: "rgba(24,20,18,.28)" },
+  quadro: { fundo: "#FBFBF9", tinta: "#1E2430", claro: "#FFFFFF", c1: "#2563EB", c2: "#EF4444", c3: "#10B981", c4: "#F59E0B", sombra: "rgba(30,36,48,.14)" },
+  bento: { fundo: "#0C101B", tinta: "#F3F6FC", claro: "#171E2E", c1: "#6366F1", c2: "#22D3EE", c3: "#34D399", c4: "#F59E0B", sombra: "rgba(0,0,0,.42)" },
+  cinetico: { fundo: "#111116", tinta: "#F8F8F4", claro: "#1E1E28", c1: "#FF3B30", c2: "#FFD60A", c3: "#30D158", c4: "#64D2FF", sombra: "rgba(0,0,0,.45)" },
+  mapa: { fundo: "#0B1A28", tinta: "#F0F6FA", claro: "#162B3D", c1: "#38BDF8", c2: "#F97316", c3: "#4ADE80", c4: "#FACC15", sombra: "rgba(0,0,0,.42)" },
+  colagem: { fundo: "#EFEAE0", tinta: "#1B1B1D", claro: "#FCF9F2", c1: "#E11D48", c2: "#FACC15", c3: "#0EA5E9", c4: "#475569", sombra: "rgba(27,27,29,.28)" },
+  bauhaus: { fundo: "#F4F1EA", tinta: "#111111", claro: "#FFFFFF", c1: "#D92B2B", c2: "#F2B705", c3: "#1D4ED8", c4: "#111111", sombra: "rgba(17,17,17,.35)" },
 };
 /** Qual pincel serve de referência para cada estilo nativo. Estilos criados pelo usuário: escolha o mais próximo. */
-export const PINCEL_DO_ESTILO = { "recorte-de-papel": "papel", "vetor-flat": "flat", "pixel-art-8-bit": "pixel", "isometrico-em-linha": "traco", "vidro-liquido": "vidro" };
+export const PINCEL_DO_ESTILO = {
+  "recorte-de-papel": "papel",
+  "vetor-flat": "flat",
+  "pixel-art-8-bit": "pixel",
+  "isometrico-em-linha": "traco",
+  "vidro-liquido": "vidro",
+  "3d-toy-clay": "3d",
+  "3d-cel-anime": "toon",
+  "3d-neon-cyber": "neon",
+  "aquarela": "aquarela",
+  "risografia": "riso",
+  "rubber-hose": "retro",
+  "quadro-branco": "quadro",
+  "bento-ui": "bento",
+  "tipografia-cinetica": "cinetico",
+  "mapa-documentario": "mapa",
+  "colagem-mista": "colagem",
+  "bauhaus-suico": "bauhaus",
+};
+export const NOMES_DE_PINCEL = Object.keys(PALETAS);
+const TINTA_CLARA = new Set(["traco", "vidro", "neon", "bento", "cinetico", "mapa"]);
+const FUNDO_ESCURO = new Set(["pixel", "toon", "traco", "vidro", "neon", "bento", "cinetico", "mapa"]);
 const TONS_DE_PELE = ["#F2C9A5", "#D9A37A", "#B97A56", "#8A5A3C", "#F6D7BD", "#6B4430"];
 
 /* ---------------------------------------------------------------- geometria */
@@ -76,14 +109,34 @@ function fibra() {
 export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel = 6 } = {}) {
   const tipo = PINCEL_DO_ESTILO[estilo] || (PALETAS[estilo] ? estilo : "flat");
   const cores = { ...PALETAS[tipo], ...paleta };
-  const FONTE = { papel: '"Archivo", "Arial Narrow", Arial, sans-serif', flat: '"Inter", "Segoe UI", Arial, sans-serif', pixel: '"Press Start 2P", "Courier New", monospace', traco: '"JetBrains Mono", "Courier New", monospace', vidro: '"Inter", "Segoe UI", Arial, sans-serif' }[tipo];
+  const FONTE = {
+    papel: '"Archivo", "Arial Narrow", Arial, sans-serif',
+    flat: '"Inter", "Segoe UI", Arial, sans-serif',
+    pixel: '"Press Start 2P", "Courier New", monospace',
+    traco: '"JetBrains Mono", "Courier New", monospace',
+    vidro: '"Inter", "Segoe UI", Arial, sans-serif',
+    "3d": '"Space Grotesk", "Inter", Arial, sans-serif',
+    toon: '"Archivo", "Inter", Arial, sans-serif',
+    neon: '"JetBrains Mono", "Courier New", monospace',
+    aquarela: 'Georgia, "Times New Roman", serif',
+    riso: '"Archivo", "Courier Prime", monospace',
+    retro: '"Archivo", "Arial Narrow", Arial, sans-serif',
+    quadro: '"Courier Prime", "Comic Sans MS", sans-serif',
+    bento: '"Inter", "Segoe UI", Arial, sans-serif',
+    cinetico: '"Archivo", "Inter", Arial, sans-serif',
+    mapa: '"JetBrains Mono", "Courier New", monospace',
+    colagem: '"Archivo", "Arial Narrow", Arial, sans-serif',
+    bauhaus: '"Space Grotesk", "Archivo", Arial, sans-serif',
+  }[tipo] || '"Inter", "Segoe UI", Arial, sans-serif';
   let real = null, base = null, baixa = null, W = 0, H = 0, tempo = 0, filaTexto = [], contador = 0;
   const quant = new Map(); let usadas = new Map();
 
   const p = {
     estilo: tipo, cores, fonte: FONTE, c: null, largura: 0, altura: 0,
+    tintaClara: TINTA_CLARA.has(tipo),
+    fundoEscuro: FUNDO_ESCURO.has(tipo),
     /** quadros por segundo da cadência de stop-motion do estilo (0 = movimento contínuo) */
-    qps: { papel: 12, pixel: 10 }[tipo] || 0,
+    qps: { papel: 12, pixel: 10, retro: 12, riso: 12 }[tipo] || 0,
     /** 0..1: quanto do traçado está revelado (ver p.tracar) */
     revelar: 1,
     /** tempo no ritmo do estilo: em passos no papel e no pixel, contínuo nos outros */
@@ -122,32 +175,64 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     /** Fundo do estilo, com vida própria. */
     fundo(t = tempo) {
       const c = p.c;
-      if (tipo === "papel") {
+      if (tipo === "papel" || tipo === "colagem" || tipo === "aquarela" || tipo === "riso" || tipo === "retro" || tipo === "bauhaus") {
         c.fillStyle = cores.fundo; c.fillRect(0, 0, W, H);
-        c.save(); c.globalCompositeOperation = "multiply"; c.globalAlpha = .6; c.fillStyle = c.createPattern(fibra(), "repeat"); c.fillRect(0, 0, W, H); c.restore();
-        c.save(); c.strokeStyle = rgba(cores.tinta, .06); c.lineWidth = 2; c.beginPath();
-        for (let x = 60; x < W; x += 60) { c.moveTo(x, 0); c.lineTo(x, H); } for (let y = 60; y < H; y += 60) { c.moveTo(0, y); c.lineTo(W, y); } c.stroke(); c.restore();
-      } else if (tipo === "flat") {
+        if (tipo === "papel" || tipo === "aquarela" || tipo === "colagem") {
+          c.save(); c.globalCompositeOperation = "multiply"; c.globalAlpha = tipo === "aquarela" ? .45 : .6; c.fillStyle = c.createPattern(fibra(), "repeat"); c.fillRect(0, 0, W, H); c.restore();
+        }
+        if (tipo === "papel") {
+          c.save(); c.strokeStyle = rgba(cores.tinta, .06); c.lineWidth = 2; c.beginPath();
+          for (let x = 60; x < W; x += 60) { c.moveTo(x, 0); c.lineTo(x, H); } for (let y = 60; y < H; y += 60) { c.moveTo(0, y); c.lineTo(W, y); } c.stroke(); c.restore();
+        } else if (tipo === "aquarela") {
+          [["c1", .25, .24], ["c2", .78, .66], ["c3", .45, .82]].forEach(([n, x, y], i) => {
+            const cx = W * x + Math.sin(t * .25 + i) * 24, cy = H * y + Math.cos(t * .2 + i) * 24, R = Math.max(W, H) * .38;
+            const gr = c.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, rgba(cores[n], .16)); gr.addColorStop(1, rgba(cores[n], 0)); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+          });
+        } else if (tipo === "riso") {
+          const r = rng(semente + 19);
+          c.save(); c.fillStyle = rgba(cores.c4, .09);
+          for (let x = 24; x < W; x += 44) for (let y = 24; y < H; y += 44) { c.beginPath(); c.arc(x + (r() - .5) * 4, y + (r() - .5) * 4, 2.2, 0, 6.2832); c.fill(); }
+          c.restore();
+        } else if (tipo === "bauhaus") {
+          c.save(); c.strokeStyle = rgba(cores.tinta, .07); c.lineWidth = 2; c.beginPath();
+          for (let x = 90; x < W; x += 90) { c.moveTo(x, 0); c.lineTo(x, H); } c.stroke(); c.restore();
+        }
+      } else if (tipo === "quadro") {
+        c.fillStyle = cores.fundo; c.fillRect(0, 0, W, H);
+        c.save(); c.fillStyle = rgba(cores.c1, .12);
+        for (let x = 40; x < W; x += 48) for (let y = 40; y < H; y += 48) { c.beginPath(); c.arc(x, y, 1.5, 0, 6.2832); c.fill(); }
+        c.restore();
+      } else if (tipo === "3d") {
+        const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, cores.claro); g.addColorStop(1, misturarCor(cores.fundo, cores.c1, .14));
+        c.fillStyle = g; c.fillRect(0, 0, W, H);
+        const rg = c.createRadialGradient(W * .35, H * .25, 0, W * .5, H * .45, Math.max(W, H) * .75);
+        rg.addColorStop(0, "rgba(255,255,255,.55)"); rg.addColorStop(1, "rgba(255,255,255,0)");
+        c.fillStyle = rg; c.fillRect(0, 0, W, H);
+      } else if (tipo === "flat" || tipo === "cinetico") {
         c.fillStyle = cores.fundo; c.fillRect(0, 0, W, H);
         const r = rng(semente + 3);
-        for (let i = 0; i < 7; i++) { const x = r() * W, y = r() * H, s = 90 + r() * 220; c.fillStyle = rgba(cores[["c1", "c3", "c4"][i % 3]], .07); c.beginPath(); c.arc(x + Math.sin(t * .3 + i) * 30, y + Math.cos(t * .25 + i * 2) * 30, s, 0, 6.2832); c.fill(); }
+        for (let i = 0; i < 7; i++) { const x = r() * W, y = r() * H, s = 90 + r() * 220; c.fillStyle = rgba(cores[["c1", "c3", "c4"][i % 3]], tipo === "cinetico" ? .06 : .07); c.beginPath(); c.arc(x + Math.sin(t * .3 + i) * 30, y + Math.cos(t * .25 + i * 2) * 30, s, 0, 6.2832); c.fill(); }
       } else if (tipo === "pixel") {
         usar(cores.fundo); usar(cores.sombra); usar(cores.claro);
         c.fillStyle = cores.fundo; c.fillRect(0, 0, W, H);
         const r = rng(semente + 5), tp = passo(t, 4);
         for (let i = 0; i < 70; i++) { const x = r() * W, y = r() * H * .8, liga = Math.sin(tp * 2 + i * 1.7) > .2; c.fillStyle = liga ? cores.claro : cores.sombra; c.fillRect(Math.round(x / pixel) * pixel, Math.round(y / pixel) * pixel, pixel, pixel); }
-      } else if (tipo === "traco") {
+      } else if (tipo === "traco" || tipo === "neon" || tipo === "mapa") {
         c.fillStyle = cores.fundo; c.fillRect(0, 0, W, H);
-        c.save(); c.strokeStyle = rgba(cores.tinta, .055); c.lineWidth = 1.5; c.beginPath();
+        c.save(); c.strokeStyle = rgba(tipo === "neon" ? cores.c1 : cores.tinta, tipo === "neon" ? .08 : .055); c.lineWidth = 1.5; c.beginPath();
         const g = 90, d = (t * 12) % g;
-        for (let x = -H; x < W + H; x += g) { c.moveTo(x + d, 0); c.lineTo(x + d + H * .577 * 2, H); c.moveTo(x + d, 0); c.lineTo(x + d - H * .577 * 2, H); }
+        if (tipo === "mapa") {
+          for (let x = 0; x < W; x += 80) { c.moveTo(x, 0); c.lineTo(x, H); } for (let y = 0; y < H; y += 80) { c.moveTo(0, y); c.lineTo(W, y); }
+        } else {
+          for (let x = -H; x < W + H; x += g) { c.moveTo(x + d, 0); c.lineTo(x + d + H * .577 * 2, H); c.moveTo(x + d, 0); c.lineTo(x + d - H * .577 * 2, H); }
+        }
         c.stroke(); c.restore();
       } else {
         const g = c.createLinearGradient(0, 0, W * .3, H); g.addColorStop(0, cores.claro); g.addColorStop(1, cores.fundo); c.fillStyle = g; c.fillRect(0, 0, W, H);
         c.save(); c.globalCompositeOperation = "lighter";
         [["c1", .22, .28], ["c4", .8, .5], ["c3", .3, .8]].forEach(([n, x, y], i) => {
           const cx = W * x + Math.sin(t * .35 + i * 2) * W * .12, cy = H * y + Math.cos(t * .28 + i) * H * .06, R = Math.max(W, H) * .42;
-          const gr = c.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, rgba(cores[n], .34)); gr.addColorStop(1, rgba(cores[n], 0)); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+          const gr = c.createRadialGradient(cx, cy, 0, cx, cy, R); gr.addColorStop(0, rgba(cores[n], tipo === "toon" ? .18 : .34)); gr.addColorStop(1, rgba(cores[n], 0)); c.fillStyle = gr; c.fillRect(0, 0, W, H);
         });
         c.restore();
       }
@@ -159,26 +244,57 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
       if (pts.length < 3) return;
       const c = p.c, f = p.cor(cor); sd = sd ?? ++contador;
       const tracar = (lista) => { c.beginPath(); for (const pl of lista) { pl.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); } };
-      if (tipo === "papel") {
+      if (tipo === "papel" || tipo === "colagem") {
         const [x0, y0, x1, y1] = caixa(pts), tam = Math.max(x1 - x0, y1 - y0);
         const j = liso ? 0 : clamp(tam / 90, .5, 2.4), lista = [pts, ...furos].map((q, i) => j ? rasgar(q, sd * 31 + i, j, clamp(tam / 7, 9, 28)) : q);
-        c.save(); if (prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = prof * 9; c.shadowOffsetX = prof * 2.5; c.shadowOffsetY = prof * 4.5; }
+        c.save(); if (prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = tipo === "colagem" ? prof * 4 : prof * 9; c.shadowOffsetX = prof * (tipo === "colagem" ? 5 : 2.5); c.shadowOffsetY = prof * (tipo === "colagem" ? 6 : 4.5); }
         tracar(lista); c.fillStyle = f; c.fill("evenodd"); c.restore();
         if (tam > 46) { c.save(); tracar(lista); c.globalCompositeOperation = "multiply"; c.globalAlpha *= .5; c.fillStyle = c.createPattern(fibra(), "repeat"); c.fill("evenodd"); c.restore(); }
         c.save(); c.translate(-1.2, -1.2); tracar(lista); c.strokeStyle = "rgba(255,250,240,.55)"; c.lineWidth = 2; c.stroke(); c.restore();
-      } else if (tipo === "flat") {
-        c.save(); if (prof > 1) { c.shadowColor = cores.sombra; c.shadowBlur = 0; c.shadowOffsetX = prof * 4; c.shadowOffsetY = prof * 6; }
+      } else if (tipo === "3d") {
+        const [x0, y0, x1, y1] = caixa(pts);
+        c.save(); if (prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = prof * 14; c.shadowOffsetX = prof * 4; c.shadowOffsetY = prof * 9; }
+        const g = c.createLinearGradient(x0, y0, x1, y1);
+        g.addColorStop(0, /^#[0-9a-f]{6}$/i.test(f) ? misturarCor(f, "#FFFFFF", .24) : f);
+        g.addColorStop(.58, f);
+        g.addColorStop(1, /^#[0-9a-f]{6}$/i.test(f) ? misturarCor(f, "#0F1428", .22) : f);
+        tracar([pts, ...furos]); c.fillStyle = g; c.fill("evenodd"); c.restore();
+        c.save(); tracar([pts, ...furos]); c.strokeStyle = "rgba(255,255,255,.32)"; c.lineWidth = 1.6; c.stroke(); c.restore();
+      } else if (tipo === "toon") {
+        c.save(); if (prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = 0; c.shadowOffsetX = prof * 4; c.shadowOffsetY = prof * 6; }
         tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        c.save(); c.lineJoin = "round"; tracar([pts, ...furos]); c.strokeStyle = cores.tinta; c.lineWidth = 3; c.stroke(); c.restore();
+      } else if (tipo === "aquarela") {
+        const [x0, y0, x1, y1] = caixa(pts), tam = Math.max(x1 - x0, y1 - y0);
+        const lista = liso ? [pts, ...furos] : [pts, ...furos].map((q, i) => rasgar(q, sd * 17 + i, clamp(tam / 110, .4, 1.8), clamp(tam / 6, 12, 32)));
+        c.save(); c.globalAlpha *= .82; tracar(lista); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        c.save(); c.globalAlpha *= .45; tracar(lista); c.strokeStyle = /^#[0-9a-f]{6}$/i.test(f) ? misturarCor(f, cores.tinta, .25) : f; c.lineWidth = 2.5; c.stroke(); c.restore();
+      } else if (tipo === "riso") {
+        const r = rng(sd + 9), ox = (r() - .5) * 4, oy = (r() - .5) * 4;
+        c.save(); c.translate(ox, oy); c.globalAlpha *= .88; tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        c.save(); tracar([pts, ...furos]); c.strokeStyle = rgba(cores.tinta, .35); c.lineWidth = 1.5; c.stroke(); c.restore();
+      } else if (tipo === "retro") {
+        c.save(); if (prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = 0; c.shadowOffsetX = prof * 3; c.shadowOffsetY = prof * 4; }
+        tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        c.save(); c.lineJoin = "round"; tracar([pts, ...furos]); c.strokeStyle = cores.tinta; c.lineWidth = 3.2; c.stroke(); c.restore();
+      } else if (tipo === "quadro") {
+        c.save(); c.globalAlpha *= .88; tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        const esboco = liso ? [pts, ...furos] : [pts, ...furos].map((q, i) => rasgar(q, sd * 13 + i, 1.2, 24));
+        c.save(); c.lineJoin = c.lineCap = "round"; tracar(esboco); c.strokeStyle = cores.tinta; c.lineWidth = 2.6; c.stroke(); c.restore();
+      } else if (tipo === "flat" || tipo === "bento" || tipo === "cinetico" || tipo === "mapa" || tipo === "bauhaus") {
+        c.save(); if (prof > 1 || tipo === "bauhaus" && prof > 0) { c.shadowColor = cores.sombra; c.shadowBlur = tipo === "bento" || tipo === "mapa" ? prof * 12 : 0; c.shadowOffsetX = prof * 4; c.shadowOffsetY = prof * 6; }
+        tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd"); c.restore();
+        if (tipo === "bento" || tipo === "mapa") { c.save(); tracar([pts, ...furos]); c.strokeStyle = "rgba(255,255,255,.18)"; c.lineWidth = 1.5; c.stroke(); c.restore(); }
       } else if (tipo === "pixel") {
         usar(f); tracar([pts, ...furos]); c.fillStyle = f; c.fill("evenodd");
         // "tinta" é quase a cor do fundo no pixel: forma grande nessa cor ganha borda de um pixel na cor de sombra
         if (f === cores.tinta) { const [x0, y0, x1, y1] = caixa(pts); if (Math.max(x1 - x0, y1 - y0) > pixel * 7) { usar(cores.sombra); c.save(); c.lineJoin = "miter"; c.strokeStyle = cores.sombra; c.lineWidth = pixel * 1.4; c.stroke(); c.restore(); } }
-      } else if (tipo === "traco") {
+      } else if (tipo === "traco" || tipo === "neon") {
         const L = perimetro(pts), k = clamp(p.revelar);
         c.save(); c.lineJoin = c.lineCap = "round";
-        tracar([pts, ...furos]); c.globalAlpha *= clamp((k - .55) / .45); c.fillStyle = misturarCor(cores.fundo, f, .16); c.fill("evenodd"); c.restore();
+        tracar([pts, ...furos]); c.globalAlpha *= clamp((k - .55) / .45); c.fillStyle = misturarCor(cores.fundo, f, tipo === "neon" ? .26 : .16); c.fill("evenodd"); c.restore();
         c.save(); c.lineJoin = c.lineCap = "round"; tracar([pts, ...furos]); if (k < 1) c.setLineDash([L * k, L * 2]);
-        const ft = visivel(f); c.shadowColor = ft; c.shadowBlur = 10; c.strokeStyle = ft; c.lineWidth = 3.5; c.stroke(); c.restore();
+        const ft = visivel(f); c.shadowColor = ft; c.shadowBlur = tipo === "neon" ? 16 : 10; c.strokeStyle = ft; c.lineWidth = 3.5; c.stroke(); c.restore();
       } else {
         const [x0, y0, x1, y1] = caixa(pts);
         c.save(); if (prof > 0) { c.shadowColor = rgba(f, .45); c.shadowBlur = 26 * prof; c.shadowOffsetY = 8 * prof; }
@@ -202,7 +318,7 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
       const c = p.c, f = visivel(p.cor(cor)); if (tipo === "pixel") usar(f);
       c.save(); c.lineJoin = c.lineCap = tipo === "pixel" ? "butt" : "round"; c.strokeStyle = f; c.lineWidth = tipo === "pixel" ? Math.max(pixel, Math.round(w / pixel) * pixel) : w;
       if (tracejado) { c.setLineDash(tracejado); c.lineDashOffset = -desloc; }
-      if (tipo === "traco") { c.shadowColor = f; c.shadowBlur = 10; }
+      if (tipo === "traco" || tipo === "neon") { c.shadowColor = f; c.shadowBlur = tipo === "neon" ? 14 : 10; }
       c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); if (fechar) c.closePath(); c.stroke(); c.restore();
     },
     seta(pts, cor = "tinta", w = 8, o) {
@@ -221,9 +337,9 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     etiqueta(s, x, y, { tam = 40, cor = "claro", fundo = "c1", rot = 0, ponta = false, prof = 1 } = {}) {
       const w = p.medir(s, { tam }) + tam * 1.3, h = tam * 1.75;
       p.em({ x, y, r: rot }, () => {
-        const pts = ponta ? [[-w / 2, -h / 2], [w / 2 + h * .3, -h / 2], [w / 2, 0], [w / 2 + h * .3, h / 2], [-w / 2, h / 2]] : (tipo === "papel" || tipo === "pixel" ? retP(-w / 2, -h / 2, w, h) : retArredP(-w / 2, -h / 2, w, h, tipo === "vidro" ? h / 2 : 10));
+        const pts = ponta ? [[-w / 2, -h / 2], [w / 2 + h * .3, -h / 2], [w / 2, 0], [w / 2 + h * .3, h / 2], [-w / 2, h / 2]] : (tipo === "papel" || tipo === "pixel" || tipo === "bauhaus" || tipo === "colagem" ? retP(-w / 2, -h / 2, w, h) : retArredP(-w / 2, -h / 2, w, h, tipo === "vidro" || tipo === "3d" ? h / 2 : 10));
         p.forma(pts, fundo, { prof });
-        p.texto(s, 0, tam * .04, { tam, cor: tipo === "traco" ? fundo : cor });
+        p.texto(s, 0, tam * .04, { tam, cor: tipo === "traco" || tipo === "neon" ? fundo : cor });
       });
     },
 
@@ -232,22 +348,22 @@ export function criarPincel(estilo = "flat", { paleta = {}, semente = 1, pixel =
     alfa(a, fn) { if (a <= 0) return; const c = p.c; c.save(); c.globalAlpha *= clamp(a); fn(p); c.restore(); },
     /** Desenha `fn` só dentro da forma `pts`. */
     recortar(pts, fn) { const c = p.c; c.save(); c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.clip(); fn(p); c.restore(); },
-    /** Entrada "desenhando": no estilo traco as linhas se traçam; nos outros a peça surge crescendo. k = 0..1. */
+    /** Entrada "desenhando": no estilo traco/quadro/neon as linhas se traçam; nos outros a peça surge crescendo. k = 0..1. */
     tracar(k, fn) {
       k = clamp(k); if (k <= 0) return;
-      if (tipo === "traco") { const a = p.revelar; p.revelar = k; fn(p); p.revelar = a; }
+      if (tipo === "traco" || tipo === "neon" || tipo === "quadro") { const a = p.revelar; p.revelar = k; fn(p); p.revelar = a; }
       else p.alfa(clamp(k * 3), fn);
     },
   };
 
-  // no traco, o cartão ("claro") é quase da cor do fundo: o contorno ganha um tom intermediário para aparecer
-  const visivel = f => tipo === "traco" && f === cores.claro && /^#[0-9a-f]{6}$/i.test(f) && /^#[0-9a-f]{6}$/i.test(cores.tinta) ? misturarCor(f, cores.tinta, .42) : f;
+  // em traco/neon/bento/mapa, o cartão ("claro") é quase da cor do fundo: o contorno ganha um tom intermediário para aparecer
+  const visivel = f => p.tintaClara && f === cores.claro && /^#[0-9a-f]{6}$/i.test(f) && /^#[0-9a-f]{6}$/i.test(cores.tinta) ? misturarCor(f, cores.tinta, .42) : f;
   function usar(h) { if (/^#[0-9a-f]{6}$/i.test(h) && !usadas.has(h)) usadas.set(h, hex(h)); }
   function escrever(c, f) {
     c.save(); c.font = `${f.italico ? "italic " : ""}${f.peso} ${f.tam}px ${f.fonte}`; c.textAlign = f.alinhar; c.textBaseline = f.base; c.fillStyle = f.cor;
     try { c.letterSpacing = f.espaco + "px"; } catch (e) { /* navegador sem suporte */ }
-    if (tipo === "traco") { c.shadowColor = f.cor; c.shadowBlur = 8; }
-    if (tipo === "vidro") { c.shadowColor = "rgba(0,0,0,.35)"; c.shadowBlur = 10; c.shadowOffsetY = 2; }
+    if (tipo === "traco" || tipo === "neon") { c.shadowColor = f.cor; c.shadowBlur = tipo === "neon" ? 12 : 8; }
+    if (tipo === "vidro" || tipo === "3d") { c.shadowColor = "rgba(0,0,0,.3)"; c.shadowBlur = 10; c.shadowOffsetY = 2; }
     c.fillText(f.s, f.x, f.y); c.restore();
   }
   return p;

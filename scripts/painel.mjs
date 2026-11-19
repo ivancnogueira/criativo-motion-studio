@@ -257,11 +257,23 @@ export function excluirEstilo(base, id) {
   return { id };
 }
 
-const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp" };
+const TIPOS = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+};
+export const ROTAS_PAGINA = /^\/(?:|estilos(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)?|criar-estilo|galeria|personagens|legendas|cenas)\/?$/;
 // Só estes caminhos são servidos; qualquer outro devolve 404.
 const ESTATICOS = [
-  /^\/painel\/(?:index\.html|app\.js|mp4box\.js|painel\.css)$/,
+  /^\/painel\/[a-z0-9_-]+\.(?:html|js|css)$/,
   /^\/vitrine\/previas\.js$/,
+  /^\/kit\/(?:[a-z0-9_-]+\.(?:html|js|json|css)|pecas\/[a-z0-9_-]+\.js)$/,
   /^\/estilos\/[a-z0-9-]+\/referencia\.(?:png|jpg|jpeg|webp)$/,
   /^\/estilos\/[a-z0-9-]+\/referencia\/(?:quadro|movimento)-\d{2}\.jpg$/,
 ];
@@ -278,7 +290,7 @@ export function criarPainel({ base = raiz } = {}) {
       const host = String(req.headers.host || "");
       if (!/^(?:127\.0\.0\.1|localhost)(?::\d+)?$/.test(host)) throw new Recusa(403, "endereço não permitido.");
       const url = new URL(req.url, `http://${host}`);
-      const caminho = url.pathname === "/" ? "/painel/index.html" : url.pathname;
+      const caminho = req.method === "GET" && ROTAS_PAGINA.test(url.pathname) ? "/painel/index.html" : url.pathname;
 
       if (req.method === "GET" && caminho === "/api/estado") return responder(res, 200, estadoDoPainel(base));
       if (req.method === "GET" && caminho === "/api/prompt") {
@@ -327,7 +339,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const servidor = criarPainel();
     servidor.on("error", e => { console.error("Erro: " + (e.code === "EADDRINUSE" ? `a porta ${porta} já está em uso. Tente: node scripts/painel.mjs --porta ${porta + 1}` : e.message)); process.exit(1); });
     servidor.listen(porta, "127.0.0.1", () => {
-      console.log(`Painel do ${lerProduto().nome}: http://127.0.0.1:${porta}/  (Ctrl+C para encerrar)`);
+      console.log(`Estúdio unificado (${lerProduto().nome}): http://127.0.0.1:${porta}/  (rotas: /estilos · /galeria · /personagens · /legendas · /cenas · /criar-estilo)`);
       if (!fs.existsSync(path.join(raiz, ".env"))) console.log("Aviso: esta pasta não está instalada; o painel abre só para consulta.");
     });
   } catch (e) {

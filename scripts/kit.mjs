@@ -1,10 +1,11 @@
-// Abre a galeria do kit de movimento (kit/demo.html: peças, legendas e cenas) em um endereço local.
-// uso: node scripts/kit.mjs [--porta 4174]
+// Abre a galeria do kit de movimento no servidor unificado (ou em modo isolado para compatibilidade).
+// uso: node scripts/kit.mjs [--porta 4173]
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { raiz, opcao } from "./lib/ambiente.mjs";
+import { raiz, lerProduto, opcao } from "./lib/ambiente.mjs";
+import { criarPainel } from "./painel.mjs";
 
 const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
 
@@ -21,6 +22,17 @@ export function criarServidorDoKit(base = raiz) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const porta = +opcao(process.argv.slice(2), "--porta") || 4174;
-  criarServidorDoKit().listen(porta, "127.0.0.1", () => console.log(`Kit de movimento: http://127.0.0.1:${porta}/  (Ctrl+C para encerrar)`));
+  const porta = +opcao(process.argv.slice(2), "--porta") || 4173;
+  const servidor = criarPainel();
+  servidor.on("error", e => {
+    if (e.code === "EADDRINUSE") {
+      console.log(`Servidor unificado já está ativo! Acesse a galeria em: http://127.0.0.1:${porta}/galeria`);
+      process.exit(0);
+    }
+    console.error("Erro: " + e.message);
+    process.exit(1);
+  });
+  servidor.listen(porta, "127.0.0.1", () => {
+    console.log(`Estúdio unificado (${lerProduto().nome}) — Galeria: http://127.0.0.1:${porta}/galeria  (Ctrl+C para encerrar)`);
+  });
 }

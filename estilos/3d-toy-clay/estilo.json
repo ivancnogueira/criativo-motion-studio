@@ -1,0 +1,11 @@
+{
+  "id": "3d-toy-clay",
+  "nome": "3D Toy & Massinha",
+  "subtitulo": "volumes suaves 3D",
+  "motor": "Three.js · luz de estúdio e clay 3D",
+  "resumo": "Personagens e objetos 3D arredondados estilo claymation, com iluminação suave e profundidade real.",
+  "aparencia": "Volumes fofos e acetinados como massinha ou toy art em um estúdio iluminado. Personagens articulados 3D interagem com gráficos, moedas e dispositivos que giram, quicam com física de mola e projetam sombras suaves.",
+  "melhorPara": "Histórias com personagens 3D, produtos físicos, finanças, negócios, explicações educativas e mascotes.",
+  "bomSaber": "O estilo 3D usa Three.js com sombras suaves (PCFSoft). Para exportações mais rápidas em notebooks simples, prefira o Chrome ou Edge.",
+  "temaExemplo": "Mostre como um agente de IA organiza uma loja online: o robô 3D recebe o pedido, separa os produtos em caixas 3D, atualiza o estoque no celular e envia o pacote."
+}

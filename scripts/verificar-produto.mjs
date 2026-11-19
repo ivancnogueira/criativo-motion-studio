@@ -8,7 +8,27 @@ import { raiz } from "./lib/ambiente.mjs";
 // O que faz parte do produto. Tudo fora desta lista é instância ou material de desenvolvimento.
 export const ARQUIVOS_DO_PRODUTO = [".env.example", ".gitattributes", ".gitignore", "AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALAR.md", "INSTALAR-COM-ANTIGRAVITY.md", "INSTALAR-COM-CLAUDE.md", "INSTALAR-COM-CODEX.md", "README.md", "marca.exemplo.json", "package.json", "produto.json", "projeto.exemplo.json"];
 export const PASTAS_DO_PRODUTO = [".agents", "blocos", "documentacao", "entrada", "estilos", "kit", "painel", "scripts", "skills", "testes", "vitrine"];
-const ESTILOS_DO_PRODUTO = ["_personalizado", "indice.json", "recorte-de-papel", "vidro-liquido", "isometrico-em-linha", "vetor-flat", "pixel-art-8-bit"];
+const ESTILOS_DO_PRODUTO = [
+  "_personalizado",
+  "indice.json",
+  "recorte-de-papel",
+  "vidro-liquido",
+  "isometrico-em-linha",
+  "vetor-flat",
+  "pixel-art-8-bit",
+  "3d-toy-clay",
+  "3d-cel-anime",
+  "3d-neon-cyber",
+  "aquarela",
+  "risografia",
+  "rubber-hose",
+  "quadro-branco",
+  "bento-ui",
+  "tipografia-cinetica",
+  "mapa-documentario",
+  "colagem-mista",
+  "bauhaus-suico",
+];
 const IGNORAR = new Set(["node_modules", ".git"]);
 
 // Um caminho relativo (com /) pertence ao produto?

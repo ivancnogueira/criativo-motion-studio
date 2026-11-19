@@ -1,0 +1,11 @@
+{
+  "id": "bento-ui",
+  "nome": "Bento Grid & SaaS",
+  "subtitulo": "produto digital modular",
+  "motor": "Canvas 2D · cartões Bento e micro-UI",
+  "resumo": "Grade modular estilo Bento Box com cartões escuros elegantes, cursores animados, gráficos e micro-interações.",
+  "aparencia": "Interface moderna dividida em blocos organizados que se expandem, destacam botões ativos, mostram métricas subindo e guiam o olhar com zoom suave da câmera.",
+  "melhorPara": "Lançamentos de SaaS, aplicativos, ferramentas de IA, dashboards, portfólios e demonstrações B2B.",
+  "bomSaber": "Ideal para organizar muita informação sem poluição visual. Mantenha no máximo 3 a 4 cartões visíveis por quadro no celular.",
+  "temaExemplo": "Apresente um painel de automação de vendas: os cartões Bento mostram leads entrando em tempo real, a IA qualificando e o gráfico de conversão disparando."
+}

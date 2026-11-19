@@ -50,13 +50,25 @@ test("painel: estado, gravação, envio e proteções", async () => {
   const { url, fechar } = await subir(base);
   try {
     const estado = await (await fetch(url + "/api/estado")).json();
-    assert.equal(estado.estilos.length, 5);
+    assert.equal(estado.estilos.length, 17);
     assert.equal(estado.instancia, true);
     assert.equal((await fetch(url + "/")).status, 200);
+    for (const rota of ["/estilos", "/estilos/3d-toy-clay", "/criar-estilo", "/galeria", "/personagens", "/legendas", "/cenas"]) {
+      const rp = await fetch(url + rota);
+      assert.equal(rp.status, 200, rota);
+      assert.match(rp.headers.get("content-type") || "", /text\/html/);
+    }
     assert.equal((await fetch(url + "/painel/app.js")).status, 200);
+    assert.equal((await fetch(url + "/painel/galeria-kit.js")).status, 200);
+    const ind = await fetch(url + "/kit/indice.json");
+    assert.equal(ind.status, 200);
+    assert.match(ind.headers.get("content-type") || "", /application\/json/);
+    assert.equal((await fetch(url + "/kit/3d.js")).status, 200);
+    assert.equal((await fetch(url + "/kit/pecas/objetos3d.js")).status, 200);
     assert.equal((await fetch(url + "/.env")).status, 404);
     assert.equal((await fetch(url + "/scripts/painel.mjs")).status, 404);
     assert.equal((await fetch(url + "/estilos/vetor-flat/prompt.md")).status, 404);
+    assert.equal((await fetch(url + "/estilos/nao-existe/prompt.md")).status, 404);
 
     const ok = { estilo: "vetor-flat", tema: "Como funciona o Wi-Fi", duracaoSegundos: 20, vertical: true, paleta: "estilo" };
     assert.equal((await post(url + "/api/projeto", ok)).status, 200);

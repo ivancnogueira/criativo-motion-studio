@@ -1,6 +1,6 @@
 {
   "name": "criativo-motion-studio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Linha de produção de vídeos curtos em motion graphics para agentes de código (Claude, Codex e Antigravity).",
   "type": "module",

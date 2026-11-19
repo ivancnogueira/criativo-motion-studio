@@ -1,6 +1,6 @@
 # Kit de movimento
 
-Peças e movimentos prontos para a animação não começar do zero nem ficar parada. Veja tudo funcionando com `npm run kit`: galeria de peças por categoria com busca, elenco de personagens, estilos de legenda e cenas de exemplo, nos cinco estilos.
+Peças e movimentos prontos para a animação não começar do zero nem ficar parada. Veja tudo funcionando com `npm run kit`: galeria de peças por categoria com busca (incluindo objetos e personagens 3D), elenco de personagens, estilos de legenda e cenas de exemplo em todos os acabamentos.
 
 ## O kit é referência, não molde
 
@@ -16,7 +16,8 @@ Peças e movimentos prontos para a animação não começar do zero nem ficar pa
 | Arquivo | O que tem |
 |---|---|
 | `movimento.js` | Motor sem desenho: curvas, entradas, saídas, movimento contínuo, beats, sincronia com a fala, caminhos, câmera, esqueleto e atuação de personagem |
-| `pinceis.js` | `criarPincel(estilo)`: as mesmas formas no acabamento de cada estilo (papel, flat, pixel, traco, vidro) |
+| `pinceis.js` | `criarPincel(estilo)`: as mesmas formas no acabamento de cada estilo (papel, flat, pixel, traco, vidro, 3d, toon, neon, aquarela, riso, retro, quadro, bento, cinetico, mapa, colagem, bauhaus) |
+| `3d.js` | Motor 3D procedural (`personagem3d`, `esfera3d`, `caixa3d`, `cilindro3d`, `piramide3d`, `desenharMalha3d`) desenhando via pincel |
 | `pecas.js` | Reúne tudo: `import * as K from "./kit/pecas.js"` dá acesso a todas as peças e às legendas |
 | `pecas/<categoria>.js` | A biblioteca, um arquivo por categoria (`base.js` tem o personagem e as peças originais; `_comum.js` tem a convenção e os apoios) |
 | `indice.json` | Índice gerado do código: nome, categoria, palavras-chave, opções e exemplo de cada peça; elenco e legendas |

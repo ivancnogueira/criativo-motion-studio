@@ -7,6 +7,7 @@
 // É referência: misture as opções à vontade (personagem(p, { ...PERSONAGENS.x.opcoes, chapeu: "bone" })).
 import { personagem, CHAPEUS, ROSTOS, TRAJES } from "./pecas/base.js";
 import { cadeirante } from "./pecas/pessoas.js";
+import { personagem3d } from "./3d.js";
 import { CICLOS, pose as resolverPose, rng } from "./movimento.js";
 import { misturarCor } from "./pinceis.js";
 import { arcoP, circP } from "./pecas/_comum.js";
@@ -39,13 +40,12 @@ Object.assign(ROSTOS, { sardas, rugas, brincos });
 Object.assign(TRAJES, { gestante });
 
 /* ---------------------------------------------------------------- cabelo, idade */
-const ESCURO = new Set(["pixel", "traco", "vidro"]);
-/** Cores de cabelo naturais, ajustadas para aparecer sobre o fundo escuro de pixel, traco e vidro. */
+/** Cores de cabelo naturais, ajustadas para aparecer sobre fundos escuros. */
 export const CABELOS = {
   preto: ["#2A211D", "#5B5463"], castanho: ["#6B4528", "#9A6A44"], loiro: ["#D8B46A", "#E2C27E"], ruivo: ["#B5532C", "#C8673E"],
   grisalho: ["#9C9993", "#B5B2AC"], branco: ["#E4E1DA", "#E4E1DA"], azul: ["c1", "c1"], rosa: ["c2", "c2"], verde: ["c3", "c3"],
 };
-const corCabelo = (p, nome) => (CABELOS[nome] || [nome, nome])[ESCURO.has(p.estilo) ? 1 : 0];
+const corCabelo = (p, nome) => (CABELOS[nome] || [nome, nome])[p.fundoEscuro ? 1 : 0];
 /** Altura e tamanho da cabeça de cada faixa de idade (o adulto tem altura 300). */
 export const IDADES = { crianca: { altura: 190, cabecao: 1.7 }, adolescente: { altura: 252, cabecao: 1.45 }, adulto: { altura: 300, cabecao: 1.3 }, idoso: { altura: 288, cabecao: 1.3 } };
 
@@ -89,6 +89,12 @@ export const PERSONAGENS = {
   pessoaNaoBinaria: P("Pessoa não binária de moicano verde", "adulto", "neutro", 1, "verde", { penteado: "moicano", roupa: "tinta", calca: "c2", rosto: "brincos" }),
   homemAfro: P("Homem negro de black power e bigode", "adulto", "masculino", 5, "preto", { penteado: "afro", roupa: "c4", calca: "tinta", rosto: "bigode" }),
   mulherCoque: P("Mulher de coque e óculos", "adulto", "feminino", 2, "preto", { penteado: "coque", roupa: "c3", calca: "tinta", rosto: "oculos" }),
+  criadoraConteudo: P("Criadora de conteúdo com fones e brincos", "adulto", "feminino", 3, "castanho", { penteado: "rabo", chapeu: "fones", corChapeu: "c2", roupa: "c1", calca: "tinta", rosto: "brincos" }),
+  podcaster: P("Podcaster de barba e fones", "adulto", "masculino", 1, "preto", { chapeu: "fones", corChapeu: "c1", roupa: "c4", calca: "tinta", rosto: "barba" }),
+  desenvolvedor: P("Desenvolvedor de óculos e moletom", "adulto", "masculino", 0, "castanho", { penteado: "topete", roupa: "c3", calca: "tinta", rosto: "oculos" }),
+  entregador: P("Entregador de capacete e mochila", "adulto", "masculino", 4, "preto", { chapeu: "capacete", corChapeu: "c2", roupa: "c1", calca: "c4", nasCostas: "mochila" }),
+  apresentadora: P("Apresentadora executiva de blazer", "adulto", "feminino", 5, "preto", { penteado: "chanel", roupa: "c4", calca: "tinta", noTronco: "terno", rosto: "brincos" }),
+  roboAssistente: P("Robô assistente de IA", "adulto", "neutro", 0, "azul", { roupa: "c1", calca: "c4" }, { robo: true }),
   // idosos
   idosaGrisalha: P("Senhora grisalha de óculos e bengala", "idoso", "feminino", 4, "grisalho", { penteado: "coque", roupa: "c2", calca: "c4", rosto: ["oculos", "rugas"], noTronco: "saia" }, { bengala: true, curvado: true }),
   idosoBengala: P("Senhor calvo de bigode e bengala", "idoso", "masculino", 3, "branco", { penteado: "calvo", roupa: "c4", calca: "tinta", rosto: ["bigode", "rugas"] }, { bengala: true, curvado: true }),
@@ -102,14 +108,17 @@ export const PERSONAGENS = {
 /** Faixas e gêneros, para filtrar. */
 export const FAIXAS = ["crianca", "adolescente", "adulto", "idoso"], GENEROS = ["feminino", "masculino", "neutro"];
 
-/** Desenha um personagem do elenco. Opções: pose, virado, t, semente, escala (multiplica a altura da idade),
+/** Desenha um personagem do elenco. Opções: pose, virado, t, semente, escala (multiplica a altura da idade), modo3d,
     e qualquer opção do personagem para sobrescrever (roupa, expressao, naMao...). Devolve o esqueleto. */
-export function pessoa(p, id, { pose, virado = 1, t = 0, semente = 0, escala = 1, ...resto } = {}) {
+export function pessoa(p, id, { pose, virado = 1, t = 0, semente = 0, escala = 1, modo3d = false, ...resto } = {}) {
   const x = PERSONAGENS[id]; if (!x) throw new Error(`personagem "${id}" não existe. Opções: ${Object.keys(PERSONAGENS).join(", ")}`);
   const { altura, cabecao } = IDADES[x.idade], o = { cabecao, pele: x.pele, ...x.opcoes, cabelo: corCabelo(p, x.cabelo), ...resto, altura: altura * escala, virado, t, semente };
   if (x.cadeira) return cadeirante(p, { ...o, pose });
   let ps = pose ?? CICLOS.respirar(t + semente);
   if (x.curvado) { const q = resolverPose(ps); ps = { ...q, tronco: q.tronco + 8, cabeca: q.cabeca + 5 }; }
+  if (x.robo || modo3d || p.estilo === "3d") {
+    return personagem3d(p, { ...o, pose: ps, robo: !!x.robo, yaw: virado < 0 ? Math.PI - 0.42 : 0.42 });
+  }
   const e = personagem(p, { ...o, pose: ps });
   if (x.bengala && e.maoF[1] > -o.altura * .58) p.em({ x: 0, y: 0, sx: virado }, () => { const [mx, my] = e.maoF, pe = [mx + o.altura * .05, 0]; p.capsula([mx, my], pe, Math.max(5, o.altura * .022), "c4"); p.linha(arcoP(mx - o.altura * .03, my, o.altura * .03, 180, 360, 6), "c4", Math.max(5, o.altura * .022)); });
   return e;

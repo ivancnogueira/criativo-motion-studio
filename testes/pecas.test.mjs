@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as K from "../kit/pecas.js";
-import { criarPincel } from "../kit/pinceis.js";
+import { criarPincel, NOMES_DE_PINCEL, PINCEL_DO_ESTILO } from "../kit/pinceis.js";
 import { criarContextoFalso, prepararAmbienteFalso } from "../kit/contexto-falso.js";
 import { opcoesDaPeca, medirPeca } from "../kit/galeria.js";
 import { legenda, NOMES_DE_LEGENDA, ESTILOS_DE_LEGENDA, conferirEstiloDeLegenda, legendasDeExemplo } from "../kit/legendas.js";
@@ -16,7 +16,7 @@ import { pertenceAoProduto } from "../scripts/verificar-produto.mjs";
 
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ler = f => fs.readFileSync(path.join(raiz, f), "utf8").replace(/\r\n/g, "\n");
-const PINCEIS = ["papel", "flat", "pixel", "traco", "vidro"];
+const PINCEIS = NOMES_DE_PINCEL;
 const indice = lerIndice(raiz);
 prepararAmbienteFalso();
 
@@ -60,12 +60,15 @@ test("kit/pecas.js reexporta tudo: cada peça do índice existe, é função e e
   for (const antiga of ["personagem", "TIPOS", "CATALOGO", "legendas", "arcoP", "estrelaP"]) assert.ok(K[antiga], antiga);
 });
 
-test("cada peça desenha sem erro nos cinco pincéis", () => {
+test("cada peça desenha sem erro em todos os pincéis", () => {
   for (const pc of indice.pecas) for (const estilo of PINCEIS) for (const t of [.4, 2.3]) {
     let ctx;
     assert.doesNotThrow(() => { ctx = desenhar(pc, estilo, t); }, `${pc.nome} no pincel ${estilo}, t = ${t}`);
     assert.deepEqual(ctx.invalidos, [], `${pc.nome} (${estilo}) passou número inválido ao canvas`);
   }
+  const estilosIdx = JSON.parse(ler("estilos/indice.json")).estilos;
+  assert.equal(estilosIdx.length, 17);
+  for (const id of estilosIdx) assert.ok(PINCEL_DO_ESTILO[id], `falta pincel para ${id}`);
   for (const pc of indice.pecas) {
     assert.ok(desenhar(pc, "flat", .4).formas > 0 || desenhar(pc, "flat", 1.1).formas > 0, `${pc.nome} não desenhou nada`);
     const [x0, y0, x1, y1] = medirPeca(K[pc.nome], pc);

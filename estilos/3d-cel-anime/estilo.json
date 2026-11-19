@@ -1,0 +1,11 @@
+{
+  "id": "3d-cel-anime",
+  "nome": "3D Cel-Shading",
+  "subtitulo": "anime & toon 3D",
+  "motor": "Three.js · toon shader e traço 2D",
+  "resumo": "Modelos e personagens 3D com sombreamento em blocos de desenho, contorno marcado e energia de anime.",
+  "aparencia": "Cenas tridimensionais iluminadas em degraus nítidos de luz e sombra, com bordas escuras marcantes, câmera cinematográfica em ângulo dinâmico e linhas de velocidade 2D.",
+  "melhorPara": "Narrativas dinâmicas, psicologia, curiosidades, tecnologia, história e explicações com personagens expressivos.",
+  "bomSaber": "Combina geometria 3D com efeitos 2D (linhas de impacto e brilhos). Funciona muito bem tanto em cenas de ação quanto em explicações didáticas.",
+  "temaExemplo": "Explique como funciona o efeito dopamina no cérebro: o gatilho acende o circuito em 3D, a energia dispara pelos neurônios com linhas de velocidade e mostra como equilibrar o foco."
+}

@@ -1,4 +1,6 @@
-// Painel local do Criativo Motion Studio. Base: o app original de estilos, adaptado para gravar na instalação.
+// Painel local unificado do Criativo Motion Studio: estilos, criador de estilo, peças 2D/3D, personagens, legendas e cenas.
+import { inicializarGaleriaKit } from "/painel/galeria-kit.js";
+
 const BOOT = await (await fetch("/api/estado")).json();
 async function api(caminho, corpo) {
   const r = await fetch(caminho, corpo === undefined ? {} : { method: "POST", headers: { "content-type": "application/json", "x-painel": "1" }, body: JSON.stringify(corpo) });
@@ -8,7 +10,14 @@ async function api(caminho, corpo) {
 }
 document.title = BOOT.produto;
 document.getElementById("brand-name").textContent = BOOT.produto;
-if (!BOOT.instancia) { const a = document.getElementById("aviso"); a.hidden = false; }
+if (!BOOT.instancia) { const a = document.getElementById("aviso"); if (a) a.hidden = false; }
+{
+  const pill = document.getElementById("instancia-pill"), txtPill = document.getElementById("instancia-txt");
+  if (pill && txtPill) {
+    pill.classList.toggle("ok", !!BOOT.instancia);
+    txtPill.textContent = BOOT.instancia ? "Instância pronta" : "Modo consulta";
+  }
+}
 
 const STYLES = [
   { name: "Recorte de Papel", sub: "editorial artesanal", engine: "Canvas 2D · texturas de papel", t: 2.2,
@@ -17,7 +26,7 @@ const STYLES = [
     best: "Explicações de como algo funciona, ciclos e processos, tudo que precisa parecer acolhedor e fácil de entender.",
     know: "Cada cena tem muito detalhe de papel, então vale ligar o Storyboard antes. Você confere os quadros antes do agente animar.",
     ex: "Explique como funcionam os agentes de IA: como recebem um objetivo, escolhem ações, usam ferramentas, conferem os resultados e decidem o próximo passo." },
-  { name: "Vidro Líquido", sub: "produto premium", engine: "Shaders WebGL de refração", t: 1.5,
+  { name: "Vidro Líquido", sub: "produto premium", engine: "Shaders WebGL de refração", t: 1.5, heavy: true,
     teaser: "Lentes de vidro deslizam pela cena e distorcem o que está atrás delas.",
     looks: "Formas de vidro refrativo passam sobre uma interface escura e detalhada. Elas ampliam e distorcem o que está embaixo, se juntam e se separam, com brilhos fortes nas bordas.",
     best: "Demonstrações de apps e produtos, fluxos de SaaS, qualquer coisa com uma interface para mostrar.",
@@ -41,15 +50,105 @@ const STYLES = [
     best: "Games, conceitos de programação, nostalgia e explicações divertidas.",
     know: "Texto em pixel é grosso, então use poucas palavras curtas na tela. Funciona também para temas que não têm nada a ver com games.",
     ex: "Explique como um jogo 2D responde ao jogador: o botão vira uma ação, o loop do jogo atualiza posições e checa colisões, os quadros do sprite mostram o movimento e a tela é redesenhada." },
+  { name: "3D Toy & Massinha", sub: "volumes suaves 3D", engine: "Three.js · luz de estúdio e clay 3D", t: 1.2,
+    teaser: "Personagens e objetos 3D arredondados estilo claymation, com iluminação suave e profundidade real.",
+    looks: "Volumes fofos e acetinados como massinha ou toy art em um estúdio iluminado. Personagens articulados 3D interagem com gráficos, moedas e dispositivos que giram e quicam com física de mola.",
+    best: "Histórias com personagens 3D, produtos físicos, finanças, negócios, explicações educativas e mascotes.",
+    know: "O estilo 3D usa Three.js com sombras suaves (PCFSoft). Para exportações mais rápidas em notebooks simples, prefira o Chrome ou Edge.",
+    ex: "Mostre como um agente de IA organiza uma loja online: o robô 3D recebe o pedido, separa os produtos em caixas 3D, atualiza o estoque no celular e envia o pacote." },
+  { name: "3D Cel-Shading", sub: "anime & toon 3D", engine: "Three.js · toon shader e traço 2D", t: 1.4,
+    teaser: "Modelos e personagens 3D com sombreamento em blocos de desenho, contorno marcado e energia de anime.",
+    looks: "Cenas tridimensionais iluminadas em degraus nítidos de luz e sombra, com bordas escuras marcantes, câmera cinematográfica em ângulo dinâmico e linhas de velocidade 2D.",
+    best: "Narrativas dinâmicas, psicologia, curiosidades, tecnologia, história e explicações com personagens expressivos.",
+    know: "Combina geometria 3D com efeitos 2D (linhas de impacto e brilhos). Funciona muito bem tanto em cenas de ação quanto em explicações didáticas.",
+    ex: "Explique como funciona o efeito dopamina no cérebro: o gatilho acende o circuito em 3D, a energia dispara pelos neurônios com linhas de velocidade e mostra como equilibrar o foco." },
+  { name: "3D Neon & HUD", sub: "futurismo luminoso", engine: "Three.js · bloom neon e perspectiva 3D", t: 1.8,
+    teaser: "Cenário noturno com objetos 3D metálicos, bordas luminosas em neon, grades em perspectiva e hologramas.",
+    looks: "Elementos tridimensionais escuros com arestas que brilham em ciano e magenta, superfícies reflexivas sobre uma grade infinita e painéis HUD de dados flutuando no espaço.",
+    best: "Inteligência Artificial, programação, cibersegurança, finanças digitais, games e ganchos de alto impacto.",
+    know: "O contraste escuro com brilho neon fica incrível em telas de celular, mas mantenha os rótulos de texto curtos e bem legíveis.",
+    ex: "Explique como funciona a criptografia de ponta a ponta: a mensagem entra num cubo 3D luminoso, vira um código embaralhado na rede e só a chave correta destrava no destino." },
+  { name: "Aquarela & Tinta Viva", sub: "orgânico artesanal", engine: "Canvas 2D · pigmento úmido e papel", t: 1.6,
+    teaser: "Pinceladas translúcidas de aquarela que se espalham em papel texturizado com suavidade poética.",
+    looks: "Manchas de tinta orgânicas com bordas suaves e sangramento de cor sobre papel de algodão creme, combinadas com traços finos de nanquim e tipografia serifada elegante.",
+    best: "Saúde, bem-estar, filosofia, natureza, educação, storytelling emotivo e marcas humanas.",
+    know: "O estilo brilha em ritmos calmos a médios, deixando espaço para a tinta florescer e as cenas respirarem.",
+    ex: "Explique como o sono profundo limpa e recupera o cérebro: ondas suaves de aquarela percorrem as conexões neurais enquanto as cores se renovam até o amanhecer." },
+  { name: "Risografia & Zine", sub: "impresso indie retrô", engine: "Canvas 2D · meio-tom e chapas de tinta", t: 1.1,
+    teaser: "Impressão artesanal com retículas halftone, chapas de cor levemente deslocadas e tintas vibrantes.",
+    looks: "Estética de zine independente e gráfica risográfica: fundo de papel texturizado, pontos de retícula, cores fluorescentes que se sobrepõem com pequeno desalinhamento de registro e ritmo tátil.",
+    best: "Cultura, design, marketing criativo, análises fora da caixa, música e público jovem.",
+    know: "A força deste estilo está no contraste limitado de 3 a 4 cores de tinta e no granulado orgânico de impressão.",
+    ex: "Mostre por que marcas independentes vencem gigantes tradicionais: ideias rápidas impressas em zine, comunidade fiel e identidade visual inconfundível." },
+  { name: "Cartoon Retrô 1930", sub: "rubber hose clássico", engine: "Canvas 2D · física elástica vintage", t: 1.4,
+    teaser: "Desenho clássico anos 30 com personagens de braços elásticos, olhos expressivos e ritmo saltitante.",
+    looks: "Estética retrô encantadora com papel creme envelhecido, contornos pretos grossos e redondos, luvas brancas, objetos com cara e física exagerada de esticar e comprimir.",
+    best: "Humor, finanças descomplicadas, histórias divertidas, mascotes carismáticos e ganchos nostálgicos.",
+    know: "Funciona melhor com personagens atuando o tempo todo e objetos do dia a dia ganhando vida e expressão.",
+    ex: "Explique os 3 erros que fazem o dinheiro sumir no fim do mês: um cofrinho animado foge de compras por impulso elásticas até aprender a se organizar." },
+  { name: "Quadro Branco & Caneta", sub: "aula desenhada ao vivo", engine: "Canvas 2D · traço progressivo e marca-texto", t: 2.8,
+    teaser: "Ilustrações e esquemas desenhados ao vivo com caneta preta e marca-texto colorido sobre papel limpo.",
+    looks: "Fundo branco texturizado com grade de pontos sutil, desenhos que se riscam traço por traço na frente do espectador, setas manuais e destaques coloridos estilo marcador.",
+    best: "Aulas, tutoriais passo a passo, resumos de livros, conceitos complexos e educação.",
+    know: "É um dos formatos mais didáticos. Evite textos longos: deixe o desenho explicar cada etapa enquanto as palavras-chave ganham marca-texto.",
+    ex: "Ensine a regra 50-30-20 para organizar o salário: a caneta divide um círculo ao vivo em três fatias e destaca cada porcentagem com marca-texto colorido." },
+  { name: "Bento Grid & SaaS", sub: "produto digital modular", engine: "Canvas 2D · cartões Bento e micro-UI", t: 2.0,
+    teaser: "Grade modular estilo Bento Box com cartões escuros elegantes, cursores animados, gráficos e micro-interações.",
+    looks: "Interface moderna dividida em blocos organizados que se expandem, destacam botões ativos, mostram métricas subindo e guiam o olhar com zoom suave da câmera.",
+    best: "Lançamentos de SaaS, aplicativos, ferramentas de IA, dashboards, portfólios e demonstrações B2B.",
+    know: "Ideal para organizar muita informação sem poluição visual. Mantenha no máximo 3 a 4 cartões visíveis por quadro no celular.",
+    ex: "Apresente um painel de automação de vendas: os cartões Bento mostram leads entrando em tempo real, a IA qualificando e o gráfico de conversão disparando." },
+  { name: "Tipografia Cinética", sub: "texto como protagonista", engine: "Canvas 2D · letras elásticas e alto impacto", t: 1.5,
+    teaser: "Palavras gigantes que deslizam, crescem, trocam de cor e se reorganizam no ritmo exato da fala.",
+    looks: "Fundo escuro de alto contraste onde a tipografia pesa como elemento gráfico principal, combinada com ícones minimalistas, faixas que correm, sublinhados animados e números gigantes.",
+    best: "Listas (5 erros, 3 passos), ganchos virais, opiniões diretas, dados numéricos e vídeos curtos de alta retenção.",
+    know: "Como o texto conduz a cena, mantenha frases curtas (1 a 4 palavras por batida) para leitura instantânea no celular.",
+    ex: "Mostre os 4 erros que travam o crescimento de um perfil: cada erro entra com peso tipográfico gigante, risco vermelho animado e a solução verde em seguida." },
+  { name: "Mapa & Satélite", sub: "documentário cartográfico", engine: "Canvas 2D · relevo procedural e rotas", t: 2.1,
+    teaser: "Voos sobre mapas estilizados com relevo sombreado, regiões iluminadas, rotas em arco e pinos de tempo.",
+    looks: "Cartografia cinematográfica em fundo escuro oceânico com continentes em relevo, fronteiras brilhantes, linhas de rota tracejadas avançando e câmera que sobrevoa de um ponto a outro.",
+    best: "Geopolítica, história, curiosidades geográficas, logística global, mercado e economia.",
+    know: "Os mapas são estilizados de forma procedural para ilustrar o tema; não tente simular mapas de rua com precisão de GPS.",
+    ex: "Explique como funciona o comércio marítimo mundial pelos estreitos estratégicos: a câmera voa entre canais iluminados mostrando navios, rotas comerciais e volumes." },
+  { name: "Colagem Editorial", sub: "mídia mista e documentário", engine: "Canvas 2D · recortes, textura e parallax", t: 1.9,
+    teaser: "Visual moderno de minidocumentários com recortes em alto contraste, texturas granuladas, carimbos e parallax.",
+    looks: "Fundo rico com granulação de papel e vinheta sutil, faixas de marca-texto amarelas, recortes jornalísticos com fita adesiva, setas marcadoras e gráficos animados em profundidade.",
+    best: "Minidocumentários, notícias, investigações, curiosidades, economia e storytelling de canal.",
+    know: "Equilibra ritmo jornalístico rápido com detalhes visuais ricos. Excelente para combinar fatos, números e comparações.",
+    ex: "Conte a história de como um erro de centavos mudou um sistema financeiro inteiro: recortes de jornais estilizados, carimbo de alerta, gráficos em camadas e destaque editorial." },
+  { name: "Bauhaus & Brutalismo", sub: "geometria e design suíço", engine: "Canvas 2D · grade modular e formas puras", t: 1.4,
+    teaser: "Formas geométricas puras em cores primárias, grades visíveis e composições arquitetônicas de alto impacto.",
+    looks: "Círculos, arcos, triângulos e blocos sólidos alinhados a uma grade suíça rigorosa com sombras duras, tipografia forte em caixa alta e transições geométricas precisas.",
+    best: "Design, arquitetura, branding, tecnologia, manifestos de marca e temas conceituais.",
+    know: "A elegância vem da disciplina geométrica e dos espaços vazios bem equilibrados. Evite enfeites desnecessários.",
+    ex: "Explique os 3 princípios de um design inesquecível: contraste, hierarquia e ritmo mostrados através de blocos Bauhaus que se encaixam na grade." },
 ];
 const IDS_BASE = BOOT.estilos.filter(e => e.previa >= 0).sort((a, b) => a.previa - b.previa).map(e => e.id);
-STYLES.forEach((s, i) => { s.id = IDS_BASE[i] || "base-" + i; });
+const ESTILOS_3D = new Set(["3d-toy-clay", "3d-cel-anime", "3d-neon-cyber", "vidro-liquido", "isometrico-em-linha"]);
+const GRUPOS_ESTILO = {
+  "3d-toy-clay": "3d", "3d-cel-anime": "3d", "3d-neon-cyber": "3d", "vidro-liquido": "3d", "isometrico-em-linha": "3d",
+  "recorte-de-papel": "artistico", "aquarela": "artistico", "risografia": "artistico", "rubber-hose": "artistico", "colagem-mista": "artistico",
+  "vetor-flat": "produto", "quadro-branco": "produto", "bento-ui": "produto", "bauhaus-suico": "produto",
+  "pixel-art-8-bit": "retencao", "tipografia-cinetica": "retencao", "mapa-documentario": "retencao",
+};
+STYLES.forEach((s, i) => {
+  s.id = IDS_BASE[i] || "base-" + i;
+  s.cat = GRUPOS_ESTILO[s.id] || "produto";
+  s.is3d = s.id.startsWith("3d-");
+});
 const STARTS = [
+  { q: "Personagens e objetos em 3D?", a: "3D Toy & Massinha", i: 5 },
   { q: "Explicar como algo funciona?", a: "Vetor Flat", i: 3 },
-  { q: "Mostrar um app ou produto?", a: "Vidro Líquido", i: 1 },
-  { q: "Mostrar um sistema ou um fluxo?", a: "Isométrico em Linha", i: 2 },
-  { q: "Um processo que precisa parecer amigável?", a: "Recorte de Papel", i: 0 },
-  { q: "Games, código ou gancho de nostalgia?", a: "Pixel Art 8-Bit", i: 4 },
+  { q: "Mostrar um app ou SaaS?", a: "Bento Grid & SaaS", i: 12 },
+  { q: "Visual suave ou emotivo?", a: "Aquarela", i: 8 },
+  { q: "IA ou visual futurista em 3D?", a: "3D Neon & HUD", i: 7 },
+  { q: "Listas ou texto de impacto?", a: "Tipografia Cinética", i: 13 },
+  { q: "História, geopolítica ou mapas?", a: "Mapa & Satélite", i: 14 },
+  { q: "Mostrar um sistema ou fluxo?", a: "Isométrico em Linha", i: 2 },
+  { q: "Um processo amigável em camadas?", a: "Recorte de Papel", i: 0 },
+  { q: "Aula passo a passo desenhada?", a: "Quadro Branco", i: 11 },
+  { q: "Documentário com recortes?", a: "Colagem Editorial", i: 15 },
+  { q: "Games, código ou nostalgia?", a: "Pixel Art 8-Bit", i: 4 },
 ];
 const TIPS = {
   storyboard: "O agente planeja primeiro: uma tabela cena a cena (tempo, visual, movimento, texto na tela, som) e quadros de prévia reais neste estilo. Ele para aí até você responder APROVADO ou pedir mudanças. Deixe desmarcado para ir direto à animação pronta.",
@@ -88,36 +187,68 @@ const arrow = `<svg class="doodle" viewBox="0 0 34 20" width="26" height="16" ar
 const tick = `<svg class="doodle" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M3 11 L8 15 L17 4"/></svg>`;
 const clip = `<svg class="doodle" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="7" y="4" width="12" height="16" rx="2"/><path d="M4 8 V20 Q4 22 6 22 H14"/></svg>`;
 
-/* ---------- cards ---------- */
+/* ---------- cards & filtros ---------- */
 const grid = document.getElementById("grid");
-/* estilos ocultos: escolha de cada pessoa (navegador + conta, quando der) */
 const HIDDEN = new Set();
 try { JSON.parse(localStorage.getItem("motion-hidden") || "[]").forEach(k => HIDDEN.add(k)); } catch (e) {}
 let MANAGE = false;
+let FILTRO_CAT = "todos";
+let BUSCA_GLOBAL = "";
+let VISAO_ATIVA = "estilos";
+let SEM_HIST = false;
 const ARM = { key: "", until: 0 }; // exclusão aguardando o segundo clique
 const keyOf = i => STYLES[i] ? STYLES[i].id : "";
 const isHidden = i => HIDDEN.has(keyOf(i));
+const normTxt = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+function matchesFilter(s) {
+  if (FILTRO_CAT === "personalizados") { if (!s.custom) return false; }
+  else if (FILTRO_CAT !== "todos") { if (s.cat !== FILTRO_CAT) return false; }
+  const q = normTxt(BUSCA_GLOBAL).trim();
+  if (!q) return true;
+  const bag = normTxt([s.name, s.sub, s.engine, s.teaser, s.best, s.id].join(" "));
+  return q.split(/\s+/).every(t => bag.includes(t));
+}
 function numOf(i) { let n = 0; for (let k = 0; k <= i && k < STYLES.length; k++) if (!isHidden(k)) n++; return isHidden(i) ? "–" : n; }
 function neighbor(i, d) { let k = i + d; while (k >= 0 && k < STYLES.length && isHidden(k)) k += d; return k >= 0 && k < STYLES.length ? k : -1; }
 function renderGrid() {
   let pos = 0;
+  let visCount = 0;
   grid.classList.toggle("manage", MANAGE);
-  grid.innerHTML = STYLES.map((s, i) => isHidden(i) ? "" : `
-  <li style="animation-delay:${.3 + Math.min(pos++, 8) * .06}s">
+  const cardsHtml = STYLES.map((s, i) => {
+    if (isHidden(i) || !matchesFilter(s)) return "";
+    visCount++;
+    const tag = s.custom ? `<span class="badge">${s.draft ? "rascunho" : "do vídeo"}</span>` : (s.is3d ? `<span class="badge badge-3d">3D</span>` : "");
+    return `
+  <li style="animation-delay:${.06 + Math.min(pos++, 8) * .04}s">
     <button class="card${s.custom ? " custom" : ""}" type="button" data-i="${i}" aria-haspopup="dialog">
-      <span class="pin" aria-hidden="true"></span>
-      <span class="shot"><canvas ${s.px ? 'class="px"' : ""} width="640" height="360" role="img" aria-label="Quadro de exemplo no estilo ${esc(s.name)}"></canvas>${s.custom ? `<span class="badge">${s.draft ? "rascunho" : "do vídeo"}</span>` : ""}</span>
-      <span class="card-top"><span class="n">${numOf(i)}</span><span class="engine">${esc(s.engine)}</span></span>
+      <span class="shot"><canvas ${s.px ? 'class="px"' : ""} width="640" height="360" role="img" aria-label="Quadro de exemplo no estilo ${esc(s.name)}"></canvas>${tag}</span>
+      <span class="card-top"><span class="n">${String(numOf(i)).padStart(2, "0")}</span><span class="engine">${esc(s.engine)}</span></span>
       <h2>${esc(s.name)}<small>${esc(s.sub)}</small></h2>
       <p>${esc(s.teaser)}</p>
       ${s.custom ? `<span class="byline">Estilo criado por você</span>` : ""}
-      <span class="open-hint">Configurar o vídeo ${arrow}</span>
+      <span class="card-foot">
+        <span class="open-hint">Configurar vídeo</span>
+        <span class="cta-circle" aria-hidden="true">→</span>
+      </span>
     </button>
     <div class="card-acts">
       <button type="button" class="mini" data-hide="${i}" title="Tirar este estilo da sua grade"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/><path d="M4 20 20 4"/></svg>Ocultar</button>
       ${typeof canDelete === "function" && canDelete(s) ? (ARM.key === s.id && Date.now() < ARM.until ? `<button type="button" class="mini danger armed" data-del="${i}">Confirmar exclusão</button>` : `<button type="button" class="mini danger" data-del="${i}" title="Apagar este estilo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Excluir</button>`) : ""}
     </div>
-  </li>`).join("") + (MANAGE ? "" : typeof creatorCard === "function" ? creatorCard() : "");
+  </li>`;
+  }).join("");
+  const showCreator = !MANAGE && (FILTRO_CAT === "todos" || FILTRO_CAT === "personalizados") && !BUSCA_GLOBAL.trim();
+  grid.innerHTML = cardsHtml + (showCreator && typeof creatorCard === "function" ? creatorCard() : "");
+  const emptyEl = document.getElementById("estilos-empty");
+  if (emptyEl) emptyEl.hidden = !(visCount === 0 && !showCreator);
+  const cntEl = document.getElementById("styles-count");
+  if (cntEl) cntEl.textContent = `${visCount} estilo${visCount === 1 ? "" : "s"} exibido${visCount === 1 ? "" : "s"}`;
+  const pillCustom = document.getElementById("pill-custom");
+  if (pillCustom) pillCustom.hidden = !STYLES.some(s => s.custom);
+  const badgeEst = document.getElementById("badge-estilos"), cntTodos = document.getElementById("cnt-todos");
+  const totalVis = STYLES.filter((_, idx) => !isHidden(idx)).length;
+  if (badgeEst) badgeEst.textContent = totalVis;
+  if (cntTodos) cntTodos.textContent = totalVis;
   renderTools();
 }
 function renderTools() {
@@ -241,7 +372,7 @@ function body(s, i) {
             <div class="script-f" id="cap-style" ${S.subtitles ? "" : "hidden"}>
               <label class="step-h small" for="f-capstyle">Estilo da legenda na tela</label>
               <select id="f-capstyle" class="sel">${(BOOT.legendas || []).map(l => `<option value="${l.id}" ${l.id === S.captionStyle ? "selected" : ""}>${esc(l.nome)}</option>`).join("")}</select>
-              <p class="hint" id="cap-desc">${esc((BOOT.legendas || []).find(l => l.id === S.captionStyle)?.descricao || "")} Veja todos tocando com <code>npm run kit</code>, aba Legendas.</p>
+              <p class="hint" id="cap-desc">${esc((BOOT.legendas || []).find(l => l.id === S.captionStyle)?.descricao || "")} <a href="/legendas" class="linkish" data-abrir-legendas>Testar os 13 estilos ao vivo →</a></p>
             </div>
           </div>
         </div>
@@ -350,7 +481,7 @@ function refresh() {
 let raf = 0, playing = true, t0 = 0, tAt = 0;
 function sizeLive(i) {
   const cv = inner.querySelector("#live"); if (!cv) return null;
-  const heavy = i === 1 && !STYLES[i].custom, w = STYLES[i].px ? 640 : heavy ? 960 : 1280;
+  const heavy = !!STYLES[i].heavy && !STYLES[i].custom, w = STYLES[i].px ? 640 : heavy ? 960 : 1280;
   cv.width = w; cv.height = w * 9 / 16; return cv;
 }
 function startLive(i) {
@@ -360,7 +491,7 @@ function startLive(i) {
   tAt = st.custom ? 0 : st.t; t0 = performance.now(); let last = 0;
   draw(cv, tAt);
   if (reduce || !playing) return;
-  const heavy = (i === 1 && !st.custom) || st.custom;
+  const heavy = (!!st.heavy && !st.custom) || st.custom;
   const loop = now => {
     raf = requestAnimationFrame(loop);
     if (heavy && now - last < 32) return; last = now;
@@ -388,13 +519,17 @@ function rectTransform(from, to) {
 function open(i, fromEl) {
   if (busy) return;
   current = i; openedAt = i; origin = fromEl || grid.querySelector(`.card[data-i="${i}"]`);
+  if (!SEM_HIST) {
+    const alvo = i < 0 ? "/criar-estilo" : `/estilos/${STYLES[i].id}`;
+    if (location.pathname !== alvo) history.pushState({ sheet: i }, "", alvo);
+  }
   fill(i);
   scrim.hidden = false; sheet.hidden = false;
   document.body.classList.add("locked");
   sheet.scrollTop = 0;
   requestAnimationFrame(() => scrim.classList.add("on"));
   const card = grid.querySelector(`.card[data-i="${i}"]`);
-  if (reduce || !card || !origin.classList.contains("card")) { sheet.querySelector("[data-close]").focus(); return; }
+  if (reduce || !card || !origin || !origin.classList?.contains("card")) { sheet.querySelector("[data-close]")?.focus(); return; }
   busy = true;
   const to = sheet.getBoundingClientRect(), from = card.getBoundingClientRect();
   sheet.classList.add("hide-body");
@@ -407,7 +542,7 @@ function open(i, fromEl) {
     sheet.removeEventListener("transitionend", done);
     sheet.classList.remove("hide-body");
     busy = false;
-    sheet.querySelector("[data-close]").focus({ preventScroll: true });
+    sheet.querySelector("[data-close]")?.focus({ preventScroll: true });
   };
   sheet.addEventListener("transitionend", done);
   setTimeout(() => busy && done(), 700);
@@ -415,6 +550,9 @@ function open(i, fromEl) {
 function close() {
   if (busy || sheet.hidden) return;
   stopLive();
+  if (!SEM_HIST && (location.pathname.startsWith("/estilos/") || location.pathname === "/criar-estilo")) {
+    history.pushState(null, "", "/estilos");
+  }
   const card = grid.querySelector(`.card[data-i="${current}"]`);
   const finish = () => {
     sheet.hidden = true; scrim.hidden = true;
@@ -440,7 +578,9 @@ function step(d) {
   if (current < 0) return;
   const n = neighbor(current, d);
   if (n < 0) return;
-  current = n; fill(n);
+  current = n;
+  if (!SEM_HIST && STYLES[n]) history.replaceState({ sheet: n }, "", `/estilos/${STYLES[n].id}`);
+  fill(n);
   sheet.scrollTop = 0;
   inner.querySelectorAll(":scope > *").forEach(el => { el.style.animation = "none"; el.offsetWidth; el.style.animation = ""; });
 }
@@ -656,7 +796,10 @@ function creatorCard() {
       <span class="card-top"><span class="n">+</span><span class="engine">vídeo de referência → template</span></span>
       <h2>Criar um estilo novo<small>a partir de um vídeo que você gostou</small></h2>
       <p>A página mede as cores e o ritmo do trecho, você marca como é o visual e o estilo fica pronto, igual aos de cima.</p>
-      <span class="open-hint">Começar ${arrow}</span>
+      <span class="card-foot">
+        <span class="open-hint">Começar</span>
+        <span class="cta-circle" aria-hidden="true">→</span>
+      </span>
     </button>
   </li>`;
 }
@@ -1660,7 +1803,7 @@ loadSaved();
   const t0 = performance.now(); let ultimo = 0;
   const laco = agora => {
     requestAnimationFrame(laco);
-    if (agora - ultimo < 40 || !sheet.hidden || document.hidden) return;
+    if (agora - ultimo < 40 || !sheet.hidden || document.hidden || VISAO_ATIVA !== "estilos") return;
     ultimo = agora;
     const t = (agora - t0) / 1000;
     for (const cv of visiveis) {
@@ -1672,3 +1815,182 @@ loadSaved();
   requestAnimationFrame(laco);
 })();
 
+/* ---------- tema claro / escuro + sidebar + roteador SPA ---------- */
+const METAS_ROTA = {
+  estilos: ["Estilos de Vídeo", "Escolha um visual 2D ou 3D e configure o seu vídeo", "Buscar estilos por nome, técnica ou tema..."],
+  galeria: ["Galeria de Peças & 3D", "492 peças animadas nos 17 acabamentos visuais (clique para inspecionar)", "Buscar peças (ex.: globo 3d, foguete, dinheiro, médico)..."],
+  personagens: ["Elenco & Personagens", "46 personagens articulados em várias idades, acessórios e estilos", "Buscar personagens (ex.: criadora, idosa, hijab, cadeira)..."],
+  legendas: ["Estúdio de Legendas", "Teste e compare todos os 13 estilos sincronizados ao vivo", "Filtrar peças ou estilos..."],
+  cenas: ["Cenas de Demonstração", "Assista às cenas compostas em 9:16 ou 16:9 em todos os acabamentos", "Buscar..."],
+};
+
+function aplicarTema(tema) {
+  const t = tema === "light" ? "light" : "dark";
+  document.body.dataset.theme = t;
+  try { localStorage.setItem("motion-theme", t); } catch {}
+  const sideLabel = document.getElementById("theme-side-label");
+  if (sideLabel) sideLabel.textContent = t === "dark" ? "Tema Claro" : "Tema Escuro";
+}
+aplicarTema((() => { try { return localStorage.getItem("motion-theme") || "dark"; } catch { return "dark"; } })());
+document.getElementById("theme-toggle")?.addEventListener("click", () => aplicarTema(document.body.dataset.theme === "dark" ? "light" : "dark"));
+document.getElementById("theme-toggle-side")?.addEventListener("click", () => aplicarTema(document.body.dataset.theme === "dark" ? "light" : "dark"));
+
+const shellEl = document.getElementById("app-shell");
+const sidebarScrim = document.getElementById("sidebar-scrim");
+const setMobileMenu = on => {
+  shellEl?.classList.toggle("mobile-open", on);
+  if (sidebarScrim) sidebarScrim.hidden = !on;
+};
+document.getElementById("sidebar-collapse")?.addEventListener("click", () => shellEl?.classList.toggle("sidebar-collapsed"));
+document.getElementById("mobile-menu-btn")?.addEventListener("click", () => setMobileMenu(true));
+sidebarScrim?.addEventListener("click", () => setMobileMenu(false));
+
+let kitPromise = null;
+let kitCtrl = null;
+function garantirKit() {
+  if (!kitPromise) {
+    kitPromise = inicializarGaleriaKit({
+      container: document.getElementById("view-kit"),
+      legendaAtual: S.captionStyle,
+      aoEscolherLegenda: id => {
+        S.captionStyle = id;
+        const sel = inner.querySelector("#f-capstyle");
+        if (sel) sel.value = id;
+      },
+      aoNavegarUrl: path => history.replaceState(null, "", path),
+    }).then(ctrlKit => {
+      kitCtrl = ctrlKit;
+      const bP = document.getElementById("badge-pecas"), bPer = document.getElementById("badge-personagens"), bLeg = document.getElementById("badge-legendas");
+      if (bP) bP.textContent = ctrlKit.indice.total;
+      if (bPer) bPer.textContent = ctrlKit.indice.personagens.length;
+      if (bLeg) bLeg.textContent = ctrlKit.indice.legendas.length;
+      return ctrlKit;
+    });
+  }
+  return kitPromise;
+}
+
+async function aplicarRota(urlCompleta) {
+  const u = new URL(urlCompleta, location.origin);
+  const path = u.pathname.replace(/\/+$/, "") || "/";
+  const viewEstilos = document.getElementById("view-estilos");
+  const viewKit = document.getElementById("view-kit");
+  const searchEl = document.getElementById("global-search");
+  const ctaEl = document.getElementById("topbar-cta");
+  const meta = (visao) => {
+    const [tit, sub, ph] = METAS_ROTA[visao] || METAS_ROTA.estilos;
+    document.getElementById("page-title").textContent = tit;
+    document.getElementById("page-sub").textContent = sub;
+    if (searchEl) searchEl.placeholder = ph;
+  };
+
+  document.querySelectorAll(".sb-link[data-rota]").forEach(a => {
+    const rotaLimpa = a.dataset.rota.split("?")[0];
+    const match = (path === "/" && rotaLimpa === "/estilos") || path === rotaLimpa || (rotaLimpa === "/estilos" && path.startsWith("/estilos/"));
+    const isAtalho3d = a.dataset.rota.includes("cat=objetos3d");
+    a.classList.toggle("active", isAtalho3d ? (path === "/galeria" && u.searchParams.get("cat") === "objetos3d") : (match && !(path === "/galeria" && u.searchParams.get("cat") === "objetos3d")));
+  });
+
+  if (path === "/galeria" || path === "/personagens" || path === "/legendas" || path === "/cenas") {
+    const aba = path.slice(1);
+    VISAO_ATIVA = aba;
+    if (!sheet.hidden) { SEM_HIST = true; close(); SEM_HIST = false; }
+    viewEstilos.hidden = true;
+    viewKit.hidden = false;
+    meta(aba);
+    if (ctaEl) { ctaEl.textContent = "Ver Estilos"; ctaEl.dataset.action = "estilos"; }
+    const ctrlKit = await garantirKit();
+    ctrlKit.atualizarLegendaAtiva(S.captionStyle);
+    ctrlKit.ativar(aba, u.searchParams);
+    if (searchEl) {
+      const qUrl = u.searchParams.get("q") || "";
+      searchEl.value = qUrl;
+      ctrlKit.filtrarBusca(qUrl);
+    }
+    setMobileMenu(false);
+    return;
+  }
+
+  VISAO_ATIVA = "estilos";
+  kitCtrl?.desativar();
+  viewKit.hidden = true;
+  viewEstilos.hidden = false;
+  meta("estilos");
+  if (ctaEl) { ctaEl.textContent = "+ Criar Estilo"; ctaEl.dataset.action = "criar"; }
+  setMobileMenu(false);
+
+  if (path === "/criar-estilo") {
+    SEM_HIST = true; openCreator(null); SEM_HIST = false;
+  } else if (path.startsWith("/estilos/")) {
+    const id = path.slice("/estilos/".length);
+    const idx = STYLES.findIndex(s => s.id === id);
+    if (idx >= 0) { SEM_HIST = true; open(idx, null); SEM_HIST = false; }
+  } else if (!sheet.hidden) {
+    SEM_HIST = true; close(); SEM_HIST = false;
+  }
+}
+
+export function navegar(destino, { substituir = false } = {}) {
+  const atual = location.pathname + location.search;
+  if (atual !== destino) history[substituir ? "replaceState" : "pushState"](null, "", destino);
+  return aplicarRota(destino);
+}
+
+document.addEventListener("click", e => {
+  const linkLeg = e.target.closest("[data-abrir-legendas]");
+  if (linkLeg) { e.preventDefault(); navegar("/legendas"); return; }
+  const link = e.target.closest("a[data-rota]");
+  if (link && !e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+    e.preventDefault();
+    navegar(link.getAttribute("href"));
+    return;
+  }
+  const catPill = e.target.closest("#style-cats .pill");
+  if (catPill) {
+    FILTRO_CAT = catPill.dataset.cat;
+    document.querySelectorAll("#style-cats .pill").forEach(b => b.classList.toggle("active", b === catPill));
+    renderGrid(); drawCards();
+    return;
+  }
+  if (e.target.closest("#hero-filter-3d")) {
+    const p3d = document.querySelector('#style-cats .pill[data-cat="3d"]');
+    if (p3d) p3d.click();
+    document.getElementById("style-cats")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  if (e.target.closest("#hero-open-creator")) { openCreator(e.target); return; }
+  if (e.target.closest("#limpar-filtros")) {
+    FILTRO_CAT = "todos"; BUSCA_GLOBAL = "";
+    const gs = document.getElementById("global-search"); if (gs) gs.value = "";
+    document.querySelectorAll("#style-cats .pill").forEach(b => b.classList.toggle("active", b.dataset.cat === "todos"));
+    renderGrid(); drawCards();
+    return;
+  }
+  const cta = e.target.closest("#topbar-cta");
+  if (cta) {
+    if (cta.dataset.action === "estilos") navegar("/estilos");
+    else openCreator(cta);
+  }
+});
+
+document.getElementById("global-search")?.addEventListener("input", e => {
+  const v = e.target.value;
+  if (VISAO_ATIVA === "estilos") {
+    BUSCA_GLOBAL = v;
+    renderGrid(); drawCards();
+  } else {
+    kitCtrl?.filtrarBusca(v);
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    const s = document.getElementById("global-search");
+    s?.focus(); s?.select();
+  }
+});
+
+window.addEventListener("popstate", () => aplicarRota(location.pathname + location.search));
+aplicarRota(location.pathname + location.search);
+garantirKit();

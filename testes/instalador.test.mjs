@@ -88,7 +88,7 @@ test("diagnóstico reflete a instalação", () => {
   const claude = d.plataformas.find(p => p.id === "claude");
   assert.equal(claude.skills, claude.total);
   assert.equal(d.plataformas.find(p => p.id === "antigravity").detectada, false);
-  assert.equal(d.estilos.length, 5);
+  assert.equal(d.estilos.length, 17);
 });
 
 test("modo de narração: manual sem chaves, api com conjunto completo, preferido respeitado", () => {

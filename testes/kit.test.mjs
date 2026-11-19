@@ -4,7 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as M from "../kit/movimento.js";
-import { misturarCor } from "../kit/pinceis.js";
+import { misturarCor, criarPincel } from "../kit/pinceis.js";
+import { criarContextoFalso, prepararAmbienteFalso } from "../kit/contexto-falso.js";
+import { caixa3d, cilindro3d, piramide3d, desenharMalha3d, personagem3d } from "../kit/3d.js";
 import { medirQuadros, trechosParados, relatorio } from "../scripts/medir-movimento.mjs";
 import { pertenceAoProduto } from "../scripts/verificar-produto.mjs";
 
@@ -89,13 +91,28 @@ test("medidor de movimento separa vídeo vivo de vídeo parado", () => {
 });
 
 test("kit faz parte do produto e as peças do catálogo existem", async () => {
-  for (const f of ["movimento.js", "pinceis.js", "pecas.js", "filme.js", "tocador.js", "exemplo.js", "demo.html", "LEIA-ME.md"]) {
+  for (const f of ["movimento.js", "pinceis.js", "3d.js", "pecas.js", "filme.js", "tocador.js", "exemplo.js", "demo.html", "LEIA-ME.md"]) {
     assert.ok(fs.existsSync(path.join(raiz, "kit", f)), f);
     assert.ok(pertenceAoProduto("kit/" + f), f);
   }
   const pecas = await import("../kit/pecas.js"), guia = fs.readFileSync(path.join(raiz, "kit", "LEIA-ME.md"), "utf8");
   for (const grupo of Object.values(pecas.CATALOGO)) for (const [nome, fn] of Object.entries(grupo)) { assert.equal(typeof fn, "function", nome); assert.ok(guia.includes(nome), `guia cita ${nome}`); }
   for (const nome of [...Object.keys(M.POSES), ...Object.keys(M.CICLOS), ...M.ENTRADAS]) assert.ok(guia.includes(nome), `guia cita ${nome}`);
+});
+
+test("motor 3D desenha sólidos e personagens articulados sem números inválidos", () => {
+  prepararAmbienteFalso();
+  const ctx = criarContextoFalso({ largura: 1080, altura: 1920, registrar: true });
+  const p = criarPincel("3d");
+  p.inicio(ctx, 1080, 1920, 1.4);
+  const caras = desenharMalha3d(p, caixa3d(120, 120, 120, "c1"), { rx: 0.4, ry: 0.8 });
+  assert.ok(caras >= 1);
+  assert.ok(desenharMalha3d(p, cilindro3d(50, 50, 100, 10, "c2"), { rx: 0.6, ry: 0.3 }) >= 1);
+  assert.ok(desenharMalha3d(p, piramide3d(60, 100, 4, "c3"), { rx: 0.3, ry: 0.5 }) >= 1);
+  const esq = personagem3d(p, { pose: M.CICLOS.andar(1.4), robo: true, t: 1.4 });
+  p.fim();
+  assert.ok(esq.cabeca && esq.maoF && ctx.formas > 5);
+  assert.deepEqual(ctx.invalidos, []);
 });
 
 test("skills de animação usam o kit como referência e exigem movimento", () => {

@@ -16,7 +16,7 @@ Antes da primeira pergunta, mostre estes seis marcos:
 1) Instalação (Node.js 20+, FFmpeg, comandos de barra no Claude Code, .env, Remotion)
 2) Chaves e credenciais (eu preencho o .env: voz, legendas e, se quiser publicar, Instagram)
 3) Marca (nome e três cores, opcional)
-4) Estilo (escolher um dos 5 estilos no painel ou criar um estilo novo a partir de um vídeo)
+4) Estilo (escolher um dos 17 estilos no painel ou criar um estilo novo a partir de um vídeo)
 5) Primeiro vídeo (tema, plano de beats, storyboard, animação, revisão e MP4)
 6) Publicação (opcional, só com a palavra PUBLICAR)
 
@@ -46,7 +46,7 @@ Antes da primeira pergunta, mostre estes seis marcos:
 1) Instalação (Node.js 20+, FFmpeg, comandos de barra no Claude Code, .env, Remotion)
 2) Chaves e credenciais (eu preencho o .env: voz, legendas e, se quiser publicar, Instagram)
 3) Marca (nome e três cores, opcional)
-4) Estilo (escolher um dos 5 estilos no painel ou criar um estilo novo a partir de um vídeo)
+4) Estilo (escolher um dos 17 estilos no painel ou criar um estilo novo a partir de um vídeo)
 5) Primeiro vídeo (tema, plano de beats, storyboard, animação, revisão e MP4)
 6) Publicação (opcional, só com a palavra PUBLICAR)
 

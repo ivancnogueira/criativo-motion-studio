@@ -1,0 +1,11 @@
+{
+  "id": "mapa-documentario",
+  "nome": "Mapa & Satélite",
+  "subtitulo": "documentário cartográfico",
+  "motor": "Canvas 2D · relevo procedural e rotas",
+  "resumo": "Voos sobre mapas estilizados com relevo sombreado, regiões iluminadas, rotas em arco e pinos de tempo.",
+  "aparencia": "Cartografia cinematográfica em fundo escuro oceânico com continentes em relevo, fronteiras brilhantes, linhas de rota tracejadas avançando e câmera que sobrevoa de um ponto a outro.",
+  "melhorPara": "Geopolítica, história, curiosidades geográficas, logística global, mercado e economia.",
+  "bomSaber": "Os mapas são estilizados de forma procedural para ilustrar o tema; não tente simular mapas de rua com precisão de GPS.",
+  "temaExemplo": "Explique como funciona o comércio marítimo mundial pelos estreitos estratégicos: a câmera voa entre canais iluminados mostrando navios, rotas comerciais e volumes."
+}

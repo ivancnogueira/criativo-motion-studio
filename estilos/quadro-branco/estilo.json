@@ -1,0 +1,11 @@
+{
+  "id": "quadro-branco",
+  "nome": "Quadro Branco & Caneta",
+  "subtitulo": "aula desenhada ao vivo",
+  "motor": "Canvas 2D · traço progressivo e marca-texto",
+  "resumo": "Ilustrações e esquemas desenhados ao vivo com caneta preta e marca-texto colorido sobre papel limpo.",
+  "aparencia": "Fundo branco texturizado com grade de pontos sutil, desenhos que se riscam traço por traço na frente do espectador, setas manuais e destaques coloridos estilo marcador.",
+  "melhorPara": "Aulas, tutoriais passo a passo, resumos de livros, conceitos complexos e educação.",
+  "bomSaber": "É um dos formatos mais didáticos. Evite textos longos: deixe o desenho explicar cada etapa enquanto as palavras-chave ganham marca-texto.",
+  "temaExemplo": "Ensine a regra 50-30-20 para organizar o salário: a caneta divide um círculo ao vivo em três fatias e destaca cada porcentagem com marca-texto colorido."
+}

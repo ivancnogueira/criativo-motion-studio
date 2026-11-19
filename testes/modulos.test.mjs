@@ -165,10 +165,23 @@ test("extração de estilo: cores dominantes e medidas", () => {
   assert.match(t, /#7C3AED \(~60%\)/);
 });
 
-test("vitrine lista os cinco estilos nativos com suas cenas", () => {
+test("vitrine lista os 17 estilos nativos com suas cenas e todos montam o prompt", () => {
   const r = gerarVitrine(undefined, { gravar: false });
-  assert.deepEqual(r.estilos.filter(e => !e.personalizado).map(e => e.previa), [0, 1, 2, 3, 4]);
+  const nativos = r.estilos.filter(e => !e.personalizado);
+  assert.equal(nativos.length, 17);
+  assert.deepEqual(nativos.map(e => e.previa), Array.from({ length: 17 }, (_, i) => i));
   assert.equal(r.estilos[0].id, "recorte-de-papel");
+  for (const est of nativos) {
+    const prompt = montarPrompt({ estilo: est.id, tema: "Teste completo de estilo", duracaoSegundos: 20, vertical: true, paleta: "estilo" });
+    assert.ok(!/\{\{(TOPIC|FORMAT|RESOLUTION|DURATION|STORYBOARD|VOICEOVER|SUBTITLES|SFX|MUSIC)\}\}/.test(prompt), `sobrou marcador em ${est.id}`);
+  }
+  const previas = fs.readFileSync(path.join(process.cwd(), "vitrine", "previas.js"), "utf8");
+  const blocoRender = previas.match(/const RENDER = \[([\s\S]*?)\];/)?.[1] || "";
+  const qtdRender = blocoRender.split(",").map(s => s.trim()).filter(Boolean).length;
+  assert.equal(qtdRender, 17, "vitrine/previas.js deve ter uma cena em RENDER para cada estilo nativo");
+  const painel = fs.readFileSync(path.join(process.cwd(), "painel", "app.js"), "utf8");
+  const qtdPainel = (painel.match(/^\s+\{\s*name:\s*"/gm) || []).length;
+  assert.equal(qtdPainel, 17, "painel/app.js deve ter um card em STYLES para cada estilo nativo");
 });
 
 test("paleta da marca vem de marca.json e exige nome e cores", () => {

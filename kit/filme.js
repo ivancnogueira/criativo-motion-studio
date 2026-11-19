@@ -8,7 +8,25 @@ import { clamp, E, rng, escalonar, prog } from "./movimento.js";
 
 export const TRANSICOES = ["empurrar", "cortina", "rasgo", "iris", "blocos", "zoom", "virar", "corte"];
 /** Transições que combinam com cada pincel; o modo "auto" alterna entre elas sem repetir. */
-export const TRANSICOES_DO_ESTILO = { papel: ["rasgo", "virar", "cortina", "empurrar"], flat: ["empurrar", "iris", "cortina", "virar"], pixel: ["blocos", "empurrar", "cortina"], traco: ["cortina", "zoom", "empurrar", "iris"], vidro: ["zoom", "iris", "empurrar", "cortina"] };
+export const TRANSICOES_DO_ESTILO = {
+  papel: ["rasgo", "virar", "cortina", "empurrar"],
+  flat: ["empurrar", "iris", "cortina", "virar"],
+  pixel: ["blocos", "empurrar", "cortina"],
+  traco: ["cortina", "zoom", "empurrar", "iris"],
+  vidro: ["zoom", "iris", "empurrar", "cortina"],
+  "3d": ["zoom", "virar", "empurrar", "iris"],
+  toon: ["cortina", "zoom", "empurrar", "blocos"],
+  neon: ["zoom", "cortina", "blocos", "iris"],
+  aquarela: ["iris", "cortina", "zoom", "empurrar"],
+  riso: ["rasgo", "blocos", "empurrar", "virar"],
+  retro: ["iris", "virar", "empurrar", "cortina"],
+  quadro: ["cortina", "empurrar", "virar", "iris"],
+  bento: ["empurrar", "zoom", "cortina", "blocos"],
+  cinetico: ["empurrar", "blocos", "zoom", "cortina"],
+  mapa: ["zoom", "cortina", "iris", "empurrar"],
+  colagem: ["rasgo", "empurrar", "virar", "cortina"],
+  bauhaus: ["blocos", "empurrar", "cortina", "virar"],
+};
 
 /** Cria o filme.
     beats: [{ de, ate, desenhar(q), transicao?, fundo?(q) }]

@@ -6,6 +6,7 @@
 // São referências para não começar do zero: cada vídeo deve ter peças próprias do tema.
 export * from "./pecas/base.js";
 export * from "./pecas/pessoas.js";
+export * from "./pecas/objetos3d.js";
 export * from "./pecas/animais.js";
 export * from "./pecas/natureza.js";
 export * from "./pecas/cidade.js";
@@ -27,6 +28,7 @@ export { pessoa, escolherElenco, PERSONAGENS, CABELOS, IDADES, FAIXAS, GENEROS }
 
 import * as c_base from "./pecas/base.js";
 import * as c_pessoas from "./pecas/pessoas.js";
+import * as c_objetos3d from "./pecas/objetos3d.js";
 import * as c_animais from "./pecas/animais.js";
 import * as c_natureza from "./pecas/natureza.js";
 import * as c_cidade from "./pecas/cidade.js";
@@ -44,4 +46,4 @@ import * as c_simbolos from "./pecas/simbolos.js";
 import * as c_graficos from "./pecas/graficos.js";
 import * as c_efeitos from "./pecas/efeitos.js";
 /** As categorias, na ordem do índice: { id: módulo }. As peças de cada uma estão listadas em kit/indice.json. */
-export const CATEGORIAS = { base: c_base, pessoas: c_pessoas, animais: c_animais, natureza: c_natureza, cidade: c_cidade, transporte: c_transporte, tecnologia: c_tecnologia, comunicacao: c_comunicacao, dinheiro: c_dinheiro, saude: c_saude, comida: c_comida, casa: c_casa, ciencia: c_ciencia, historia: c_historia, esporte: c_esporte, simbolos: c_simbolos, graficos: c_graficos, efeitos: c_efeitos };
+export const CATEGORIAS = { base: c_base, pessoas: c_pessoas, objetos3d: c_objetos3d, animais: c_animais, natureza: c_natureza, cidade: c_cidade, transporte: c_transporte, tecnologia: c_tecnologia, comunicacao: c_comunicacao, dinheiro: c_dinheiro, saude: c_saude, comida: c_comida, casa: c_casa, ciencia: c_ciencia, historia: c_historia, esporte: c_esporte, simbolos: c_simbolos, graficos: c_graficos, efeitos: c_efeitos };

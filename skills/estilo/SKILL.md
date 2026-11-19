@@ -1,6 +1,6 @@
 ---
 name: estilo
-description: Diretor de estilo do {{PRODUTO}}. Ajuda a escolher o visual do vídeo entre os estilos instalados (os cinco nativos e os criados pelo usuário) e define a paleta de cores. Use quando o usuário perguntar quais estilos existem, qual combina com o tema, ou quiser trocar cores.
+description: Diretor de estilo do {{PRODUTO}}. Ajuda a escolher o visual do vídeo entre os estilos instalados (os 17 estilos nativos, incluindo 3D e artísticos, e os criados pelo usuário) e define a paleta de cores. Use quando o usuário perguntar quais estilos existem, qual combina com o tema, ou quiser trocar cores.
 ---
 
 # Diretor de estilo — {{PRODUTO}}

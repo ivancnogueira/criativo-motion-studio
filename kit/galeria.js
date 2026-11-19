@@ -43,7 +43,7 @@ export function desenharFolha(p, itens, { cols = 6, cel = 300, topo = 0, t = 0, 
     p.recortar(retP(x + 2, y + 2, cel - 4, cel - 4), () => p.em({ x: x + cel / 2 - (x0 + x1) / 2 * s, y: y + areaH / 2 - (y0 + y1) / 2 * s, s }, () => {
       try { it.fn(p, opcoesDaPeca(it.info, t + i * .37)); } catch (e) { c.erro = String(e?.message || e); }
     }));
-    if (rotulos) p.texto(c.erro ? "ERRO: " + it.nome : it.nome, x + cel / 2, y + cel - tam * 1.05, { tam, cor: c.erro ? "c1" : p.estilo === "pixel" ? "claro" : "tinta", peso: 700 });
+    if (rotulos) p.texto(c.erro ? "ERRO: " + it.nome : it.nome, x + cel / 2, y + cel - tam * 1.05, { tam, cor: c.erro ? "c1" : (p.estilo === "pixel" || p.estilo === "toon") ? "claro" : "tinta", peso: 700 });
     celulas.push(c);
   });
   return celulas;

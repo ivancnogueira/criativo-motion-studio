@@ -3,52 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Painel de vídeos</title>
+<title>Criativo Motion Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Courier+Prime:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Press+Start+2P&family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="/painel/painel.css">
 </head>
-<body>
+<body data-theme="dark">
 
-<div class="desk">
-  <div class="brand rise a1">
-    <p class="brand-name" id="brand-name">Criativo Motion Studio</p>
-    <span class="brand-tag">Vídeos curtos em motion graphics</span>
-  </div>
-  <div class="brand-bar" aria-hidden="true"></div>
-  <div class="paper">
-    <main class="page">
-      <p class="status" id="aviso" role="status" hidden>Esta pasta ainda não foi instalada: o painel abre só para consulta. Rode <b>npm run instalar</b> para poder salvar.</p>
-      <header class="hero">
-        <span class="kicker rise a1">Caderno de estilos · vídeos prontos</span>
-        <h1 class="h1 rise a2">Estilos de motion graphics, <span class="ul">um vídeo</span> para cada</h1>
-        <p class="sub rise a3">Escolha o visual, escreva o tema e salve a configuração. Gostou do estilo de algum vídeo? Arraste um trecho e ele vira um template novo.</p>
-      </header>
+<div class="app-shell" id="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Navegação do estúdio">
+    <div class="sb-head">
+      <a href="/estilos" class="sb-brand" data-rota="/estilos">
+        <span class="sb-logo" aria-hidden="true">
+          <svg viewBox="0 0 28 28" width="22" height="22" fill="none">
+            <rect x="3" y="3" width="10" height="10" rx="3" fill="currentColor"/>
+            <rect x="15" y="3" width="10" height="10" rx="5" fill="#14B8A6"/>
+            <path d="M5 17h18l-9 8-9-8Z" fill="#34D399"/>
+          </svg>
+        </span>
+        <span class="sb-brand-txt">
+          <strong class="brand-name" id="brand-name">Criativo Motion Studio</strong>
+          <small class="brand-tag">Estúdio 2D &amp; 3D</small>
+        </span>
+      </a>
+      <button type="button" class="icon-btn sb-collapse" id="sidebar-collapse" aria-label="Recolher barra lateral" title="Recolher ou expandir barra lateral">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12.5 5 7.5 10l5 5"/></svg>
+      </button>
+    </div>
 
-      <ol class="how rise a3" aria-label="Como funciona">
-        <li><span class="dot">1</span><span><b>Escolha um estilo</b>Cada card mostra uma cena desenhada naquele estilo.</span></li>
-        <li><span class="dot">2</span><span><b>Configure</b>Tema, storyboard, narração, formato, áudio e cores.</span></li>
-        <li><span class="dot">3</span><span><b>Cole no agente</b>No chat do Claude Code, Codex ou Antigravity. Envie o MP3 da narração por aqui, se marcou essa opção.</span></li>
-        <li><span class="dot">4</span><span><b>Exporte o MP4</b>Clique em Exportar na animação que o agente criar.</span></li>
-      </ol>
-
-      <div class="grid-tools" id="grid-tools">
-        <button type="button" class="mini" id="manage-btn" aria-pressed="false">Ocultar ou excluir estilos</button>
-        <span class="tools-note" id="hidden-note"></span>
-        <p class="status" id="grid-status" aria-live="polite"></p>
+    <nav class="sb-nav">
+      <div class="sb-group">
+        <span class="sb-label">Estúdio de Vídeo</span>
+        <a href="/estilos" class="sb-link active" data-rota="/estilos" aria-current="page">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+          <span class="sb-txt">Estilos de Vídeo</span>
+          <span class="sb-badge" id="badge-estilos">17</span>
+        </a>
+        <a href="/criar-estilo" class="sb-link" data-rota="/criar-estilo">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4v12M4 10h12"/><rect x="2.5" y="2.5" width="15" height="15" rx="4"/></svg>
+          <span class="sb-txt">Criar do Vídeo</span>
+          <span class="sb-badge accent">Extrator</span>
+        </a>
       </div>
+
+      <div class="sb-group">
+        <span class="sb-label">Kit de Movimento &amp; 3D</span>
+        <a href="/galeria" class="sb-link" data-rota="/galeria">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 16.5 6.2v7.6L10 17.5 3.5 13.8V6.2L10 2.5Z"/><path d="m3.5 6.2 6.5 3.8 6.5-3.8M10 10v7.5"/></svg>
+          <span class="sb-txt">Peças &amp; 3D</span>
+          <span class="sb-badge" id="badge-pecas">492</span>
+        </a>
+        <a href="/personagens" class="sb-link" data-rota="/personagens">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6.5" r="3"/><path d="M4.5 16.5c.6-2.9 2.7-4.5 5.5-4.5s4.9 1.6 5.5 4.5"/></svg>
+          <span class="sb-txt">Personagens</span>
+          <span class="sb-badge" id="badge-personagens">46</span>
+        </a>
+        <a href="/legendas" class="sb-link" data-rota="/legendas">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="15" height="12" rx="3"/><path d="M6 12.5h4.5M12.5 12.5H14M6 9.5h8"/></svg>
+          <span class="sb-txt">Legendas</span>
+          <span class="sb-badge" id="badge-legendas">13</span>
+        </a>
+        <a href="/cenas" class="sb-link" data-rota="/cenas">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="3"/><path d="m8.5 7.2 5 2.8-5 2.8V7.2Z" fill="currentColor" stroke="none"/></svg>
+          <span class="sb-txt">Cenas ao Vivo</span>
+          <span class="sb-badge live">Play</span>
+        </a>
+      </div>
+
+      <div class="sb-group sb-group-meta">
+        <span class="sb-label">Atalhos Rápidos</span>
+        <a href="/galeria?cat=objetos3d&estilo=3d" class="sb-link" data-rota="/galeria?cat=objetos3d&estilo=3d">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M10 3.5a9 9 0 0 1 0 13M3.5 10h13"/></svg>
+          <span class="sb-txt">Objetos 3D</span>
+          <span class="sb-badge accent">3D</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="instancia-pill" id="instancia-pill">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span class="instancia-txt" id="instancia-txt">Verificando instalação…</span>
+      </div>
+      <button type="button" class="sb-theme-btn" id="theme-toggle-side">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15.5 12.2A6 6 0 0 1 7.8 4.5a6 6 0 1 0 7.7 7.7Z"/></svg>
+        <span class="sb-txt" id="theme-side-label">Tema Claro</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button type="button" class="icon-btn mobile-only" id="mobile-menu-btn" aria-label="Abrir menu lateral">
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>
+        </button>
+        <div class="crumb">
+          <h1 class="page-title" id="page-title">Estilos de Vídeo</h1>
+          <span class="page-sub" id="page-sub">Escolha um visual 2D ou 3D e configure o seu vídeo</span>
+        </div>
+      </div>
+
+      <div class="topbar-search">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="m13.5 13.5 3.5 3.5"/></svg>
+        <input type="search" id="global-search" placeholder="Buscar estilos, peças 3D, personagens..." autocomplete="off" aria-label="Buscar no estúdio">
+        <kbd class="kbd-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" class="icon-btn" id="theme-toggle" aria-label="Alternar entre tema escuro e claro" title="Alternar tema">
+          <svg class="ico-sun" viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4"/></svg>
+          <svg class="ico-moon" viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M15.5 12.2A6 6 0 0 1 7.8 4.5a6 6 0 1 0 7.7 7.7Z"/></svg>
+        </button>
+        <button type="button" class="btn-primary" id="topbar-cta">+ Criar Estilo</button>
+      </div>
+    </header>
+
+    <p class="status install-banner" id="aviso" role="status" hidden>Esta pasta ainda não foi instalada: o painel abre só para consulta. Rode <b>npm run instalar</b> para poder salvar.</p>
+
+    <main class="view view-estilos" id="view-estilos">
+      <section class="hero-banner rise a1">
+        <div class="hero-copy">
+          <span class="kicker">Estúdio Unificado · Motion Graphics 2D &amp; 3D</span>
+          <h2 class="h1">Estilos de motion graphics, <span class="ul">um vídeo</span> para cada</h2>
+          <p class="sub">Visualize os 17 estilos nativos animados em tempo real, explore 492 peças (incluindo objetos e personagens 3D), defina a legenda e salve tudo em <code>projeto.json</code>.</p>
+          <div class="hero-actions">
+            <button type="button" class="btn-primary" id="hero-filter-3d">Explorar Estilos 3D</button>
+            <a href="/galeria?cat=objetos3d&estilo=3d" class="btn-ghost" data-rota="/galeria?cat=objetos3d&estilo=3d">Ver Galeria 3D</a>
+            <button type="button" class="btn-ghost" id="hero-open-creator">Extrair de um Vídeo</button>
+          </div>
+        </div>
+        <ol class="how" aria-label="Como funciona">
+          <li><span class="dot">1</span><span><b>Escolha o estilo</b>Card com prévia ao vivo em 2D, 3D ou shader.</span></li>
+          <li><span class="dot">2</span><span><b>Configure</b>Tema, narração, legendas, formato e marca.</span></li>
+          <li><span class="dot">3</span><span><b>Rode no agente</b>Salve e cole o comando no chat do seu agente.</span></li>
+          <li><span class="dot">4</span><span><b>Exporte MP4</b>Renderização direta na página gerada.</span></li>
+        </ol>
+      </section>
+
+      <div class="filter-bar">
+        <div class="cat-pills" id="style-cats" role="tablist" aria-label="Filtrar estilos por categoria">
+          <button type="button" class="pill active" data-cat="todos">Todos <span id="cnt-todos">17</span></button>
+          <button type="button" class="pill" data-cat="3d">3D &amp; Shaders</button>
+          <button type="button" class="pill" data-cat="artistico">Artísticos &amp; Táteis</button>
+          <button type="button" class="pill" data-cat="produto">Produto &amp; Aula</button>
+          <button type="button" class="pill" data-cat="retencao">Retenção &amp; Mapas</button>
+          <button type="button" class="pill" data-cat="personalizados" id="pill-custom" hidden>Criados por mim</button>
+        </div>
+
+        <div class="grid-tools" id="grid-tools">
+          <span class="tools-count" id="styles-count"></span>
+          <span class="tools-note" id="hidden-note"></span>
+          <button type="button" class="mini" id="manage-btn" aria-pressed="false">Ocultar ou excluir estilos</button>
+        </div>
+      </div>
+      <p class="status grid-status" id="grid-status" aria-live="polite"></p>
+
       <ul class="grid" id="grid"></ul>
+      <div class="empty-state" id="estilos-empty" hidden>
+        <p>Nenhum estilo encontrado para este filtro ou busca.</p>
+        <button type="button" class="mini" id="limpar-filtros">Mostrar todos os estilos</button>
+      </div>
       <div class="hidden-list" id="hidden-list" hidden></div>
 
       <section class="start" aria-labelledby="start-h">
-        <span class="tape"></span>
-        <h3 id="start-h">Não sabe qual estilo usar?</h3>
-        <p>Comece pelo que o vídeo precisa fazer.</p>
+        <div class="start-head">
+          <div>
+            <h3 id="start-h">Não sabe qual estilo usar?</h3>
+            <p>Comece pelo objetivo principal do seu vídeo.</p>
+          </div>
+          <a href="/galeria" class="btn-ghost" data-rota="/galeria">Abrir Galeria de Peças →</a>
+        </div>
         <ul id="starts"></ul>
       </section>
 
       <p class="closing">Mesmas configurações, quantos visuais você quiser. <span>Todos exportam em MP4.</span></p>
     </main>
+
+    <main class="view view-kit" id="view-kit" hidden></main>
   </div>
 </div>
 

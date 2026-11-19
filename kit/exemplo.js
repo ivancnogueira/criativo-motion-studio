@@ -71,7 +71,7 @@ export function criarExemplo(estilo = "papel", { vertical = true, paleta } = {})
     const c4 = vertical ? 4 : 8;
     ELENCO.forEach(([tipo, acao], i) => {
       const x = W / c4 * (i % c4 + .5), y = (vertical ? 900 : 760) + Math.floor(i / c4) * 520, k = q.cascata(i, { atraso: .1 });
-      p.em(combinar({ x, y }, entrada("pop", k)), () => { p.elipse(0, 6, 90, 16, "sombra", { prof: 0, liso: true }); K.personagem(p, { ...K.TIPOS[tipo], pose: CICLOS[acao](t), t, semente: i, expressao: acao === "tremer" ? "susto" : acao === "comemorar" ? "feliz" : "neutro" }); p.texto(`${tipo} · ${acao}`, 0, 70, { tam: 28, cor: "tinta", peso: 700 }); });
+      p.em(combinar({ x, y }, entrada("pop", k)), () => { p.elipse(0, 6, 90, 16, "sombra", { prof: 0, liso: true }); K.personagem(p, { ...K.TIPOS[tipo], pose: CICLOS[acao](t), t, semente: i, expressao: acao === "tremer" ? "susto" : acao === "comemorar" ? "feliz" : "neutro" }); p.texto(`${tipo} · ${acao}`, 0, 70, { tam: vertical ? 21 : 26, cor: "tinta", peso: 700 }); });
     });
   } });
   // 2. Cena composta: planos, atuação em sequência, chegada de objetos, câmera.

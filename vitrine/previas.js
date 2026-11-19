@@ -473,4 +473,401 @@ function renderPixel(cv, t) {
   const o = cv.getContext("2d"); o.setTransform(1, 0, 0, 1, 0, 0); o.imageSmoothingEnabled = false; o.drawImage(lo, 0, 0, cv.width, cv.height);
 }
 
-const RENDER = [renderPaper, renderGlass, renderIso, renderFlat, renderPixel];
+/* =========================================================== 6. 3D TOY & MASSINHA */
+function sphere3d(c, x, y, r, corBase, corLuz, corSombra) {
+  const g = c.createRadialGradient(x - r * .34, y - r * .36, r * .08, x, y, r);
+  g.addColorStop(0, corLuz); g.addColorStop(.55, corBase); g.addColorStop(1, corSombra);
+  c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+}
+function boxIso3d(c, cx, cy, w, h, d, ry, topCol, leftCol, rightCol) {
+  const cs = Math.cos(ry), sn = Math.sin(ry), hw = w / 2, hd = d / 2, hh = h / 2;
+  const P = (x, y, z) => {
+    const rx = x * cs + z * sn, rz = -x * sn + z * cs, f = 520 / (520 - rz * .65);
+    return [cx + rx * f, cy + (y - rz * .22) * f];
+  };
+  const face = (pts, fill) => { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); c.fillStyle = fill; c.fill(); };
+  const T0 = P(-hw, -hh, -hd), T1 = P(hw, -hh, -hd), T2 = P(hw, -hh, hd), T3 = P(-hw, -hh, hd);
+  const B0 = P(-hw, hh, -hd), B1 = P(hw, hh, -hd), B2 = P(hw, hh, hd), B3 = P(-hw, hh, hd);
+  if (sn >= 0) face([T0, T3, B3, B0], leftCol); else face([T1, T2, B2, B1], rightCol);
+  face([T3, T2, B2, B3], sn >= 0 ? rightCol : leftCol);
+  face([T0, T1, T2, T3], topCol);
+}
+function renderToy3D(cv, t) {
+  const [c] = scaled(cv);
+  const bg = c.createLinearGradient(0, 0, 0, LH); bg.addColorStop(0, "#F6F7FC"); bg.addColorStop(1, "#DDE1F4");
+  c.fillStyle = bg; c.fillRect(0, 0, LW, LH);
+  const glow = c.createRadialGradient(220, 110, 10, 320, 170, 320);
+  glow.addColorStop(0, "rgba(255,255,255,.85)"); glow.addColorStop(1, "rgba(255,255,255,0)");
+  c.fillStyle = glow; c.fillRect(0, 0, LW, LH);
+  font(c, 800, 21); txt(c, "Estúdio 3D Clay", 28, 42, "#1E243B");
+  font(c, 500, 11); txt(c, "personagens e volumes suaves com luz real", 29, 60, "#5C6588");
+  // Piso e sombras
+  c.fillStyle = "rgba(30,36,59,.10)";
+  c.beginPath(); c.ellipse(195, 294, 62, 16, 0, 0, 6.2832); c.fill();
+  c.beginPath(); c.ellipse(455, 296, 98, 22, 0, 0, 6.2832); c.fill();
+  // Personagem / Mascote Toy 3D
+  const bounce = Math.abs(Math.sin(t * 2.8)) * 12, wave = Math.sin(t * 4.5) * 14;
+  const rx = 195, ry = 236 - bounce;
+  c.lineCap = "round";
+  // Pernas
+  c.strokeStyle = "#2E375C"; c.lineWidth = 15;
+  c.beginPath(); c.moveTo(rx - 14, ry + 18); c.lineTo(rx - 18, 286); c.moveTo(rx + 14, ry + 18); c.lineTo(rx + 18, 286); c.stroke();
+  // Braços
+  c.strokeStyle = "#5B6CFF"; c.lineWidth = 13;
+  c.beginPath(); c.moveTo(rx - 28, ry - 4); c.lineTo(rx - 50, ry + 14); c.moveTo(rx + 28, ry - 4); c.lineTo(rx + 56, ry - 26 + wave); c.stroke();
+  sphere3d(c, rx + 58, ry - 28 + wave, 9, "#FF785A", "#FFC1B3", "#B9462E");
+  // Tronco e Cabeça
+  sphere3d(c, rx, ry, 34, "#5B6CFF", "#9AA6FF", "#3441A8");
+  sphere3d(c, rx, ry - 56, 38, "#FFFFFF", "#FFFFFF", "#CFD6EE");
+  // Antena + visor
+  c.strokeStyle = "#2E375C"; c.lineWidth = 4; c.beginPath(); c.moveTo(rx, ry - 94); c.lineTo(rx, ry - 110); c.stroke();
+  sphere3d(c, rx, ry - 114, 8, "#FFC84D", "#FFF0B3", "#C78E18");
+  c.fillStyle = "#1E243B"; rr(c, rx - 22, ry - 68, 44, 22, 11); c.fill();
+  c.fillStyle = "#14C8A8"; c.beginPath(); c.arc(rx - 9, ry - 57, 4, 0, 6.28); c.arc(rx + 9, ry - 57, 4, 0, 6.28); c.fill();
+  // Barras 3D e Moeda 3D flutuando
+  const vals = [.45, .75, 1.0], cols = [["#6EE7CF", "#14C8A8", "#0B8771"], ["#FF9A83", "#FF785A", "#BE4329"], ["#8C99FF", "#5B6CFF", "#3541AE"]];
+  vals.forEach((v, i) => {
+    const h = 38 + v * 68 + Math.sin(t * 2.2 + i) * 10;
+    boxIso3d(c, 390 + i * 62, 286 - h / 2, 38, h, 38, -0.45 + Math.sin(t * .7) * .12, cols[i][0], cols[i][1], cols[i][2]);
+  });
+  const coinY = 128 + Math.sin(t * 2.4) * 10, coinW = 6 + Math.abs(Math.cos(t * 2.1)) * 22;
+  c.fillStyle = "#D4971A"; c.beginPath(); c.ellipse(460 + 4, coinY, coinW, 24, 0, 0, 6.28); c.fill();
+  c.fillStyle = "#FFC84D"; c.beginPath(); c.ellipse(460, coinY, coinW, 24, 0, 0, 6.28); c.fill();
+  c.strokeStyle = "#FFF2B2"; c.lineWidth = 2; c.stroke();
+}
+
+/* =========================================================== 7. 3D CEL-SHADING ANIME */
+function renderCelAnime(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#18132B"; c.fillRect(0, 0, LW, LH);
+  // Linhas de velocidade radiais
+  c.save(); c.translate(340, 185); c.strokeStyle = "rgba(56,214,255,.16)";
+  for (let i = 0; i < 24; i++) {
+    const a = (i / 24) * 6.2832 + t * .12, r0 = 110 + ((t * 140 + i * 31) % 90);
+    c.lineWidth = i % 3 === 0 ? 2.5 : 1.2;
+    c.beginPath(); c.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); c.lineTo(Math.cos(a) * (r0 + 95), Math.sin(a) * (r0 + 95)); c.stroke();
+  }
+  c.restore();
+  // Blocos 3D com contorno duro toon
+  const ang = t * .9;
+  for (let i = 0; i < 3; i++) {
+    const a = ang + i * 2.094, x = 350 + Math.cos(a) * 125, y = 188 + Math.sin(a) * 46;
+    const z = Math.sin(a), sc = .72 + (z + 1) * .22;
+    c.save(); c.translate(x, y); c.scale(sc, sc);
+    c.fillStyle = "#0D0917"; rr(c, -26 + 5, -26 + 6, 52, 52, 12); c.fill();
+    c.fillStyle = ["#FF4D6D", "#FFD166", "#38D6FF"][i]; rr(c, -26, -26, 52, 52, 12); c.fill();
+    c.fillStyle = "rgba(255,255,255,.35)"; rr(c, -22, -22, 44, 16, 8); c.fill();
+    c.strokeStyle = "#0D0917"; c.lineWidth = 3.5; rr(c, -26, -26, 52, 52, 12); c.stroke();
+    c.restore();
+  }
+  // Núcleo central toon
+  const pul = 1 + Math.sin(t * 4) * .06;
+  c.save(); c.translate(350, 185); c.scale(pul, pul);
+  c.fillStyle = "#0D0917"; c.beginPath(); c.arc(6, 7, 50, 0, 6.28); c.fill();
+  c.fillStyle = "#9B72FF"; c.beginPath(); c.arc(0, 0, 50, 0, 6.28); c.fill();
+  c.fillStyle = "#C3AAFF"; c.beginPath(); c.arc(-10, -10, 32, 0, 6.28); c.fill();
+  c.strokeStyle = "#0D0917"; c.lineWidth = 4; c.beginPath(); c.arc(0, 0, 50, 0, 6.28); c.stroke();
+  c.fillStyle = "#FFF8EC"; c.beginPath(); c.arc(-18, -18, 8, 0, 6.28); c.fill();
+  c.restore();
+  // Título estilo anime
+  c.fillStyle = "#0D0917"; rr(c, 32, 30, 214, 38, 8); c.fill();
+  c.fillStyle = "#FF4D6D"; rr(c, 28, 26, 214, 38, 8); c.fill();
+  c.strokeStyle = "#0D0917"; c.lineWidth = 3; c.stroke();
+  font(c, 900, 17); txt(c, "AÇÃO EM CEL-SHADING", 135, 50, "#FFF8EC", "center");
+  font(c, 700, 11); txt(c, "CONTORNO + SOMBRA EM BLOCO", 30, 82, "#FFD166");
+}
+
+/* =========================================================== 8. 3D NEON & HUD */
+function renderNeon3D(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#070816"; c.fillRect(0, 0, LW, LH);
+  // Grade em perspectiva no chão
+  c.strokeStyle = "rgba(0,245,212,.18)"; c.lineWidth = 1;
+  const hy = 205;
+  for (let i = -8; i <= 8; i++) { c.beginPath(); c.moveTo(320 + i * 18, hy); c.lineTo(320 + i * 78, LH); c.stroke(); }
+  for (let j = 0; j < 7; j++) { const f = ((j + (t * 1.4) % 1) / 7), y = hy + f * f * (LH - hy); c.beginPath(); c.moveTo(0, y); c.lineTo(LW, y); c.stroke(); }
+  // Cubo wireframe neon 3D girando
+  const cs = Math.cos(t * .9), sn = Math.sin(t * .9), cx = 250, cy = 175, s = 54;
+  const pts = [[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1], [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]].map(([x, y, z]) => {
+    const rx = x * cs + z * sn, rz = -x * sn + z * cs, ry = y * .9 + rz * .35, f = 3.2 / (3.2 - rz * .6);
+    return [cx + rx * s * f, cy + ry * s * f];
+  });
+  c.save(); c.shadowColor = "#00F5D4"; c.shadowBlur = 14; c.strokeStyle = "#00F5D4"; c.lineWidth = 2.4;
+  [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]].forEach(([a, b]) => {
+    c.beginPath(); c.moveTo(pts[a][0], pts[a][1]); c.lineTo(pts[b][0], pts[b][1]); c.stroke();
+  });
+  c.fillStyle = "#FF3CAC"; c.shadowColor = "#FF3CAC"; c.beginPath(); c.arc(cx, cy, 14 + Math.sin(t * 4) * 3, 0, 6.28); c.fill();
+  c.restore();
+  // Painel HUD lateral
+  c.fillStyle = "rgba(17,23,52,.86)"; rr(c, 370, 82, 232, 186, 10); c.fill();
+  c.strokeStyle = "#6C63FF"; c.lineWidth = 1.6; rr(c, 370, 82, 232, 186, 10); c.stroke();
+  font(c, 700, 12, "normal", MONO); txt(c, "CRIPTOGRAFIA ATIVA", 388, 110, "#00F5D4");
+  for (let i = 0; i < 4; i++) {
+    const k = .35 + .65 * (.5 + .5 * Math.sin(t * 2.5 + i * 1.4));
+    c.fillStyle = "rgba(233,244,255,.12)"; rr(c, 388, 130 + i * 30, 194, 12, 6); c.fill();
+    c.fillStyle = i % 2 ? "#FF3CAC" : "#00F5D4"; rr(c, 388, 130 + i * 30, 194 * k, 12, 6); c.fill();
+  }
+  font(c, 700, 20); txt(c, "3D NEON HUD", 30, 46, "#E9F4FF");
+  font(c, 500, 10.5, "normal", MONO); txt(c, "SISTEMA SEGURO · CAMADA 3D", 31, 64, "#FF3CAC");
+}
+
+/* =========================================================== 9. AQUARELA */
+function renderAquarela(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#FAF6EE"; c.fillRect(0, 0, LW, LH);
+  c.save(); c.globalCompositeOperation = "multiply"; c.globalAlpha = .45; c.drawImage(fiber(), 0, 0, 1280, 720); c.restore();
+  // Manchas orgânicas de aquarela
+  const manchas = [
+    [220 + Math.sin(t * .6) * 8, 195, 115, "76,126,168"],
+    [350 + Math.cos(t * .5) * 10, 175, 105, "224,122,95"],
+    [450, 225 + Math.sin(t * .7) * 6, 95, "129,178,154"],
+    [300, 250, 88, "242,204,143"],
+  ];
+  manchas.forEach(([x, y, r, rgb], i) => {
+    const pul = 1 + Math.sin(t * 1.4 + i) * .05;
+    const g = c.createRadialGradient(x, y, r * .1, x, y, r * pul);
+    g.addColorStop(0, `rgba(${rgb},.42)`); g.addColorStop(.75, `rgba(${rgb},.24)`); g.addColorStop(1, `rgba(${rgb},0)`);
+    c.fillStyle = g; c.beginPath(); c.arc(x, y, r * pul, 0, 6.28); c.fill();
+  });
+  // Traços delicados de nanquim por cima
+  c.strokeStyle = "#2B303A"; c.lineWidth = 2; c.lineCap = "round";
+  c.beginPath();
+  for (let x = 80; x <= 560; x += 8) {
+    const y = 210 + Math.sin(x * .025 - t * 1.8) * 28 + Math.cos(x * .06 + t) * 10;
+    x === 80 ? c.moveTo(x, y) : c.lineTo(x, y);
+  }
+  c.stroke();
+  for (let i = 0; i < 4; i++) {
+    const x = 150 + i * 115, y = 210 + Math.sin(x * .025 - t * 1.8) * 28;
+    c.fillStyle = "#FFFDF8"; c.beginPath(); c.arc(x, y, 10, 0, 6.28); c.fill();
+    c.strokeStyle = "#2B303A"; c.lineWidth = 2; c.stroke();
+  }
+  font(c, 700, 24, "normal", "Georgia, serif"); txt(c, "Aquarela & Tinta Viva", 34, 50, "#2B303A");
+  font(c, 500, 12, "normal", "Georgia, serif"); txt(c, "pigmento orgânico sobre papel texturizado", 35, 70, "#4C7EA8");
+}
+
+/* =========================================================== 10. RISOGRAFIA */
+function renderRiso(cv, t) {
+  const [c] = scaled(cv);
+  const st = Math.floor(t * 12) / 12;
+  c.fillStyle = "#F4EFE4"; c.fillRect(0, 0, LW, LH);
+  // Retícula de fundo
+  c.fillStyle = "rgba(0,120,191,.13)";
+  for (let x = 24; x < LW; x += 28) for (let y = 24; y < LH; y += 28) { c.beginPath(); c.arc(x, y, 1.8, 0, 6.28); c.fill(); }
+  // Chapas desalinhadas em multiply
+  c.save(); c.globalCompositeOperation = "multiply";
+  const dx = Math.sin(st * 4) * 3;
+  c.fillStyle = "#FF48B0"; c.beginPath(); c.arc(230 + dx, 195, 72, 0, 6.28); c.fill();
+  c.fillStyle = "#0078BF"; c.beginPath(); c.arc(242 - dx, 202, 72, 0, 6.28); c.fill();
+  c.fillStyle = "#FF6C2F"; rr(c, 340, 130 + dx, 220, 118, 6); c.fill();
+  c.fillStyle = "#00A95C"; rr(c, 352, 140 - dx, 220, 118, 6); c.fill();
+  c.restore();
+  // Texto zine e marcas de registro (+)
+  c.strokeStyle = "#1D264B"; c.lineWidth = 1.6;
+  [[24, 24], [LW - 24, 24], [24, LH - 24], [LW - 24, LH - 24]].forEach(([x, y]) => {
+    c.beginPath(); c.moveTo(x - 8, y); c.lineTo(x + 8, y); c.moveTo(x, y - 8); c.lineTo(x, y + 8); c.stroke();
+  });
+  font(c, 900, 22); txt(c, "ZINE RISOGRÁFICO", 38, 52, "#1D264B");
+  font(c, 700, 13, "normal", MONO); txt(c, "EDIÇÃO 04 // TINTA SOBREPOSTA", 380, 198, "#FFFBF2");
+}
+
+/* =========================================================== 11. RUBBER HOSE 1930 */
+function renderRubberHose(cv, t) {
+  const [c] = scaled(cv);
+  const st = Math.floor(t * 12) / 12, p = Math.abs(Math.sin(st * 3.6)), sq = 1 + (1 - p) * .16;
+  c.fillStyle = "#F1E8D6"; c.fillRect(0, 0, LW, LH);
+  // Piso e sombras
+  c.fillStyle = "#DFD2B8"; c.fillRect(0, 290, LW, 70);
+  c.fillStyle = "rgba(24,20,18,.22)"; c.beginPath(); c.ellipse(230, 295, 58 * sq, 12, 0, 0, 6.28); c.fill();
+  // Cofrinho / Personagem elástico anos 30
+  const y = 225 - p * 44;
+  c.strokeStyle = "#181412"; c.lineWidth = 9; c.lineCap = "round";
+  c.beginPath(); c.moveTo(205, y + 32); c.quadraticCurveTo(188, 265, 195, 290); c.moveTo(255, y + 32); c.quadraticCurveTo(272, 265, 265, 290); c.stroke();
+  c.beginPath(); c.moveTo(184, y); c.quadraticCurveTo(148, y - 20 - p * 20, 138, y - 42); c.moveTo(276, y); c.quadraticCurveTo(312, y - 24, 326, y - 8); c.stroke();
+  c.fillStyle = "#FBF7EE"; c.lineWidth = 3.5; c.beginPath(); c.arc(138, y - 42, 11, 0, 6.28); c.fill(); c.stroke();
+  c.beginPath(); c.arc(326, y - 8, 11, 0, 6.28); c.fill(); c.stroke();
+  c.save(); c.translate(230, y); c.scale(sq, 2 - sq);
+  c.fillStyle = "#D95D39"; c.beginPath(); c.ellipse(0, 0, 56, 46, 0, 0, 6.28); c.fill(); c.strokeStyle = "#181412"; c.lineWidth = 4; c.stroke();
+  // Olhos estilo pie-cut
+  for (const ex of [-16, 16]) {
+    c.fillStyle = "#FBF7EE"; c.beginPath(); c.ellipse(ex, -10, 10, 14, 0, 0, 6.28); c.fill(); c.stroke();
+    c.fillStyle = "#181412"; c.beginPath(); c.arc(ex + 3, -10, 4.5, 0, 6.28); c.fill();
+  }
+  c.beginPath(); c.arc(0, 12, 16, .1, Math.PI - .1); c.stroke();
+  c.restore();
+  // Moeda saltando
+  const my = 155 + Math.sin(st * 4.2) * 28;
+  c.fillStyle = "#E8B954"; c.strokeStyle = "#181412"; c.lineWidth = 3.5; c.beginPath(); c.arc(460, my, 32, 0, 6.28); c.fill(); c.stroke();
+  font(c, 900, 22); txt(c, "$", 460, my + 8, "#181412", "center");
+  font(c, 900, 22); txt(c, "RUBBER HOSE 1930", 34, 48, "#181412");
+  font(c, 700, 12); txt(c, "FÍSICA ELÁSTICA + TRAÇO VINTAGE", 35, 68, "#5C8078");
+}
+
+/* =========================================================== 12. QUADRO BRANCO */
+function renderQuadroBranco(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#FBFBF9"; c.fillRect(0, 0, LW, LH);
+  c.fillStyle = "rgba(37,99,235,.13)";
+  for (let x = 28; x < LW; x += 28) for (let y = 28; y < LH; y += 28) { c.beginPath(); c.arc(x, y, 1.3, 0, 6.28); c.fill(); }
+  const k = clamp((t % 6) / 3.5);
+  // Marca-texto amarelo atrás do título
+  c.fillStyle = "rgba(245,158,11,.32)"; rr(c, 34, 24, 270 * clamp(k * 2), 34, 6); c.fill();
+  font(c, 800, 22, "normal", MONO); txt(c, "REGRA 50 · 30 · 20", 42, 48, "#1E2430");
+  // Círculo desenhando ao vivo
+  const cx = 220, cy = 208, r = 82;
+  c.lineCap = "round";
+  c.strokeStyle = "#2563EB"; c.lineWidth = 10; c.beginPath(); c.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + 6.28 * .5 * k); c.stroke();
+  if (k > .35) { c.strokeStyle = "#10B981"; c.beginPath(); c.arc(cx, cy, r, -Math.PI / 2 + 6.28 * .5, -Math.PI / 2 + 6.28 * (.5 + .3 * clamp((k - .35) / .4))); c.stroke(); }
+  if (k > .65) { c.strokeStyle = "#EF4444"; c.beginPath(); c.arc(cx, cy, r, -Math.PI / 2 + 6.28 * .8, -Math.PI / 2 + 6.28 * (.8 + .2 * clamp((k - .65) / .35))); c.stroke(); }
+  // Rótulos escritos
+  [["50% ESSENCIAL", 370, 140, "#2563EB"], ["30% DESEJOS", 370, 200, "#10B981"], ["20% RESERVA", 370, 260, "#EF4444"]].forEach(([s, x, y, col], i) => {
+    if (k > i * .25) {
+      c.fillStyle = col; c.beginPath(); c.arc(x - 16, y - 5, 6, 0, 6.28); c.fill();
+      font(c, 700, 16, "normal", MONO); txt(c, s, x, y, "#1E2430");
+    }
+  });
+}
+
+/* =========================================================== 13. BENTO UI & SAAS */
+function renderBentoUI(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#0C101B"; c.fillRect(0, 0, LW, LH);
+  const ativo = Math.floor(t / 1.8) % 3;
+  const card = (x, y, w, h, ac) => {
+    c.fillStyle = "#171E2E"; rr(c, x, y, w, h, 14); c.fill();
+    c.strokeStyle = ac ? "#6366F1" : "rgba(255,255,255,.12)"; c.lineWidth = ac ? 2.2 : 1; rr(c, x, y, w, h, 14); c.stroke();
+  };
+  card(32, 34, 270, 144, ativo === 0);
+  card(320, 34, 288, 144, ativo === 1);
+  card(32, 196, 386, 130, ativo === 2);
+  card(436, 196, 172, 130, false);
+  // Conteúdo dos cartões
+  font(c, 600, 11); txt(c, "LEADS ATIVOS", 52, 62, "#94A3B8");
+  font(c, 800, 32); txt(c, "+" + Math.round(128 + Math.sin(t * 2) * 14), 52, 108, "#22D3EE");
+  c.fillStyle = "#34D399"; rr(c, 52, 126, 94, 24, 12); c.fill();
+  font(c, 700, 11); txt(c, "● AO VIVO", 99, 142, "#0C101B", "center");
+  // Sparkline cartão 2
+  font(c, 600, 11); txt(c, "CONVERSÃO", 340, 62, "#94A3B8");
+  c.strokeStyle = "#6366F1"; c.lineWidth = 3; c.beginPath();
+  for (let i = 0; i <= 12; i++) { const x = 342 + i * 20, y = 148 - (Math.sin(i * .6 + t * 2.5) * .3 + i / 16) * 60; i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.stroke();
+  // Barras cartão 3
+  font(c, 600, 11); txt(c, "AUTOMAÇÃO IA", 52, 224, "#94A3B8");
+  for (let i = 0; i < 6; i++) {
+    const h = 24 + (Math.sin(t * 3 + i) * .5 + .5) * 44;
+    c.fillStyle = i === 4 ? "#22D3EE" : "#6366F1"; rr(c, 56 + i * 54, 304 - h, 34, h, 6); c.fill();
+  }
+  font(c, 800, 26); txt(c, "99%", 522, 264, "#F3F6FC", "center");
+  font(c, 600, 11); txt(c, "BENTO UI", 522, 288, "#34D399", "center");
+  // Cursor guiado
+  const pos = [[165, 110], [460, 105], [220, 265]][ativo];
+  c.fillStyle = "#FFFFFF"; c.beginPath(); c.moveTo(pos[0], pos[1]); c.lineTo(pos[0] + 16, pos[1] + 10); c.lineTo(pos[0] + 6, pos[1] + 12); c.lineTo(pos[0] + 3, pos[1] + 20); c.closePath(); c.fill();
+}
+
+/* =========================================================== 14. TIPOGRAFIA CINÉTICA */
+function renderTipoCinetica(cv, t) {
+  const [c] = scaled(cv);
+  const cyc = t % 4, flip = cyc > 2.4 && cyc < 3.4;
+  c.fillStyle = flip ? "#FFD60A" : "#111116"; c.fillRect(0, 0, LW, LH);
+  const ink = flip ? "#111116" : "#F8F8F4";
+  // Faixa correndo no topo
+  c.fillStyle = flip ? "#111116" : "#FF3B30"; c.fillRect(0, 28, LW, 34);
+  font(c, 800, 14, "normal", MONO); txt(c, "01 · GANCHO FORTE   ·   02 · RITMO RÁPIDO   ·   03 · RETENÇÃO", 320 - ((t * 90) % 240), 50, "#F8F8F4", "center");
+  // Palavras em escala de impacto
+  const sc = .92 + Math.sin(t * 6) * .04;
+  c.save(); c.translate(320, 160); c.scale(sc, sc);
+  font(c, 900, 58); txt(c, flip ? "VIRALIZA!" : "NÃO TRAVE", 0, 0, ink, "center");
+  c.restore();
+  font(c, 900, 38); txt(c, "O SEU VÍDEO", 320, 224, flip ? "#FF3B30" : "#FFD60A", "center");
+  // Barra de risco / sublinhado animado
+  const w = 360 * clamp((cyc % 2) * 1.4);
+  c.fillStyle = flip ? "#111116" : "#30D158"; c.fillRect(140, 246, w, 10);
+  font(c, 700, 13, "normal", MONO); txt(c, "TIPOGRAFIA COMO PROTAGONISTA", 320, 306, flip ? "#111116" : "#64D2FF", "center");
+}
+
+/* =========================================================== 15. MAPA & SATÉLITE */
+function renderMapaDoc(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#0B1A28"; c.fillRect(0, 0, LW, LH);
+  c.strokeStyle = "rgba(56,189,248,.09)"; c.lineWidth = 1;
+  for (let x = 0; x < LW; x += 48) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, LH); c.stroke(); }
+  for (let y = 0; y < LH; y += 48) { c.beginPath(); c.moveTo(0, y); c.lineTo(LW, y); c.stroke(); }
+  // Massas continentais estilizadas
+  const terra = (pts, acesa) => {
+    c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath();
+    c.fillStyle = acesa ? "rgba(56,189,248,.22)" : "#162B3D"; c.fill();
+    c.strokeStyle = acesa ? "#38BDF8" : "#274762"; c.lineWidth = 2; c.stroke();
+  };
+  terra([[60, 110], [190, 90], [230, 175], [165, 290], [95, 270], [70, 195]], true);
+  terra([[290, 85], [470, 75], [560, 145], [510, 275], [380, 285], [310, 185]], false);
+  // Rota em arco + ponto viajando
+  const p0 = [150, 165], p1 = [445, 175], ctrl = [295, 65];
+  c.strokeStyle = "#F97316"; c.lineWidth = 3; c.setLineDash([7, 7]); c.lineDashOffset = -t * 30;
+  c.beginPath(); c.moveTo(p0[0], p0[1]); c.quadraticCurveTo(ctrl[0], ctrl[1], p1[0], p1[1]); c.stroke(); c.setLineDash([]);
+  const u = (t * .45) % 1, bx = (1 - u) * (1 - u) * p0[0] + 2 * (1 - u) * u * ctrl[0] + u * u * p1[0];
+  const by = (1 - u) * (1 - u) * p0[1] + 2 * (1 - u) * u * ctrl[1] + u * u * p1[1];
+  c.fillStyle = "#FACC15"; c.beginPath(); c.arc(bx, by, 6, 0, 6.28); c.fill();
+  // Pinos com radar
+  [p0, p1].forEach(([px, py], i) => {
+    const r = 8 + ((t * 18 + i * 10) % 18);
+    c.strokeStyle = "rgba(74,222,128,.55)"; c.lineWidth = 1.5; c.beginPath(); c.arc(px, py, r, 0, 6.28); c.stroke();
+    c.fillStyle = "#4ADE80"; c.beginPath(); c.arc(px, py, 6, 0, 6.28); c.fill();
+  });
+  font(c, 800, 20); txt(c, "ROTAS & GEOPOLÍTICA", 30, 44, "#F0F6FA");
+  font(c, 600, 10.5, "normal", MONO); txt(c, "LAT -23.5 · LON -46.6 · ESCALA GLOBAL", 30, 334, "#38BDF8");
+}
+
+/* =========================================================== 16. COLAGEM EDITORIAL */
+function renderColagem(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#EFEAE0"; c.fillRect(0, 0, LW, LH);
+  c.save(); c.globalCompositeOperation = "multiply"; c.globalAlpha = .55; c.drawImage(fiber(), 0, 0, 1280, 720); c.restore();
+  // Recortes em camadas
+  c.save(); c.translate(220, 185); c.rotate(-.04);
+  c.fillStyle = "rgba(27,27,29,.22)"; c.fillRect(-130 + 6, -92 + 8, 260, 184);
+  c.fillStyle = "#FCF9F2"; c.fillRect(-130, -92, 260, 184);
+  c.fillStyle = "#FACC15"; c.fillRect(-110, -68, 175 * clamp((t % 3) * 1.4), 24);
+  font(c, 900, 16); txt(c, "ARQUIVO CONFIDENCIAL", -104, -50, "#1B1B1D");
+  for (let i = 0; i < 4; i++) {
+    const h = 24 + ((i + 1) * 16) * (.7 + .3 * Math.sin(t * 2 + i));
+    c.fillStyle = i === 2 ? "#E11D48" : "#0EA5E9"; c.fillRect(-95 + i * 48, 66 - h, 30, h);
+  }
+  c.restore();
+  // Fita adesiva e carimbo
+  c.save(); c.translate(200, 88); c.rotate(.15); c.fillStyle = "rgba(250,204,21,.65)"; c.fillRect(-34, -10, 68, 20); c.restore();
+  const s = 1 + Math.max(0, Math.sin(t * 3) * .08);
+  c.save(); c.translate(475, 195); c.rotate(-.16); c.scale(s, s);
+  c.strokeStyle = "#E11D48"; c.lineWidth = 4; rr(c, -74, -28, 148, 56, 6); c.stroke();
+  font(c, 900, 22); txt(c, "REVELADO", 0, 8, "#E11D48", "center");
+  c.restore();
+  font(c, 900, 22); txt(c, "COLAGEM EDITORIAL", 34, 48, "#1B1B1D");
+}
+
+/* =========================================================== 17. BAUHAUS SUÍÇO */
+function renderBauhaus(cv, t) {
+  const [c] = scaled(cv);
+  c.fillStyle = "#F4F1EA"; c.fillRect(0, 0, LW, LH);
+  // Grade suíça
+  c.strokeStyle = "rgba(17,17,17,.12)"; c.lineWidth = 1;
+  for (let x = 80; x < LW; x += 80) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, LH); c.stroke(); }
+  for (let y = 90; y < LH; y += 90) { c.beginPath(); c.moveTo(0, y); c.lineTo(LW, y); c.stroke(); }
+  // Sólidos geométricos Bauhaus em rotação escalonada
+  const a = Math.floor(t / 1.4) * (Math.PI / 2) + eio(clamp((t % 1.4) / .6)) * (Math.PI / 2);
+  c.save(); c.translate(420, 180); c.rotate(a);
+  c.fillStyle = "#D92B2B"; c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, 96, 0, Math.PI / 2); c.closePath(); c.fill();
+  c.fillStyle = "#1D4ED8"; c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, 96, Math.PI, Math.PI * 1.5); c.closePath(); c.fill();
+  c.fillStyle = "#F2B705"; c.beginPath(); c.arc(0, 0, 42, 0, 6.28); c.fill();
+  c.restore();
+  c.fillStyle = "#111111"; c.fillRect(40, 120, 240, 12);
+  c.fillStyle = "#D92B2B"; c.fillRect(40, 250, 96, 40);
+  c.fillStyle = "#1D4ED8"; c.fillRect(148, 250, 96, 40);
+  font(c, 900, 32); txt(c, "BAUHAUS", 40, 102, "#111111");
+  font(c, 700, 14); txt(c, "01 · FORMA   02 · GRADE", 40, 165, "#111111");
+  font(c, 700, 14); txt(c, "03 · CONTRASTE PURO", 40, 190, "#D92B2B");
+}
+
+const RENDER = [
+  renderPaper, renderGlass, renderIso, renderFlat, renderPixel,
+  renderToy3D, renderCelAnime, renderNeon3D, renderAquarela, renderRiso, renderRubberHose,
+  renderQuadroBranco, renderBentoUI, renderTipoCinetica, renderMapaDoc, renderColagem, renderBauhaus,
+];

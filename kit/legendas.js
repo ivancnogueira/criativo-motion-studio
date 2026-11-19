@@ -8,8 +8,8 @@ import { clamp, lerp, E, mola } from "./movimento.js";
 import { retP, retArredP } from "./pinceis.js";
 
 // cor de texto que aparece sobre qualquer cena, e a cor oposta para contorno e faixa
-const luz = p => p.estilo === "traco" || p.estilo === "vidro" ? "tinta" : "claro";
-const breu = p => p.estilo === "traco" || p.estilo === "vidro" ? "claro" : "tinta";
+const luz = p => p.tintaClara ? "tinta" : "claro";
+const breu = p => p.tintaClara ? "claro" : "tinta";
 
 /** Texto com contorno (o mesmo texto desenhado em volta, na cor da borda). `grosso` é a fração do tamanho. */
 function escrever(p, s, x, y, { tam, cor, borda = null, grosso = .08, alinhar = "center" } = {}) {

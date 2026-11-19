@@ -1,6 +1,6 @@
 # Criativo Motion Studio
 
-Uma máquina de vídeos curtos em motion graphics — Reels, Shorts e TikTok — conduzida por agentes dentro do **Claude Code**, do **Codex** ou do **Antigravity**. Você escolhe um dos 5 estilos nativos, ou cria um estilo novo a partir de um vídeo de que gostou, e os agentes cuidam do resto: roteiro, narração, legendas, storyboard, animação, renderização, revisão e publicação.
+Uma máquina de vídeos curtos em motion graphics — Reels, Shorts e TikTok — conduzida por agentes dentro do **Claude Code**, do **Codex** ou do **Antigravity**. Você escolhe um dos 17 estilos nativos, ou cria um estilo novo a partir de um vídeo de que gostou, e os agentes cuidam do resto: roteiro, narração, legendas, storyboard, animação, renderização, revisão e publicação.
 
 ## Instalação rápida
 
@@ -35,19 +35,19 @@ Cada etapa é uma skill que vira um comando de barra (o prefixo vem de `produto.
 | `/motion-publicar` | publica no Instagram, só com a palavra PUBLICAR |
 | `/motion-configurar` | guia as chaves e integrações |
 
-## Os 5 estilos nativos
+## Os 17 estilos nativos
 
-Recorte de Papel, Vidro Líquido, Isométrico em Linha, Vetor Flat e Pixel Art 8-bit. Veja cada um animado no painel (`npm run painel`).
+Recorte de Papel, Vidro Líquido, Isométrico em Linha, Vetor Flat, Pixel Art 8-bit, 3D Toy & Massinha, 3D Cel-Shading, 3D Neon & HUD, Aquarela & Tinta Viva, Risografia & Zine, Cartoon Retrô 1930 (Rubber Hose), Quadro Branco & Caneta, Bento Grid & SaaS, Tipografia Cinética, Mapa & Satélite, Colagem Editorial e Bauhaus & Brutalismo. Veja cada um animado no painel (`npm run painel`).
 
 Quer um estilo próprio? Arraste um vídeo de referência para o painel: a própria página mede cores e ritmo, reconhece o tipo de visual e monta o template, que fica salvo em `estilos/`. O vídeo é lido no navegador e não sai do seu computador. Sem o painel, o guia está em `estilos/_personalizado/CRIAR-ESTILO.md`.
 
-## Painel local
+## Painel local unificado
 
 ```bash
 npm run painel
 ```
 
-Escolha o estilo (cada card tem uma cena animada), configure o vídeo, envie o MP3 da narração, cadastre as cores da sua marca e crie estilos novos a partir de um vídeo. Depois de salvar, cole o comando mostrado no seu agente. O painel só atende neste computador.
+Dashboard com sidebar e rotas limpas em um único servidor (`http://127.0.0.1:4173`): escolha um dos 17 estilos (`/estilos`), crie estilos novos por vídeo (`/criar-estilo`), explore a galeria de 492 peças e objetos 3D (`/galeria`), o elenco de 46 personagens (`/personagens`), os 13 estilos de legenda (`/legendas`) e cenas de demonstração (`/cenas`). `npm run kit` também aponta para o servidor unificado (`/galeria`). O servidor só atende neste computador.
 
 ## Voz, legendas e publicação
 
